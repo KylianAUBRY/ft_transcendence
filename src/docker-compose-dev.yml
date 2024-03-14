@@ -1,5 +1,19 @@
 version: '3.8'
 services:
+  front:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile.dev
+    # image: frontend_dev:local
+    volumes:
+      - ./front-end/src:/app/src
+    networks:
+      - main
+    restart: always
+    init: true
+    ports:
+      - "3000:3000"
+
   django:
     container_name: django
     build:
@@ -12,23 +26,6 @@ services:
     env_file: .env
     ports:
       - "8080:8000"
-
-  nginx:
-    container_name: nginx
-    build:
-      context: ./
-      dockerfile: ./nginx/Dockerfile
-      args:
-        - NGINX_PROTOCOL=${DJANGO_PROTOCOL:-http}
-    ports:
-      - ${NGINX_PORT}
-    restart: always
-    networks:
-      - main
-    volumes:
-      - /var/www/html
-    env_file: .env
-
 networks:
   main:
     name: main
