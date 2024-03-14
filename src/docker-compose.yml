@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  django:
+    container_name: django
+    build:
+      context: ./
+      dockerfile: ./back-end/Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    restart: always
+    networks:
+      - main
+    env_file: .env
+    ports:
+      - "8080:8000"
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./
+      dockerfile: ./nginx/Dockerfile
+      args:
+        - NGINX_PROTOCOL=${DJANGO_PROTOCOL:-http}
+    ports:
+      - "8000:8000"
+      - "443:443"
+    restart: always
+    networks:
+      - main
+    volumes:
+      - /var/www/html
+    env_file: .env
+
+networks:
+  main:
+    name: main
+    driver: bridge

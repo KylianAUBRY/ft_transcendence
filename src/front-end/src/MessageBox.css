@@ -1,0 +1,61 @@
+.messageBox{
+    background: #003c76;
+    border: 2px solid black;
+    position: absolute;
+    top: 20%;
+    left: 105%;
+    width: 60%;
+    height: 40%;
+}
+
+.friendName{
+    position: relative;
+    border-bottom: 2px solid black;
+    margin-top: 0px;
+    display: flex;
+    justify-content: space-between;
+    height: 10%;
+    align-items: center;
+    width: 100%;
+}
+
+.exitMessage{
+    position: relative;
+    height: 100%;
+    border: none;
+    background: none;
+    border-left: 2px solid black;
+    margin: 0;
+    padding: 0;
+    margin-top: 0px;
+    width: 12%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.messages{
+    height: 82%;
+}
+
+.formMessage{
+    position: relative;
+    border-top: 1px solid black;
+    height: 8%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.inputMessage{
+    width: 80%;
+}
+
+.btnSend{
+    width: 20%;
+    border: 1.5px solid black;
+    border: none;
+    background: #003276;
+    padding: 0;
+    margin: 0;
+}

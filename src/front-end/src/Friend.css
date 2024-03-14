@@ -1,0 +1,29 @@
+.friend{
+    background: #004176;
+    margin: 0.5% 0;
+    padding: 0;
+    width: 99%;
+    height: 10%;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.friend:hover{
+    height: 20%;
+    background: #003c76;
+    border: 2px solid black;
+}
+
+.iconeMessage{
+    width: 90%;
+    height: 90%;
+}
+
+.btnMessage{
+    background: transparent;
+    border: none;
+}
