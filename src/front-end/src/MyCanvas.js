@@ -27,6 +27,8 @@ function MyCanvas( props ) {
   const [email, setEmail] = useState('')
   const [registrationToggle, setregistrationToggle] = useState(false)
   const [password, setPassword] = useState('')
+  const [email2, setEmail2] = useState('')
+  const [password2, setPassword2] = useState('')
   const [t] = useTranslation("global")
 
   const location = useLocation()
@@ -750,15 +752,18 @@ function affDecompte(){
 
   function handleconnection(event) {
     event.preventDefault()
+    console.log(email2, password2)
     client.post(
       "/api/login",
       {
-        email: email,
-        username: username,
+        email: email2,
+        password: password2
       }
     ).then(function(res){
         setCurrentUser(true)
-      })
+      }).catch(function(error) {
+        console.error("Erreur lors de la requête de connexion :", error);
+      });
     }
   
     /*
@@ -776,7 +781,6 @@ function affDecompte(){
 
   function handleRegister(event){
     event.preventDefault()
-    console.log(email, username, password)
     client.post(
       "/api/register",
       {
@@ -785,7 +789,6 @@ function affDecompte(){
         password: password
       }
     ).then(function(res){
-      console.log('test', res)
       client.post(
         "/api/login",
         {
@@ -794,17 +797,47 @@ function affDecompte(){
         }
       ).then(function(res){
         setCurrentUser(true)
+        var loginPage = document.getElementById('loginPage');
+        loginPage.classList.remove('visible');
+        loginPage.classList.add('hidden');
+        setTimeout(function() {
+          setisLoginPage(false)
+          if (childRef.current) {
+            childRef.current.childFunction(2)
+        }
+        }, 800);
       })
     }
     ) 
   }
 
+
+  function handleLogout (event){
+    event.preventDefault()
+    client.post(
+      "/api/logout",
+      {withCredentials: true}
+    ).then(function(res){
+      setCurrentUser(false)
+    }).catch(function(error){
+     console.log(error)
+    })
+  }
   
+useEffect(() => {
+  client.get("/api/user")
+  .then(function(res){
+    setCurrentUser(true)
+  })
+  .catch(function(error){
+    setCurrentUser(false)
+  })
+}, [])
+
 
     return (
         <div>
-
-          
+    <button className="logoutBtn" onClick={handleLogout}>log out</button>  
     {props.isSize ? (
         <div>
           {isLoginPage ? (
@@ -813,11 +846,11 @@ function affDecompte(){
       <div className='form'>
         <form onSubmit={handleconnection} className='signinForm'>
           <div className='Wgroup'>
-            <input placeholder='login' id='login' name='login' className='Winput' onChange={e => setEmail(e.target.value)}></input>
+            <input placeholder='login' id='login' name='login' className='Winput' onChange={e => setEmail2(e.target.value)}></input>
             <label className='Wlabel' htmlFor='login'>{t("home.email")}</label>
           </div>
           <div className='Wgroup'>
-            <input placeholder='password' id='password' name='password' className='Winput' onChange={e => setPassword(e.target.value)}></input>
+            <input placeholder='password' id='password' name='password' className='Winput' onChange={e => setPassword2(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password'>{t("home.password")}</label>
           </div>
           <div className='btn'>

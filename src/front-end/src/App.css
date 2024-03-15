@@ -1250,3 +1250,16 @@ canvas {
   visibility: visible;
   transform: scale(100) translateX(2px);
 }
+
+
+.logoutBtn{
+  position: absolute;
+  top: 1%;
+  right: 1%;
+  z-index: 2;
+  background: rgba(0, 54, 118, 0.9);
+  border: 1px solid black;
+  border-radius: 10%;
+  width: 5%;
+  height: 3%;
+}
