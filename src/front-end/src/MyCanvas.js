@@ -9,16 +9,29 @@ import { Environment, Stars } from '@react-three/drei'
 import SocialMenu from './SocialMenu'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import axios from 'axios'
 
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+axios.defaults.withCredentials = true
+
+const client = axios.create({
+  baseURL: 'http://localhost:8080'
+})
 
 let stopDecompte = false
 
 function MyCanvas( props ) {
-    const [t] = useTranslation("global")
+  const [currentUser, setCurrentUser] = useState()
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [registrationToggle, setregistrationToggle] = useState(false)
+  const [password, setPassword] = useState('')
+  const [t] = useTranslation("global")
 
   const location = useLocation()
 
-    const cameraRef = useRef()
+  const cameraRef = useRef()
 
 
 
@@ -737,6 +750,18 @@ function affDecompte(){
 
   function handleconnection(event) {
     event.preventDefault()
+    client.post(
+      "/api/login",
+      {
+        email: email,
+        username: username,
+      }
+    ).then(function(res){
+        setCurrentUser(true)
+      })
+    }
+  
+    /*
     var loginPage = document.getElementById('loginPage');
     loginPage.classList.remove('visible');
     loginPage.classList.add('hidden');
@@ -745,17 +770,36 @@ function affDecompte(){
       if (childRef.current) {
         childRef.current.childFunction(2)
     }
-    }, 800);
+    }, 800);*/
     
-  }
 
 
   function handleRegister(event){
     event.preventDefault()
+    console.log(email, username, password)
+    client.post(
+      "/api/register",
+      {
+        email: email,
+        username: username,
+        password: password
+      }
+    ).then(function(res){
+      console.log('test', res)
+      client.post(
+        "/api/login",
+        {
+          email: email,
+          password: password
+        }
+      ).then(function(res){
+        setCurrentUser(true)
+      })
+    }
+    ) 
   }
 
   
-console.log('canvas: ', isSocialMenu)
 
     return (
         <div>
@@ -769,11 +813,11 @@ console.log('canvas: ', isSocialMenu)
       <div className='form'>
         <form onSubmit={handleconnection} className='signinForm'>
           <div className='Wgroup'>
-            <input placeholder='login' id='login' name='login' className='Winput'></input>
-            <label className='Wlabel' htmlFor='login'>{t("home.login")}</label>
+            <input placeholder='login' id='login' name='login' className='Winput' onChange={e => setEmail(e.target.value)}></input>
+            <label className='Wlabel' htmlFor='login'>{t("home.email")}</label>
           </div>
           <div className='Wgroup'>
-            <input placeholder='password' id='password' name='password' className='Winput'></input>
+            <input placeholder='password' id='password' name='password' className='Winput' onChange={e => setPassword(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password'>{t("home.password")}</label>
           </div>
           <div className='btn'>
@@ -782,19 +826,19 @@ console.log('canvas: ', isSocialMenu)
         </form>
         <form onSubmit={handleRegister} className='signupForm'>
         <div className='Wgroup'>
-            <input placeholder='e-mail' id='e-mail' name='e-mail' className='Winput'></input>
+            <input placeholder='e-mail' id='e-mail' name='e-mail' className='Winput' onChange={e => setEmail(e.target.value)}></input>
             <label className='Wlabel' htmlFor='e-mail'>{t("home.email")}</label>
           </div>
           <div className='Wgroup'>
-            <input placeholder='phone number' id='phone number' name='phone number' className='Winput'></input>
+            <input placeholder='phone number' id='phone number' name='phone number' className='Winput' ></input>
             <label className='Wlabel' htmlFor='phone number'>{t("home.phone")}</label>
           </div>
           <div className='Wgroup'>
-            <input placeholder='login' id='login2' name='login2' className='Winput'></input>
+            <input placeholder='login' id='login2' name='login2' className='Winput' onChange={e => setUsername(e.target.value)}></input>
             <label className='Wlabel' htmlFor='login2'>{t("home.login")}</label>
           </div>
           <div className='Wgroup'>
-            <input placeholder='password' id='password2' name='password2' className='Winput'></input>
+            <input placeholder='password' id='password2' name='password2' className='Winput' onChange={e => setPassword(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password2'>{t("home.password")}</label>
           </div>
           <div className='btn'>
