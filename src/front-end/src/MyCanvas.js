@@ -129,15 +129,17 @@ useEffect(() => {
   stopDecompte = true
 
   if (location.pathname === '/' && props.isSize){
+    if (currentUser === true){
     client.get(
       "/api/logout",
       {withCredentials: true}
     ).then(function(res){
       setCurrentUser(false)
-      navigate('/')
     }).catch(function(error){
      console.log(error)
     })
+    }
+    
     const initialFormData8 = {
       player1: '',
       player2: '',
@@ -770,7 +772,7 @@ function affDecompte(){
       document.getElementById('badPasswordl2').innerText = t("home.empty")
       return
     }
-    if (!validateEmail(email)){
+    if (!validateEmail(email2)){
       document.getElementById('badEmail2').innerText = t("home.badE")
       return
     }
