@@ -1256,3 +1256,10 @@ canvas {
   font-size: 0.8em;
   width: auto;
 }
+
+.profil{
+  z-index: 2;
+  position: absolute;
+  right: 0;
+  top: 0;
+}

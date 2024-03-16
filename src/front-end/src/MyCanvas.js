@@ -797,9 +797,8 @@ function affDecompte(){
         setPassword2('')
       }).catch(function(error) {
         console.error("Erreur lors de la requête de connexion :", error);
-      });
+      }); 
     }
-  
  
 
 
@@ -818,12 +817,10 @@ function affDecompte(){
       return
     }
     if (!validateEmail(email)){
-      console.log('pas bon mail')
       document.getElementById('badEmail').innerText = t("home.badE")
       return
     }
     if (!passwordVerif(password)){
-      console.log('pas bon password')
       document.getElementById('badPassword').innerText = t("home.badP")
       return
     }
@@ -876,7 +873,6 @@ function affDecompte(){
   
 useEffect(() => {
   if (currentUser === true){
-    console.log('rtest')
     client.get("/api/user")
     .then(function(res){
       console.log(res.data)
@@ -898,8 +894,15 @@ function passwordVerif(motDePasse) {
   return motDePasse.length >= 8;
 }
 
+
+
+
+
     return (
         <div>
+           {props.currentUser ? (
+            <img src='/profil.png' alt='profil' className='profil'/>
+            ) : null}
     {props.isSize ? (
         <div>
           {isLoginPage ? (
