@@ -136,6 +136,46 @@
     font-size: 0.8em;
 }
 
+.logoutBtn{
+    margin: 5%;
+    width: 40%;
+    height: 5%;
+    position: relative;
+    background-color: transparent;
+    cursor: pointer;
+    border: 2px solid black;
+    overflow: hidden;
+    border-radius: 30px;
+    color: black;
+    transition: all 0.5s ease-in-out;
+    font-size: 1.5rem;
+  }
+  
+  .logoutBtn:hover {
+    box-shadow: 1px 1px 200px black;
+    color: #0000c8;
+    border: none;
+  }
+  
+  .logoutBtn::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: all 0.5s ease-in-out;
+    background-color: black;
+    border-radius: 30px;
+    visibility: hidden;
+    height: 10px;
+    width: 10px;
+    z-index: -1;
+  }
+  
+  .logoutBtn:hover::after {
+    visibility: visible;
+    transform: scale(100) translateX(2px);
+  }
+
 
 
 

@@ -6,7 +6,10 @@
         "login": "Login",
         "password": "Password",
         "email": "E-mail",
-        "phone": "phone number"
+        "phone": "phone number",
+        "badE": "Invalid e-mail",
+        "badP": "Password must contain 8 characters minimum",
+        "empty": "empty field"
     },
     "game":{
         "online": "Play online",

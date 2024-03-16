@@ -129,6 +129,15 @@ useEffect(() => {
   stopDecompte = true
 
   if (location.pathname === '/' && props.isSize){
+    client.get(
+      "/api/logout",
+      {withCredentials: true}
+    ).then(function(res){
+      setCurrentUser(false)
+      navigate('/')
+    }).catch(function(error){
+     console.log(error)
+    })
     const initialFormData8 = {
       player1: '',
       player2: '',
@@ -753,7 +762,18 @@ function affDecompte(){
 
   function handleconnection(event) {
     event.preventDefault()
-    console.log(email2, password2)
+    if (!email2){
+      document.getElementById('badEmail2').innerText = t("home.empty")
+      return
+    }
+    if (!password2){
+      document.getElementById('badPasswordl2').innerText = t("home.empty")
+      return
+    }
+    if (!validateEmail(email)){
+      document.getElementById('badEmail2').innerText = t("home.badE")
+      return
+    }
     client.post(
       "/api/login",
       {
@@ -762,26 +782,49 @@ function affDecompte(){
       }
     ).then(function(res){
         setCurrentUser(true)
+        var loginPage = document.getElementById('loginPage');
+        loginPage.classList.remove('visible');
+        loginPage.classList.add('hidden');
+        setTimeout(function() {
+          setisLoginPage(false)
+          if (childRef.current) {
+            childRef.current.childFunction(2)
+        }
+        }, 800);
+        setEmail2('')
+        setPassword2('')
       }).catch(function(error) {
         console.error("Erreur lors de la requête de connexion :", error);
       });
     }
   
-    /*
-    var loginPage = document.getElementById('loginPage');
-    loginPage.classList.remove('visible');
-    loginPage.classList.add('hidden');
-    setTimeout(function() {
-      setisLoginPage(false)
-      if (childRef.current) {
-        childRef.current.childFunction(2)
-    }
-    }, 800);*/
-    
+ 
 
 
   function handleRegister(event){
     event.preventDefault()
+    if (!email){
+      document.getElementById('badEmail').innerText = t("home.empty")
+      return
+    }
+    if(!username){
+      document.getElementById('badLogin').innerText = t("home.empty")
+      return
+    }
+    if(!password){
+      document.getElementById('badPassword').innerText = t("home.empty")
+      return
+    }
+    if (!validateEmail(email)){
+      console.log('pas bon mail')
+      document.getElementById('badEmail').innerText = t("home.badE")
+      return
+    }
+    if (!passwordVerif(password)){
+      console.log('pas bon password')
+      document.getElementById('badPassword').innerText = t("home.badP")
+      return
+    }
     client.post(
       "/api/register",
       {
@@ -807,6 +850,9 @@ function affDecompte(){
             childRef.current.childFunction(2)
         }
         }, 800);
+        setEmail('')
+        setUsername('')
+        setPassword('')
       })
     }
     ) 
@@ -831,21 +877,27 @@ useEffect(() => {
     console.log('rtest')
     client.get("/api/user")
     .then(function(res){
+      console.log(res.data)
       setCurrentUser(true)
     })
     .catch(function(error){
       setCurrentUser(false)
     })
   }
-  
 }, [])
 
 
+const validateEmail = (email) => {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailPattern.test(email);
+};
+
+function passwordVerif(motDePasse) {
+  return motDePasse.length >= 8;
+}
+
     return (
         <div>
-    {currentUser ? (
-      <button className="logoutBtn" onClick={handleLogout}>log out</button>  
-    ) : null}
     {props.isSize ? (
         <div>
           {isLoginPage ? (
@@ -856,10 +908,12 @@ useEffect(() => {
           <div className='Wgroup'>
             <input placeholder='login' id='login' name='login' className='Winput' onChange={e => setEmail2(e.target.value)}></input>
             <label className='Wlabel' htmlFor='login'>{t("home.email")}</label>
+            <div className='bad' id='badEmail2'></div>
           </div>
           <div className='Wgroup'>
             <input placeholder='password' id='password' name='password' className='Winput' onChange={e => setPassword2(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password'>{t("home.password")}</label>
+            <div className='bad' id='badPassword2'></div>
           </div>
           <div className='btn'>
             <button type='submit' className='btnlogin'>{t("home.signin")}</button>      
@@ -869,18 +923,22 @@ useEffect(() => {
         <div className='Wgroup'>
             <input placeholder='e-mail' id='e-mail' name='e-mail' className='Winput' onChange={e => setEmail(e.target.value)}></input>
             <label className='Wlabel' htmlFor='e-mail'>{t("home.email")}</label>
+            <div className='bad' id='badEmail'></div>
           </div>
           <div className='Wgroup'>
             <input placeholder='phone number' id='phone number' name='phone number' className='Winput' ></input>
             <label className='Wlabel' htmlFor='phone number'>{t("home.phone")}</label>
+            <div className='bad' id='badNumber'></div>
           </div>
           <div className='Wgroup'>
             <input placeholder='login' id='login2' name='login2' className='Winput' onChange={e => setUsername(e.target.value)}></input>
             <label className='Wlabel' htmlFor='login2'>{t("home.login")}</label>
+            <div className='bad' id='badLogin'></div>
           </div>
           <div className='Wgroup'>
             <input placeholder='password' id='password2' name='password2' className='Winput' onChange={e => setPassword(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password2'>{t("home.password")}</label>
+            <div className='bad' id='badPassword'></div>
           </div>
           <div className='btn'>
             <button type='submit' className='btnlogin'>{t("home.signup")}</button>
@@ -890,7 +948,7 @@ useEffect(() => {
       </div>
       ) : null}
     { state === 10 ? (
-      <SocialMenu setisSocialMenu={setisSocialMenu} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
+      <SocialMenu setisSocialMenu={setisSocialMenu} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout}/>
     ) : null}
             {isInMatchTournament ? (
       <div className='scoreDirect' id='scoreDirect'>Score</div>
