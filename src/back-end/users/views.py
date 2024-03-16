@@ -44,7 +44,10 @@ class UserLogin(APIView):
 
 # Post request to logout user
 class UserLogout(APIView):
-    def post(self, request):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+    
+    def get(self, request):
         logout(request)
         return Response(status=status.HTTP_200_OK)
 

@@ -10,6 +10,7 @@ import SocialMenu from './SocialMenu'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
@@ -25,11 +26,11 @@ function MyCanvas( props ) {
   const [currentUser, setCurrentUser] = useState()
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
-  const [registrationToggle, setregistrationToggle] = useState(false)
   const [password, setPassword] = useState('')
   const [email2, setEmail2] = useState('')
   const [password2, setPassword2] = useState('')
   const [t] = useTranslation("global")
+  const navigate = useNavigate();
 
   const location = useLocation()
 
@@ -814,30 +815,37 @@ function affDecompte(){
 
   function handleLogout (event){
     event.preventDefault()
-    client.post(
+    client.get(
       "/api/logout",
       {withCredentials: true}
     ).then(function(res){
       setCurrentUser(false)
+      navigate('/')
     }).catch(function(error){
      console.log(error)
     })
   }
   
 useEffect(() => {
-  client.get("/api/user")
-  .then(function(res){
-    setCurrentUser(true)
-  })
-  .catch(function(error){
-    setCurrentUser(false)
-  })
+  if (currentUser === true){
+    console.log('rtest')
+    client.get("/api/user")
+    .then(function(res){
+      setCurrentUser(true)
+    })
+    .catch(function(error){
+      setCurrentUser(false)
+    })
+  }
+  
 }, [])
 
 
     return (
         <div>
-    <button className="logoutBtn" onClick={handleLogout}>log out</button>  
+    {currentUser ? (
+      <button className="logoutBtn" onClick={handleLogout}>log out</button>  
+    ) : null}
     {props.isSize ? (
         <div>
           {isLoginPage ? (
