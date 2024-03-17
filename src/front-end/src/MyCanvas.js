@@ -11,6 +11,7 @@ import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import gsap from 'gsap/gsap-core'
 
 // axios.defaults.xsrfCookieName = 'csrftoken'
 // axios.defaults.xsrfHeaderName = 'X-CSRFToken'
@@ -53,6 +54,7 @@ function MyCanvas( props ) {
   const [isLoginPage, setisLoginPage] = useState(true)
   const [racketColor, setracketColor] = useState(0xffffff);
   const [selectedKeys, setSelectedKeys] = useState(['KeyA', 'KeyD', 'ArrowLeft', 'ArrowRight']);
+  const [isProfilView, setIsProfilView] = useState(false)
  
 
 
@@ -895,14 +897,25 @@ function passwordVerif(motDePasse) {
 }
 
 
-document.getElementById('profil').addEventListener
+var profil = document.getElementById('profil')
+console.log(profil)
 
+if (profil){
+profil.addEventListener('click', function() {
+  console.log("L'élément 'profil' a été cliqué !");
+  var currentHeight = profil.style.top; // Obtenir la hauteur actuelle de l'élément par rapport à la fenêtre
+  setIsProfilView(true)
+});
+}
 
     return (
         <div>
            {/* {props.currentUser ? ( */}
             <img src='/profil.png' alt='profil' className='profil' id="profil"/>
             {/* ) : null} */}
+            {isProfilView ? (
+              <div className='profilView'>Username</div>  
+            ) : null}
     {props.isSize ? (
         <div>
           {isLoginPage ? (
