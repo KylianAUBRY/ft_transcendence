@@ -1287,13 +1287,13 @@ canvas {
 
 
 .stats{
-  background: red;
   width: 100%;
   height: 80%;
   margin:5%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, auto);
+  gap: 2%;
 }
 
 .graph1{
@@ -1313,7 +1313,10 @@ canvas {
 }
 
 .history{
-  background: black;
+  border: 1px solid black;
   grid-column: 3;
   grid-row: 1/3;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+

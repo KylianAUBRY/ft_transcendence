@@ -11,7 +11,7 @@ import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import gsap from 'gsap/gsap-core'
+import Match from './Match'
 
 // axios.defaults.xsrfCookieName = 'csrftoken'
 // axios.defaults.xsrfHeaderName = 'X-CSRFToken'
@@ -907,6 +907,8 @@ profil.addEventListener('click', function() {
 });
 }
 
+const matchArray = Array.from({ length: 42 });
+
     return (
         <div>
            {/* {props.currentUser ? ( */}
@@ -919,7 +921,11 @@ profil.addEventListener('click', function() {
                   <div className='graph2'></div>
                   <div className='stats1'></div>
                   <div className='stats2'></div>
-                  <div className='history'></div>
+                  <div className='history'>
+                    {matchArray.map((_, index) => (
+                      <Match key={index} />
+                    ))}
+                  </div>
                 </div>
                 </div>  
             ) : null}
