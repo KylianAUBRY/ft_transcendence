@@ -911,7 +911,7 @@ profil.addEventListener('click', function() {
 const matchArray = Array.from({ length: 42 });
 
 const chartRef = useRef(null);
-
+const chartRef2 = useRef(null);
 
 if (isProfilView){
 let can1 = document.getElementById('chart1')
@@ -937,30 +937,31 @@ if (can1){
   }
 })
   }
-//   let can2 = document.getElementById('chart2')
-// if (can2){
-//   if (chartRef.current !== null) {
-//     chartRef.current.destroy();
-//   }
-//   chartRef.current = new Chart(can2, {
-//   type: 'pie',
-//   data: {
-//     labels: [
-//       'Points Wins',
-//       'Points Lose'
-//     ],
-//     datasets: [{
-//       data: [370, 50],
-//       backgroundColor: [
-//         'green',
-//         'red'
-//       ],
-//       hoverOffset: 4
-//     }]
-//   }
-// })
-//   }
+  let can2 = document.getElementById('chart2')
+if (can2){
+  if (chartRef2.current !== null) {
+    chartRef2.current.destroy();
+  }
+  chartRef2.current = new Chart(can2, {
+  type: 'pie',
+  data: {
+    labels: [
+      'Points Wins',
+      'Points Loses'
+    ],
+    datasets: [{
+      data: [370, 50],
+      backgroundColor: [
+        'green',
+        'red'
+      ],
+      hoverOffset: 4
+    }]
+  }
+})
+  }
 }
+
 
 
     return (
@@ -971,10 +972,20 @@ if (can1){
             {isProfilView ? (
               <div className='profilView'>Username
                 <div className="stats">
-                  <div className='graph1'><canvas className='graph11' id='chart1' aria-label='chart' role='img'></canvas></div>
-                  <div className='graph2'><canvas id='chart2' aria-label='chart' role='img'></canvas></div>
-                  <div className='stats1'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. *</div>
-                  <div className='stats2'></div>
+                  <div className='graph1'><canvas className='canv1' id='chart1' aria-label='chart' role='img'></canvas></div>
+                  <div className='graph2'><canvas className='canv2' id='chart2' aria-label='chart' role='img'></canvas></div>
+                  <div className='stats1'>
+                    <p>nbGamePlayed</p>
+                    <p>nbGameWin</p>
+                    <p>nbGameLose</p>
+                    <p>LongestExchange</p>
+                  </div>
+                  <div className='stats2'>
+                    <p>nbTouchedBall</p>
+                    <p>nbAce</p>
+                    <p>nbPointMarked</p>
+                    <p>nbPointLose</p>
+                  </div>
                   <div className='history'>
                     {matchArray.map((_, index) => (
                       <Match key={index} />
