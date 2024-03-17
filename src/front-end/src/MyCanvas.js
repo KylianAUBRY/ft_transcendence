@@ -12,13 +12,13 @@ import { useTranslation } from 'react-i18next'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.xsrfHeaderName = 'X-CSRFToken'
-axios.defaults.withCredentials = true
+// axios.defaults.xsrfCookieName = 'csrftoken'
+// axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+// axios.defaults.withCredentials = true
 
-const client = axios.create({
-  baseURL: 'http://localhost:8080'
-})
+// const client = axios.create({
+//   baseURL: 'http://localhost:8080'
+// })
 
 let stopDecompte = false
 
@@ -129,16 +129,16 @@ useEffect(() => {
   stopDecompte = true
 
   if (location.pathname === '/' && props.isSize){
-    if (currentUser === true){
-    client.get(
-      "/api/logout",
-      {withCredentials: true}
-    ).then(function(res){
-      setCurrentUser(false)
-    }).catch(function(error){
-     console.log(error)
-    })
-    }
+    // if (currentUser === true){
+    // client.get(
+    //   "/api/logout",
+    //   {withCredentials: true}
+    // ).then(function(res){
+    //   setCurrentUser(false)
+    // }).catch(function(error){
+    //  console.log(error)
+    // })
+    // }
     
     const initialFormData8 = {
       player1: '',
@@ -764,25 +764,25 @@ function affDecompte(){
 
   function handleconnection(event) {
     event.preventDefault()
-    if (!email2){
-      document.getElementById('badEmail2').innerText = t("home.empty")
-      return
-    }
-    if (!password2){
-      document.getElementById('badPasswordl2').innerText = t("home.empty")
-      return
-    }
-    if (!validateEmail(email2)){
-      document.getElementById('badEmail2').innerText = t("home.badE")
-      return
-    }
-    client.post(
-      "/api/login",
-      {
-        email: email2,
-        password: password2
-      }
-    ).then(function(res){
+    // if (!email2){
+    //   document.getElementById('badEmail2').innerText = t("home.empty")
+    //   return
+    // }
+    // if (!password2){
+    //   document.getElementById('badPasswordl2').innerText = t("home.empty")
+    //   return
+    // }
+    // if (!validateEmail(email2)){
+    //   document.getElementById('badEmail2').innerText = t("home.badE")
+    //   return
+    // }
+    // client.post(
+    //   "/api/login",
+    //   {
+    //     email: email2,
+    //     password: password2
+    //   }
+    // ).then(function(res){
         setCurrentUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
@@ -793,52 +793,52 @@ function affDecompte(){
             childRef.current.childFunction(2)
         }
         }, 800);
-        setEmail2('')
-        setPassword2('')
-      }).catch(function(error) {
-        console.error("Erreur lors de la requête de connexion :", error);
-      }); 
+      //   setEmail2('')
+      //   setPassword2('')
+      // }).catch(function(error) {
+      //   console.error("Erreur lors de la requête de connexion :", error);
+      // }); 
     }
  
 
 
   function handleRegister(event){
     event.preventDefault()
-    if (!email){
-      document.getElementById('badEmail').innerText = t("home.empty")
-      return
-    }
-    if(!username){
-      document.getElementById('badLogin').innerText = t("home.empty")
-      return
-    }
-    if(!password){
-      document.getElementById('badPassword').innerText = t("home.empty")
-      return
-    }
-    if (!validateEmail(email)){
-      document.getElementById('badEmail').innerText = t("home.badE")
-      return
-    }
-    if (!passwordVerif(password)){
-      document.getElementById('badPassword').innerText = t("home.badP")
-      return
-    }
-    client.post(
-      "/api/register",
-      {
-        email: email,
-        username: username,
-        password: password
-      }
-    ).then(function(res){
-      client.post(
-        "/api/login",
-        {
-          email: email,
-          password: password
-        }
-      ).then(function(res){
+    // if (!email){
+    //   document.getElementById('badEmail').innerText = t("home.empty")
+    //   return
+    // }
+    // if(!username){
+    //   document.getElementById('badLogin').innerText = t("home.empty")
+    //   return
+    // }
+    // if(!password){
+    //   document.getElementById('badPassword').innerText = t("home.empty")
+    //   return
+    // }
+    // if (!validateEmail(email)){
+    //   document.getElementById('badEmail').innerText = t("home.badE")
+    //   return
+    // }
+    // if (!passwordVerif(password)){
+    //   document.getElementById('badPassword').innerText = t("home.badP")
+    //   return
+    // }
+    // client.post(
+    //   "/api/register",
+    //   {
+    //     email: email,
+    //     username: username,
+    //     password: password
+    //   }
+    // ).then(function(res){
+    //   client.post(
+    //     "/api/login",
+    //     {
+    //       email: email,
+    //       password: password
+    //     }
+    //   ).then(function(res){
         setCurrentUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
@@ -849,40 +849,40 @@ function affDecompte(){
             childRef.current.childFunction(2)
         }
         }, 800);
-        setEmail('')
-        setUsername('')
-        setPassword('')
-      })
-    }
-    ) 
+    //     setEmail('')
+    //     setUsername('')
+    //     setPassword('')
+    //   })
+    // }
+    // ) 
   }
 
 
   function handleLogout (event){
-    event.preventDefault()
-    client.get(
-      "/api/logout",
-      {withCredentials: true}
-    ).then(function(res){
-      setCurrentUser(false)
-      navigate('/')
-    }).catch(function(error){
-     console.log(error)
-    })
+    // event.preventDefault()
+    // client.get(
+    //   "/api/logout",
+    //   {withCredentials: true}
+    // ).then(function(res){
+    //   setCurrentUser(false)
+    //   navigate('/')
+    // }).catch(function(error){
+    //  console.log(error)
+    // })
   }
   
-useEffect(() => {
-  if (currentUser === true){
-    client.get("/api/user")
-    .then(function(res){
-      console.log(res.data)
-      setCurrentUser(true)
-    })
-    .catch(function(error){
-      setCurrentUser(false)
-    })
-  }
-}, [])
+// useEffect(() => {
+//   if (currentUser === true){
+//     client.get("/api/user")
+//     .then(function(res){
+//       console.log(res.data)
+//       setCurrentUser(true)
+//     })
+//     .catch(function(error){
+//       setCurrentUser(false)
+//     })
+//   }
+// }, [])
 
 
 const validateEmail = (email) => {
@@ -895,14 +895,14 @@ function passwordVerif(motDePasse) {
 }
 
 
-
+document.getElementById('profil').addEventListener
 
 
     return (
         <div>
-           {props.currentUser ? (
-            <img src='/profil.png' alt='profil' className='profil'/>
-            ) : null}
+           {/* {props.currentUser ? ( */}
+            <img src='/profil.png' alt='profil' className='profil' id="profil"/>
+            {/* ) : null} */}
     {props.isSize ? (
         <div>
           {isLoginPage ? (

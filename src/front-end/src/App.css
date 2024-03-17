@@ -1260,6 +1260,7 @@ canvas {
 .profil{
   z-index: 2;
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 1%;
+  top: 1%;
+  width: 3%;
 }
