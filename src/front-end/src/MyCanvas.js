@@ -903,7 +903,6 @@ console.log(profil)
 if (profil){
 profil.addEventListener('click', function() {
   console.log("L'élément 'profil' a été cliqué !");
-  var currentHeight = profil.style.top; // Obtenir la hauteur actuelle de l'élément par rapport à la fenêtre
   setIsProfilView(true)
 });
 }
@@ -914,7 +913,15 @@ profil.addEventListener('click', function() {
             <img src='/profil.png' alt='profil' className='profil' id="profil"/>
             {/* ) : null} */}
             {isProfilView ? (
-              <div className='profilView'>Username</div>  
+              <div className='profilView'>Username
+                <div className="stats">
+                  <div className='graph1'></div>
+                  <div className='graph2'></div>
+                  <div className='stats1'></div>
+                  <div className='stats2'></div>
+                  <div className='history'></div>
+                </div>
+                </div>  
             ) : null}
     {props.isSize ? (
         <div>

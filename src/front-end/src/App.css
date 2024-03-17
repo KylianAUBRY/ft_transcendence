@@ -1281,4 +1281,39 @@ canvas {
   z-index: 2;
   padding: 10px;
   transition: top 1s ease;
+
+
+}
+
+
+.stats{
+  background: red;
+  width: 100%;
+  height: 80%;
+  margin:5%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, auto);
+}
+
+.graph1{
+  background: yellow;
+}
+
+.graph2{
+  background: green;
+}
+
+.stats1{
+  background: purple;
+}
+
+.stats2{
+  background: blue;
+}
+
+.history{
+  background: black;
+  grid-column: 3;
+  grid-row: 1/3;
 }
