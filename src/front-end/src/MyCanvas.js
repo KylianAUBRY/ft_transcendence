@@ -11,6 +11,7 @@ import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import Chart from 'chart.js/auto';
 import Match from './Match'
 
 // axios.defaults.xsrfCookieName = 'csrftoken'
@@ -909,6 +910,59 @@ profil.addEventListener('click', function() {
 
 const matchArray = Array.from({ length: 42 });
 
+const chartRef = useRef(null);
+
+
+if (isProfilView){
+let can1 = document.getElementById('chart1')
+if (can1){
+  if (chartRef.current !== null) {
+    chartRef.current.destroy();
+  }
+  chartRef.current = new Chart(can1, {
+  type: 'pie',
+  data: {
+    labels: [
+      'Wins',
+      'Lose'
+    ],
+    datasets: [{
+      data: [37, 5],
+      backgroundColor: [
+        'green',
+        'red'
+      ],
+      hoverOffset: 4
+    }]
+  }
+})
+  }
+//   let can2 = document.getElementById('chart2')
+// if (can2){
+//   if (chartRef.current !== null) {
+//     chartRef.current.destroy();
+//   }
+//   chartRef.current = new Chart(can2, {
+//   type: 'pie',
+//   data: {
+//     labels: [
+//       'Points Wins',
+//       'Points Lose'
+//     ],
+//     datasets: [{
+//       data: [370, 50],
+//       backgroundColor: [
+//         'green',
+//         'red'
+//       ],
+//       hoverOffset: 4
+//     }]
+//   }
+// })
+//   }
+}
+
+
     return (
         <div>
            {/* {props.currentUser ? ( */}
@@ -917,9 +971,9 @@ const matchArray = Array.from({ length: 42 });
             {isProfilView ? (
               <div className='profilView'>Username
                 <div className="stats">
-                  <div className='graph1'></div>
-                  <div className='graph2'></div>
-                  <div className='stats1'></div>
+                  <div className='graph1'><canvas className='graph11' id='chart1' aria-label='chart' role='img'></canvas></div>
+                  <div className='graph2'><canvas id='chart2' aria-label='chart' role='img'></canvas></div>
+                  <div className='stats1'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. *</div>
                   <div className='stats2'></div>
                   <div className='history'>
                     {matchArray.map((_, index) => (
