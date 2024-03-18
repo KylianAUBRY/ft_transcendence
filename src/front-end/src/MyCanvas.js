@@ -14,13 +14,13 @@ import { useNavigate } from 'react-router-dom'
 import Chart from 'chart.js/auto';
 import Match from './Match'
 
-// axios.defaults.xsrfCookieName = 'csrftoken'
-// axios.defaults.xsrfHeaderName = 'X-CSRFToken'
-// axios.defaults.withCredentials = true
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+axios.defaults.withCredentials = true
 
-// const client = axios.create({
-//   baseURL: 'http://localhost:8080'
-// })
+const client = axios.create({
+  baseURL: 'http://localhost:8080'
+})
 
 let stopDecompte = false
 
@@ -132,16 +132,16 @@ useEffect(() => {
   stopDecompte = true
 
   if (location.pathname === '/' && props.isSize){
-    // if (currentUser === true){
-    // client.get(
-    //   "/api/logout",
-    //   {withCredentials: true}
-    // ).then(function(res){
-    //   setCurrentUser(false)
-    // }).catch(function(error){
-    //  console.log(error)
-    // })
-    // }
+    if (currentUser === true){
+    client.get(
+      "/api/logout",
+      {withCredentials: true}
+    ).then(function(res){
+      setCurrentUser(false)
+    }).catch(function(error){
+     console.log(error)
+    })
+    }
     
     const initialFormData8 = {
       player1: '',
@@ -767,25 +767,25 @@ function affDecompte(){
 
   function handleconnection(event) {
     event.preventDefault()
-    // if (!email2){
-    //   document.getElementById('badEmail2').innerText = t("home.empty")
-    //   return
-    // }
-    // if (!password2){
-    //   document.getElementById('badPasswordl2').innerText = t("home.empty")
-    //   return
-    // }
-    // if (!validateEmail(email2)){
-    //   document.getElementById('badEmail2').innerText = t("home.badE")
-    //   return
-    // }
-    // client.post(
-    //   "/api/login",
-    //   {
-    //     email: email2,
-    //     password: password2
-    //   }
-    // ).then(function(res){
+    if (!email2){
+      document.getElementById('badEmail2').innerText = t("home.empty")
+      return
+    }
+    if (!password2){
+      document.getElementById('badPasswordl2').innerText = t("home.empty")
+      return
+    }
+    if (!validateEmail(email2)){
+      document.getElementById('badEmail2').innerText = t("home.badE")
+      return
+    }
+    client.post(
+      "/api/login",
+      {
+        email: email2,
+        password: password2
+      }
+    ).then(function(res){
         setCurrentUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
@@ -796,52 +796,52 @@ function affDecompte(){
             childRef.current.childFunction(2)
         }
         }, 800);
-      //   setEmail2('')
-      //   setPassword2('')
-      // }).catch(function(error) {
-      //   console.error("Erreur lors de la requête de connexion :", error);
-      // }); 
+        setEmail2('')
+        setPassword2('')
+      }).catch(function(error) {
+        console.error("Erreur lors de la requête de connexion :", error);
+      }); 
     }
  
 
 
   function handleRegister(event){
     event.preventDefault()
-    // if (!email){
-    //   document.getElementById('badEmail').innerText = t("home.empty")
-    //   return
-    // }
-    // if(!username){
-    //   document.getElementById('badLogin').innerText = t("home.empty")
-    //   return
-    // }
-    // if(!password){
-    //   document.getElementById('badPassword').innerText = t("home.empty")
-    //   return
-    // }
-    // if (!validateEmail(email)){
-    //   document.getElementById('badEmail').innerText = t("home.badE")
-    //   return
-    // }
-    // if (!passwordVerif(password)){
-    //   document.getElementById('badPassword').innerText = t("home.badP")
-    //   return
-    // }
-    // client.post(
-    //   "/api/register",
-    //   {
-    //     email: email,
-    //     username: username,
-    //     password: password
-    //   }
-    // ).then(function(res){
-    //   client.post(
-    //     "/api/login",
-    //     {
-    //       email: email,
-    //       password: password
-    //     }
-    //   ).then(function(res){
+    if (!email){
+      document.getElementById('badEmail').innerText = t("home.empty")
+      return
+    }
+    if(!username){
+      document.getElementById('badLogin').innerText = t("home.empty")
+      return
+    }
+    if(!password){
+      document.getElementById('badPassword').innerText = t("home.empty")
+      return
+    }
+    if (!validateEmail(email)){
+      document.getElementById('badEmail').innerText = t("home.badE")
+      return
+    }
+    if (!passwordVerif(password)){
+      document.getElementById('badPassword').innerText = t("home.badP")
+      return
+    }
+    client.post(
+      "/api/register",
+      {
+        email: email,
+        username: username,
+        password: password
+      }
+    ).then(function(res){
+      client.post(
+        "/api/login",
+        {
+          email: email,
+          password: password
+        }
+      ).then(function(res){
         setCurrentUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
@@ -852,40 +852,40 @@ function affDecompte(){
             childRef.current.childFunction(2)
         }
         }, 800);
-    //     setEmail('')
-    //     setUsername('')
-    //     setPassword('')
-    //   })
-    // }
-    // ) 
+        setEmail('')
+        setUsername('')
+        setPassword('')
+      })
+    }
+    ) 
   }
 
 
   function handleLogout (event){
-    // event.preventDefault()
-    // client.get(
-    //   "/api/logout",
-    //   {withCredentials: true}
-    // ).then(function(res){
-    //   setCurrentUser(false)
-    //   navigate('/')
-    // }).catch(function(error){
-    //  console.log(error)
-    // })
+    event.preventDefault()
+    client.get(
+      "/api/logout",
+      {withCredentials: true}
+    ).then(function(res){
+      setCurrentUser(false)
+      navigate('/')
+    }).catch(function(error){
+     console.log(error)
+    })
   }
   
-// useEffect(() => {
-//   if (currentUser === true){
-//     client.get("/api/user")
-//     .then(function(res){
-//       console.log(res.data)
-//       setCurrentUser(true)
-//     })
-//     .catch(function(error){
-//       setCurrentUser(false)
-//     })
-//   }
-// }, [])
+useEffect(() => {
+  if (currentUser === true){
+    client.get("/api/user")
+    .then(function(res){
+      console.log(res.data)
+      setCurrentUser(true)
+    })
+    .catch(function(error){
+      setCurrentUser(false)
+    })
+  }
+}, [])
 
 
 const validateEmail = (email) => {
@@ -899,27 +899,64 @@ function passwordVerif(motDePasse) {
 
 
 var profil = document.getElementById('profil')
-console.log(profil)
 
-if (profil){
-profil.addEventListener('click', function() {
-  console.log("L'élément 'profil' a été cliqué !");
-  setIsProfilView(true)
-});
-}
+
+let user 
+let LongestExchange
+let aceRate
+let nbAce
+let nbGameLose
+let nbGamePlayed
+let nbGameWin 
+let nbPointLose
+let nbPointMarked
+let nbTouchedBall
+let name
+let winRate
+
+
+
+
+
 
 const matchArray = Array.from({ length: 42 });
 
 const chartRef = useRef(null);
 const chartRef2 = useRef(null);
 
-if (isProfilView){
-let can1 = document.getElementById('chart1')
-if (can1){
+const chartRef1 = useRef(null);
+
+function getChart() {
+  if (currentUser === true){
+    client.get("/api/user")
+      .then(res => {
+        user = res.data.user
+        LongestExchange = user.LongestExchange
+        aceRate = user.aceRate
+        nbAce = user.nbAce
+        nbGameLose = user.nbGameLose
+        nbGamePlayed = user.nbGamePlayed
+        nbGameWin = user.nbGameWin
+        nbPointLose = user.nbPointLose
+        nbPointMarked = user.nbPointMarked
+        nbTouchedBall = user.nbTouchedBall
+        name = user.username
+        winRate = user.winRate
+        console.log(name, nbGamePlayed)
+    })
+  }
+
+
+
   if (chartRef.current !== null) {
     chartRef.current.destroy();
   }
-  chartRef.current = new Chart(can1, {
+
+  const can1 = chartRef1.current
+  const ctx = can1.getContext('2d')
+  console.log(ctx)
+
+  chartRef.current = new Chart(ctx, {
   type: 'pie',
   data: {
     labels: [
@@ -927,7 +964,7 @@ if (can1){
       'Lose'
     ],
     datasets: [{
-      data: [37, 5],
+      data: [nbGameWin, nbGameLose],
       backgroundColor: [
         'green',
         'red'
@@ -936,7 +973,7 @@ if (can1){
     }]
   }
 })
-  }
+  
   let can2 = document.getElementById('chart2')
 if (can2){
   if (chartRef2.current !== null) {
@@ -950,7 +987,7 @@ if (can2){
       'Points Loses'
     ],
     datasets: [{
-      data: [370, 50],
+      data: [nbPointMarked, nbPointLose],
       backgroundColor: [
         'green',
         'red'
@@ -960,6 +997,39 @@ if (can2){
   }
 })
   }
+
+    if (elements.nbPointLose && nbPointLose){
+      elements.nbGamePlayed.innerText = "nbGamePlayed: " + nbGamePlayed
+      elements.nbGameWin.innerText = "nbGameWin: " + nbGameWin
+      elements.nbGameLose.innerText = "nbGameLose: " + nbGameLose
+      elements.LongestExchange.innerText = "LongestExchange: " + LongestExchange
+      elements.nbTouchedBall.innerText = "nbTouchedBall: " + nbTouchedBall
+      elements.nbAce.innerText = "nbAce: " + nbAce
+      elements.nbPointMarked.innerText = "nbPointMarked: " + nbPointMarked
+      elements.nbPointLose.innerText = "nbPointLose: " + nbPointLose
+    }
+
+}
+  
+const elements = {
+  nbGamePlayed: document.getElementById('nbGamePlayed'),
+  nbGameWin: document.getElementById('nbGameWin'),
+  nbGameLose: document.getElementById('nbGameLose'),
+  LongestExchange: document.getElementById('LongestExchange'),
+  nbTouchedBall: document.getElementById('nbTouchedBall'),
+  nbAce: document.getElementById('nbAce'),
+  nbPointMarked: document.getElementById('nbPointMarked'),
+  nbPointLose: document.getElementById('nbPointLose')
+};
+
+
+function handleProfil(){
+  if (isProfilView === false){
+    setIsProfilView(true)
+    getChart()
+  }
+  else if (isProfilView === true)
+    setIsProfilView(false)
 }
 
 
@@ -967,24 +1037,24 @@ if (can2){
     return (
         <div>
            {/* {props.currentUser ? ( */}
-            <img src='/profil.png' alt='profil' className='profil' id="profil"/>
+            <button onClick={handleProfil}><img src='/profil.png' alt='profil' className='profil' id="profil"/></button>
             {/* ) : null} */}
             {isProfilView ? (
               <div className='profilView'>Username
                 <div className="stats">
-                  <div className='graph1'><canvas className='canv1' id='chart1' aria-label='chart' role='img'></canvas></div>
+                  <div className='graph1'><canvas className='canv1' id='chart1' ref={chartRef1} aria-label='chart' role='img'></canvas></div>
                   <div className='graph2'><canvas className='canv2' id='chart2' aria-label='chart' role='img'></canvas></div>
                   <div className='stats1'>
-                    <p>nbGamePlayed</p>
-                    <p>nbGameWin</p>
-                    <p>nbGameLose</p>
-                    <p>LongestExchange</p>
+                    <p id='nbGamePlayed'>nbGamePlayed</p>
+                    <p id='nbGameWin'>nbGameWin</p>
+                    <p id='nbGameLose'>nbGameLose</p>
+                    <p id='LongestExchange'>LongestExchange</p>
                   </div>
                   <div className='stats2'>
-                    <p>nbTouchedBall</p>
-                    <p>nbAce</p>
-                    <p>nbPointMarked</p>
-                    <p>nbPointLose</p>
+                    <p id='nbTouchedBall'>nbTouchedBall</p>
+                    <p id='nbAce'>nbAce</p>
+                    <p id='nbPointMarked'>nbPointMarked</p>
+                    <p id='nbPointLose'>nbPointLose</p>
                   </div>
                   <div className='history'>
                     {matchArray.map((_, index) => (
