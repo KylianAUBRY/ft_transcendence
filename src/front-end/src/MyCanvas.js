@@ -766,6 +766,10 @@ function affDecompte(){
 
 
   function handleconnection(event) {
+    refBadPassword.current.innerText = ''
+    document.getElementById('badEmail2').innerText = ''
+    document.getElementById('badPasswordl2').innerText = ''
+    document.getElementById('badEmail2').innerText = ''
     event.preventDefault()
     if (!email2){
       document.getElementById('badEmail2').innerText = t("home.empty")
@@ -800,7 +804,7 @@ function affDecompte(){
         setPassword2('')
       }).catch(function(error) {
         console.error("Erreur lors de la requête de connexion :", error);
-        document.getElementById('badPasswordl2').innerText = 'Wrong Password'
+        refBadPassword.current.innerText = 'Wrong Password'
       }); 
       
     }
@@ -809,6 +813,11 @@ function affDecompte(){
 
   function handleRegister(event){
     event.preventDefault()
+    document.getElementById('badEmail').innerText = ''
+    document.getElementById('badLogin').innerText = ''
+    document.getElementById('badPassword').innerText = ''
+    document.getElementById('badEmail').innerText = ''
+    document.getElementById('badPassword').innerText = ''
     if (!email){
       document.getElementById('badEmail').innerText = t("home.empty")
       return
@@ -910,18 +919,19 @@ let winRate
 
 const matchArray = Array.from({ length: 42 });
 
-const chartRef = useRef(null);
-const chartRef2 = useRef(null);
+const chartRef = useRef(null)
+const chartRef2 = useRef(null)
 
-const chartRef1 = useRef(null);
-const ref1 = useRef(null);
-const ref2 = useRef(null);
-const ref3 = useRef(null);
-const ref4 = useRef(null);
-const ref5 = useRef(null);
-const ref6 = useRef(null);
-const ref7 = useRef(null);
-const ref8 = useRef(null);
+const chartRef1 = useRef(null)
+const ref1 = useRef(null)
+const ref2 = useRef(null)
+const ref3 = useRef(null)
+const ref4 = useRef(null)
+const ref5 = useRef(null)
+const ref6 = useRef(null)
+const ref7 = useRef(null)
+const ref8 = useRef(null)
+const refBadPassword = useRef(null)
 
 function getChart() {
   if (currentUser === true){
@@ -1080,7 +1090,7 @@ useEffect(() => {
           <div className='Wgroup'>
             <input placeholder='password' id='password' name='password' className='Winput' onChange={e => setPassword2(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password'>{t("home.password")}</label>
-            <div className='bad' id='badPassword2'></div>
+            <div className='bad' id='badPassword2' ref={refBadPassword}></div>
           </div>
           <div className='btn'>
             <button type='submit' className='btnlogin'>{t("home.signin")}</button>      
