@@ -9,7 +9,15 @@
         "phone": "Numero de telephone",
         "badE": "E-mail invalide",
         "badP": "Le mot de passe doit contenir 8 caracteres minimum",
-        "empty": "Champs vide"
+        "empty": "Champs vide",
+        "nbGamePlayed": "Parties jouées",
+        "nbGameWin": "Parties gagnées",
+        "nbGameLose": "Parties perdues",
+        "LongestExchange": "Échange le plus long",
+        "nbTouchedBall": "Balles touchées",
+        "nbAce": "Service gagnant",
+        "nbPointMarked": "Points marqués",
+        "nbPointLose": "Points perdus"
     },
     "game":{
         "online": "Jouer en ligne",

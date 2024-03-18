@@ -9,7 +9,15 @@
         "phone": "Número de teléfono",
         "badE": "Correo electrónico inválido",
         "badP": "La contraseña debe contener como mínimo 8 caracteres",
-        "empty": "Campo vacío"
+        "empty": "Campo vacío",
+        "nbGamePlayed": "Partidas jugadas",
+        "nbGameWin": "Partidas ganadas",
+        "nbGameLose": "Partidas perdidas",
+        "LongestExchange": "Intercambio más largo",
+        "nbTouchedBall": "Bolas tocadas",
+        "nbAce": "As",
+        "nbPointMarked": "Puntos marcados",
+        "nbPointLose": "Puntos perdidos"
     },
     "game":{
         "online": "Jugar en línea",

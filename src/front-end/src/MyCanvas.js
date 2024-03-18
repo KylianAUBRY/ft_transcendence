@@ -800,6 +800,7 @@ function affDecompte(){
         setPassword2('')
       }).catch(function(error) {
         console.error("Erreur lors de la requête de connexion :", error);
+        document.getElementById('badPasswordl2').innerText = 'Wrong Password'
       }); 
     }
  
@@ -925,6 +926,7 @@ const chartRef = useRef(null);
 const chartRef2 = useRef(null);
 
 const chartRef1 = useRef(null);
+const refTest = useRef(null);
 
 function getChart() {
   if (currentUser === true){
@@ -952,11 +954,9 @@ function getChart() {
     chartRef.current.destroy();
   }
 
-  const can1 = chartRef1.current
-  const ctx = can1.getContext('2d')
-  console.log(ctx)
 
-  chartRef.current = new Chart(ctx, {
+
+  chartRef.current = new Chart(chartRef1.current, {
   type: 'pie',
   data: {
     labels: [
@@ -999,7 +999,7 @@ if (can2){
   }
 
     if (elements.nbPointLose && nbPointLose){
-      elements.nbGamePlayed.innerText = "nbGamePlayed: " + nbGamePlayed
+      //elements.nbGamePlayed.innerText = "nbGamePlayed: " + nbGamePlayed
       elements.nbGameWin.innerText = "nbGameWin: " + nbGameWin
       elements.nbGameLose.innerText = "nbGameLose: " + nbGameLose
       elements.LongestExchange.innerText = "LongestExchange: " + LongestExchange
@@ -1024,14 +1024,23 @@ const elements = {
 
 
 function handleProfil(){
-  if (isProfilView === false){
+  if (isProfilView === false)
     setIsProfilView(true)
-    getChart()
-  }
   else if (isProfilView === true)
     setIsProfilView(false)
 }
 
+
+useEffect(() => {
+  if (chartRef1.current) {
+    getChart()
+  }
+  if (refTest.current)
+  {
+    refTest.current.innerText = "nbGamePlayed: " + nbGamePlayed
+  }
+  
+}, [isProfilView]);
 
 
     return (
@@ -1045,7 +1054,7 @@ function handleProfil(){
                   <div className='graph1'><canvas className='canv1' id='chart1' ref={chartRef1} aria-label='chart' role='img'></canvas></div>
                   <div className='graph2'><canvas className='canv2' id='chart2' aria-label='chart' role='img'></canvas></div>
                   <div className='stats1'>
-                    <p id='nbGamePlayed'>nbGamePlayed</p>
+                    <p ref={refTest} id='nbGamePlayed'>nbGamePlayed</p>
                     <p id='nbGameWin'>nbGameWin</p>
                     <p id='nbGameLose'>nbGameLose</p>
                     <p id='LongestExchange'>LongestExchange</p>
