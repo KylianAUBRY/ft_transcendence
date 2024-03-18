@@ -766,17 +766,17 @@ function affDecompte(){
 
 
   function handleconnection(event) {
+    event.preventDefault()
     refBadPassword.current.innerText = ''
     document.getElementById('badEmail2').innerText = ''
-    document.getElementById('badPasswordl2').innerText = ''
+    document.getElementById('badPassword2').innerText = ''
     document.getElementById('badEmail2').innerText = ''
-    event.preventDefault()
     if (!email2){
       document.getElementById('badEmail2').innerText = t("home.empty")
       return
     }
     if (!password2){
-      document.getElementById('badPasswordl2').innerText = t("home.empty")
+      document.getElementById('badPassword2').innerText = t("home.empty")
       return
     }
     if (!validateEmail(email2)){
@@ -1101,11 +1101,6 @@ useEffect(() => {
             <input placeholder='e-mail' id='e-mail' name='e-mail' className='Winput' onChange={e => setEmail(e.target.value)}></input>
             <label className='Wlabel' htmlFor='e-mail'>{t("home.email")}</label>
             <div className='bad' id='badEmail'></div>
-          </div>
-          <div className='Wgroup'>
-            <input placeholder='phone number' id='phone number' name='phone number' className='Winput' ></input>
-            <label className='Wlabel' htmlFor='phone number'>{t("home.phone")}</label>
-            <div className='bad' id='badNumber'></div>
           </div>
           <div className='Wgroup'>
             <input placeholder='login' id='login2' name='login2' className='Winput' onChange={e => setUsername(e.target.value)}></input>
