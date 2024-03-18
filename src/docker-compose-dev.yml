@@ -1,5 +1,19 @@
 version: '3.8'
 services:
+  db:
+    container_name: db
+    image: postgres
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - main
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 5s
+      retries: 3
+      timeout: 5s
+
   front:
     build:
       context: ./front-end
@@ -22,6 +36,11 @@ services:
     restart: always
     networks:
       - main
+    healthcheck:
+      test: ["CMD-SHELL", "curl localhost:8000 || exit 1"]
+      interval: 3s
+      timeout: 10s
+      retries: 3
     env_file: .env
     ports:
       - "8080:8000"
