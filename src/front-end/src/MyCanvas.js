@@ -9,16 +9,34 @@ import { Environment, Stars } from '@react-three/drei'
 import SocialMenu from './SocialMenu'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import Chart from 'chart.js/auto';
+import Match from './Match'
 
+// axios.defaults.xsrfCookieName = 'csrftoken'
+// axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+// axios.defaults.withCredentials = true
+
+// const client = axios.create({
+//   baseURL: 'http://localhost:8080'
+// })
 
 let stopDecompte = false
 
 function MyCanvas( props ) {
-    const [t] = useTranslation("global")
+  const [currentUser, setCurrentUser] = useState()
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [email2, setEmail2] = useState('')
+  const [password2, setPassword2] = useState('')
+  const [t] = useTranslation("global")
+  const navigate = useNavigate();
 
   const location = useLocation()
 
-    const cameraRef = useRef()
+  const cameraRef = useRef()
 
 
 
@@ -37,6 +55,7 @@ function MyCanvas( props ) {
   const [isLoginPage, setisLoginPage] = useState(true)
   const [racketColor, setracketColor] = useState(0xffffff);
   const [selectedKeys, setSelectedKeys] = useState(['KeyA', 'KeyD', 'ArrowLeft', 'ArrowRight']);
+  const [isProfilView, setIsProfilView] = useState(false)
  
 
 
@@ -113,6 +132,17 @@ useEffect(() => {
   stopDecompte = true
 
   if (location.pathname === '/' && props.isSize){
+    // if (currentUser === true){
+    // client.get(
+    //   "/api/logout",
+    //   {withCredentials: true}
+    // ).then(function(res){
+    //   setCurrentUser(false)
+    // }).catch(function(error){
+    //  console.log(error)
+    // })
+    // }
+    
     const initialFormData8 = {
       player1: '',
       player2: '',
@@ -737,30 +767,233 @@ function affDecompte(){
 
   function handleconnection(event) {
     event.preventDefault()
-    var loginPage = document.getElementById('loginPage');
-    loginPage.classList.remove('visible');
-    loginPage.classList.add('hidden');
-    setTimeout(function() {
-      setisLoginPage(false)
-      if (childRef.current) {
-        childRef.current.childFunction(2)
+    // if (!email2){
+    //   document.getElementById('badEmail2').innerText = t("home.empty")
+    //   return
+    // }
+    // if (!password2){
+    //   document.getElementById('badPasswordl2').innerText = t("home.empty")
+    //   return
+    // }
+    // if (!validateEmail(email2)){
+    //   document.getElementById('badEmail2').innerText = t("home.badE")
+    //   return
+    // }
+    // client.post(
+    //   "/api/login",
+    //   {
+    //     email: email2,
+    //     password: password2
+    //   }
+    // ).then(function(res){
+        setCurrentUser(true)
+        var loginPage = document.getElementById('loginPage');
+        loginPage.classList.remove('visible');
+        loginPage.classList.add('hidden');
+        setTimeout(function() {
+          setisLoginPage(false)
+          if (childRef.current) {
+            childRef.current.childFunction(2)
+        }
+        }, 800);
+      //   setEmail2('')
+      //   setPassword2('')
+      // }).catch(function(error) {
+      //   console.error("Erreur lors de la requête de connexion :", error);
+      // }); 
     }
-    }, 800);
-    
-  }
+ 
 
 
   function handleRegister(event){
     event.preventDefault()
+    // if (!email){
+    //   document.getElementById('badEmail').innerText = t("home.empty")
+    //   return
+    // }
+    // if(!username){
+    //   document.getElementById('badLogin').innerText = t("home.empty")
+    //   return
+    // }
+    // if(!password){
+    //   document.getElementById('badPassword').innerText = t("home.empty")
+    //   return
+    // }
+    // if (!validateEmail(email)){
+    //   document.getElementById('badEmail').innerText = t("home.badE")
+    //   return
+    // }
+    // if (!passwordVerif(password)){
+    //   document.getElementById('badPassword').innerText = t("home.badP")
+    //   return
+    // }
+    // client.post(
+    //   "/api/register",
+    //   {
+    //     email: email,
+    //     username: username,
+    //     password: password
+    //   }
+    // ).then(function(res){
+    //   client.post(
+    //     "/api/login",
+    //     {
+    //       email: email,
+    //       password: password
+    //     }
+    //   ).then(function(res){
+        setCurrentUser(true)
+        var loginPage = document.getElementById('loginPage');
+        loginPage.classList.remove('visible');
+        loginPage.classList.add('hidden');
+        setTimeout(function() {
+          setisLoginPage(false)
+          if (childRef.current) {
+            childRef.current.childFunction(2)
+        }
+        }, 800);
+    //     setEmail('')
+    //     setUsername('')
+    //     setPassword('')
+    //   })
+    // }
+    // ) 
   }
 
+
+  function handleLogout (event){
+    // event.preventDefault()
+    // client.get(
+    //   "/api/logout",
+    //   {withCredentials: true}
+    // ).then(function(res){
+    //   setCurrentUser(false)
+    //   navigate('/')
+    // }).catch(function(error){
+    //  console.log(error)
+    // })
+  }
   
-console.log('canvas: ', isSocialMenu)
+// useEffect(() => {
+//   if (currentUser === true){
+//     client.get("/api/user")
+//     .then(function(res){
+//       console.log(res.data)
+//       setCurrentUser(true)
+//     })
+//     .catch(function(error){
+//       setCurrentUser(false)
+//     })
+//   }
+// }, [])
+
+
+const validateEmail = (email) => {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailPattern.test(email);
+};
+
+function passwordVerif(motDePasse) {
+  return motDePasse.length >= 8;
+}
+
+
+var profil = document.getElementById('profil')
+console.log(profil)
+
+if (profil){
+profil.addEventListener('click', function() {
+  console.log("L'élément 'profil' a été cliqué !");
+  setIsProfilView(true)
+});
+}
+
+const matchArray = Array.from({ length: 42 });
+
+const chartRef = useRef(null);
+const chartRef2 = useRef(null);
+
+if (isProfilView){
+let can1 = document.getElementById('chart1')
+if (can1){
+  if (chartRef.current !== null) {
+    chartRef.current.destroy();
+  }
+  chartRef.current = new Chart(can1, {
+  type: 'pie',
+  data: {
+    labels: [
+      'Wins',
+      'Lose'
+    ],
+    datasets: [{
+      data: [37, 5],
+      backgroundColor: [
+        'green',
+        'red'
+      ],
+      hoverOffset: 4
+    }]
+  }
+})
+  }
+  let can2 = document.getElementById('chart2')
+if (can2){
+  if (chartRef2.current !== null) {
+    chartRef2.current.destroy();
+  }
+  chartRef2.current = new Chart(can2, {
+  type: 'pie',
+  data: {
+    labels: [
+      'Points Wins',
+      'Points Loses'
+    ],
+    datasets: [{
+      data: [370, 50],
+      backgroundColor: [
+        'green',
+        'red'
+      ],
+      hoverOffset: 4
+    }]
+  }
+})
+  }
+}
+
+
 
     return (
         <div>
-
-          
+           {/* {props.currentUser ? ( */}
+            <img src='/profil.png' alt='profil' className='profil' id="profil"/>
+            {/* ) : null} */}
+            {isProfilView ? (
+              <div className='profilView'>Username
+                <div className="stats">
+                  <div className='graph1'><canvas className='canv1' id='chart1' aria-label='chart' role='img'></canvas></div>
+                  <div className='graph2'><canvas className='canv2' id='chart2' aria-label='chart' role='img'></canvas></div>
+                  <div className='stats1'>
+                    <p>nbGamePlayed</p>
+                    <p>nbGameWin</p>
+                    <p>nbGameLose</p>
+                    <p>LongestExchange</p>
+                  </div>
+                  <div className='stats2'>
+                    <p>nbTouchedBall</p>
+                    <p>nbAce</p>
+                    <p>nbPointMarked</p>
+                    <p>nbPointLose</p>
+                  </div>
+                  <div className='history'>
+                    {matchArray.map((_, index) => (
+                      <Match key={index} />
+                    ))}
+                  </div>
+                </div>
+                </div>  
+            ) : null}
     {props.isSize ? (
         <div>
           {isLoginPage ? (
@@ -769,12 +1002,14 @@ console.log('canvas: ', isSocialMenu)
       <div className='form'>
         <form onSubmit={handleconnection} className='signinForm'>
           <div className='Wgroup'>
-            <input placeholder='login' id='login' name='login' className='Winput'></input>
-            <label className='Wlabel' htmlFor='login'>{t("home.login")}</label>
+            <input placeholder='login' id='login' name='login' className='Winput' onChange={e => setEmail2(e.target.value)}></input>
+            <label className='Wlabel' htmlFor='login'>{t("home.email")}</label>
+            <div className='bad' id='badEmail2'></div>
           </div>
           <div className='Wgroup'>
-            <input placeholder='password' id='password' name='password' className='Winput'></input>
+            <input placeholder='password' id='password' name='password' className='Winput' onChange={e => setPassword2(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password'>{t("home.password")}</label>
+            <div className='bad' id='badPassword2'></div>
           </div>
           <div className='btn'>
             <button type='submit' className='btnlogin'>{t("home.signin")}</button>      
@@ -782,20 +1017,24 @@ console.log('canvas: ', isSocialMenu)
         </form>
         <form onSubmit={handleRegister} className='signupForm'>
         <div className='Wgroup'>
-            <input placeholder='e-mail' id='e-mail' name='e-mail' className='Winput'></input>
+            <input placeholder='e-mail' id='e-mail' name='e-mail' className='Winput' onChange={e => setEmail(e.target.value)}></input>
             <label className='Wlabel' htmlFor='e-mail'>{t("home.email")}</label>
+            <div className='bad' id='badEmail'></div>
           </div>
           <div className='Wgroup'>
-            <input placeholder='phone number' id='phone number' name='phone number' className='Winput'></input>
+            <input placeholder='phone number' id='phone number' name='phone number' className='Winput' ></input>
             <label className='Wlabel' htmlFor='phone number'>{t("home.phone")}</label>
+            <div className='bad' id='badNumber'></div>
           </div>
           <div className='Wgroup'>
-            <input placeholder='login' id='login2' name='login2' className='Winput'></input>
+            <input placeholder='login' id='login2' name='login2' className='Winput' onChange={e => setUsername(e.target.value)}></input>
             <label className='Wlabel' htmlFor='login2'>{t("home.login")}</label>
+            <div className='bad' id='badLogin'></div>
           </div>
           <div className='Wgroup'>
-            <input placeholder='password' id='password2' name='password2' className='Winput'></input>
+            <input placeholder='password' id='password2' name='password2' className='Winput' onChange={e => setPassword(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password2'>{t("home.password")}</label>
+            <div className='bad' id='badPassword'></div>
           </div>
           <div className='btn'>
             <button type='submit' className='btnlogin'>{t("home.signup")}</button>
@@ -805,7 +1044,7 @@ console.log('canvas: ', isSocialMenu)
       </div>
       ) : null}
     { state === 10 ? (
-      <SocialMenu setisSocialMenu={setisSocialMenu} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
+      <SocialMenu setisSocialMenu={setisSocialMenu} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout}/>
     ) : null}
             {isInMatchTournament ? (
       <div className='scoreDirect' id='scoreDirect'>Score</div>

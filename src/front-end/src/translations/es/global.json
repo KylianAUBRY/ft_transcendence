@@ -6,7 +6,10 @@
         "login": "Nombre de usuario",
         "password": "Contraseña",
         "email": "Correo electrónico",
-        "phone": "Número de teléfono"
+        "phone": "Número de teléfono",
+        "badE": "Correo electrónico inválido",
+        "badP": "La contraseña debe contener como mínimo 8 caracteres",
+        "empty": "Campo vacío"
     },
     "game":{
         "online": "Jugar en línea",

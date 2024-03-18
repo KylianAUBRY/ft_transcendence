@@ -1129,7 +1129,6 @@ canvas {
   background-color: rgba(0, 54, 118);
   width: 250px;
   height: 30px;
-  margin-bottom: 10px;
   font-family: 'Ethnocentric';
   border-radius: 2px;
   border: 0;
@@ -1250,3 +1249,94 @@ canvas {
   visibility: visible;
   transform: scale(100) translateX(2px);
 }
+
+.bad{
+  color: red;
+  font-family: sans-serif;
+  font-size: 0.8em;
+  width: auto;
+}
+
+.profil{
+  z-index: 2;
+  position: absolute;
+  right: 1%;
+  top: 1%;
+  width: 3%;
+}
+
+.profilView{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(0, 54, 118, 0.9);
+  border: 2px double black;
+  border-radius: 10px;
+  position: absolute;
+  width: 700px;
+  height: 500px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  padding: 10px;
+  transition: top 1s ease;
+
+
+}
+
+
+.stats{
+  width: 100%;
+  height: 80%;
+  margin:5%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 2%;
+  overflow: hidden;
+}
+
+.graph1{
+  grid-column: 1;
+  grid-row: 1;
+  position: relative
+}
+
+.canv1{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+
+.graph2{
+  grid-column: 2;
+  grid-row: 2;
+  position: relative;
+}
+
+.canv2{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.stats1{
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.stats2{
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.history{
+  border: 1px solid black;
+  grid-column: 3;
+  grid-row: 1/3;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+

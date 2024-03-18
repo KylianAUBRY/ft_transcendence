@@ -115,6 +115,9 @@ const handleChangeMusic = event => {
                 <div className="line line--3" id='line3'></div>
             </button>
             <div className='container' id='container'>
+            {props.currentUser ? (
+            <button className="logoutBtn" onClick={props.handleLogout}>log out</button>  
+            ) : null}
                 <h3 className='title'>{t("social.list")}</h3>
                 <form className='formFriend'>
                     <input placeholder={t("social.add")} className='inputFriend'></input>
