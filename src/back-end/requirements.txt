@@ -5,8 +5,6 @@ click==8.1.7
 Django==4.2.10
 django-cors-headers==4.3.1
 djangorestframework==3.14.0
-channels==4.0.0
-daphne==4.0.0
 exceptiongroup==1.2.0
 fastapi==0.110.0
 h11==0.14.0
@@ -19,3 +17,6 @@ sqlparse==0.4.4
 starlette==0.36.3
 typing_extensions==4.10.0
 uvicorn==0.27.1
+channels==4.0.0
+daphne==4.0.0
+psycopg2==2.9.1

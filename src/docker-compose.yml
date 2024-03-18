@@ -1,7 +1,24 @@
 version: '3.8'
 services:
+  db:
+    container_name: db
+    image: postgres
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - main
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 5s
+      retries: 3
+      timeout: 5s
+
   django:
     container_name: django
+    depends_on:
+      db:
+        condition: service_healthy
     build:
       context: ./
       dockerfile: ./back-end/Dockerfile
@@ -9,12 +26,20 @@ services:
     restart: always
     networks:
       - main
+    healthcheck:
+      test: ["CMD-SHELL", "curl localhost:8000 || exit 1"]
+      interval: 3s
+      timeout: 10s
+      retries: 3
     env_file: .env
     ports:
       - "8080:8000"
 
   nginx:
     container_name: nginx
+    depends_on:
+      django:
+        condition: service_healthy
     build:
       context: ./
       dockerfile: ./nginx/Dockerfile
@@ -27,6 +52,11 @@ services:
       - main
     volumes:
       - /var/www/html
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${NGINX_PORT}/ || exit 1"]
+      interval: 3s
+      timeout: 10s
+      retries: 3
     env_file: .env
 
 networks:

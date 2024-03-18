@@ -4,7 +4,6 @@ services:
     build:
       context: ./front-end
       dockerfile: Dockerfile.dev
-    # image: frontend_dev:local
     volumes:
       - ./front-end/src:/app/src
     networks:
