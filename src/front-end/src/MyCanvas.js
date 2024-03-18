@@ -804,7 +804,7 @@ function affDecompte(){
         setPassword2('')
       }).catch(function(error) {
         console.error("Erreur lors de la requête de connexion :", error);
-        refBadPassword.current.innerText = 'Wrong Password'
+        refBadPassword.current.innerText = t("home.WPass")
       }); 
       
     }

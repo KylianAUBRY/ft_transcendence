@@ -17,7 +17,8 @@
         "nbTouchedBall": "Bolas tocadas",
         "nbAce": "As",
         "nbPointMarked": "Puntos marcados",
-        "nbPointLose": "Puntos perdidos"
+        "nbPointLose": "Puntos perdidos",
+        "WPass: ": "Contraseña incorrecta"
     },
     "game":{
         "online": "Jugar en línea",
