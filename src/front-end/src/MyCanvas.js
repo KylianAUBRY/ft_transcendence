@@ -105,6 +105,12 @@ function MyCanvas( props ) {
         var localMatch = document.querySelector('.botMatch');
         localMatch.classList.add('visible');
     }, 100); 
+    }else  if(newValue === 52) {
+      setisResultLocal(true)
+      setTimeout(function() {
+        var localMatch = document.querySelector('.localMatch');
+        localMatch.classList.add('visible');
+      }, 100); 
     }else {
       setisTableTournament(false)
       setisSetterTournament(false)
@@ -345,7 +351,6 @@ useEffect(() => {
 
 
 
-
   function searchOpponent(){
     const buttonS = document.getElementById('btnSearch')
     buttonS.style.display = 'none'
@@ -366,7 +371,7 @@ useEffect(() => {
     botMatch.classList.add('hidden');
     if (state === 50){
       updateSetScore('name1', 'Player 1')
-      updateSetScore('name2', 'Player 2')
+      updateSetScore('name2', 'AI-bot')
     }
     setTimeout(function() {
         setisBotMatch(false)
@@ -398,15 +403,28 @@ useEffect(() => {
 
 
   function replayLocal(){
-    setisResultLocal(false)
-    setisLocalMatch(true)
-    setTimeout(function() {
-        var localMatch = document.querySelector('.localMatch');
-        localMatch.classList.add('visible');
-      }, 100); 
-    updateSetScore('player1', 0)
-    updateSetScore('player2', 0)
-    updateSetState(30)
+    if (state === 32){
+      setisResultLocal(false)
+      setisLocalMatch(true)
+      setTimeout(function() {
+          var localMatch = document.querySelector('.localMatch');
+          localMatch.classList.add('visible');
+        }, 100); 
+      updateSetScore('player1', 0)
+      updateSetScore('player2', 0)
+      updateSetState(30)
+    } else if (state === 52){
+      setisResultLocal(false)
+      setisBotMatch(true)
+      setTimeout(function() {
+          var localMatch = document.querySelector('.botMatch');
+          localMatch.classList.add('visible');
+        }, 100); 
+      updateSetScore('name1', 'Player 1')
+      updateSetScore('name2', 'AI-bot')
+      updateSetState(50)
+    }
+    
   }
 
 
@@ -593,6 +611,10 @@ function affResult(){
   } else if (state === 144){
     textWinner.textContent = 'Final Victory of'
     winner.textContent = winnerTournament.player
+  } else if (state === 52){
+    console.log('test')
+    const winnerLocal = document.getElementById('winnerLocal')
+    winnerLocal.textContent = winnerTournament.player
   }
 }
 

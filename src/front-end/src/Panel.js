@@ -208,7 +208,7 @@ function Click (rota)  {
 
 // Touche apuyee
   const onKeyDown = function (event) {
-  if (loaderGltf && loaderGltf.scene && stateG === 1 && props.isSocialMenu === false){
+  if (loaderGltf && loaderGltf.scene && stateG === 1 && props.isSocialMenu === false && props.state < 11){
     switch (event.code) {
       case "ArrowRight":
       case "KeyD":

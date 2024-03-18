@@ -194,6 +194,9 @@ function endGame(winner)
     }else if (stateGame === 143){
       winner === 1 ? winnerTournament.player = formData2.player1 : winnerTournament.player = formData2.player2
       updateSetState(144)
+  }else if (stateGame === 51){
+    winner === 1 ? winnerTournament.player = 'player 1' : winnerTournament.player = 'AI-bot'
+    updateSetState(52)
   }
 }
 
@@ -258,11 +261,18 @@ function endGame(winner)
     if(running) {
       requestAnimationFrame(render);
       processBallMovement();
+      processBotPaddle()
     }
   }
   
 
-
+  function processBotPaddle() {
+    if(racket2.position.z > ball.position.z) {
+      racket2.position.z -= Math.min(racket2.position.z - ball.position.z, 0.05);
+    }else if(racket2.position.z < ball.position.z) {
+      racket2.position.z  += Math.min(ball.position.z - racket2.position.z, 0.05);
+    }
+  }
 
 
 
@@ -363,7 +373,7 @@ function endGame(winner)
     }
     requestAnimationFrame(handleKeys);
   };
-  if (stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143) {
+  if (stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51) {
     if (newRound === true){
       newRound = false
         startRender()
