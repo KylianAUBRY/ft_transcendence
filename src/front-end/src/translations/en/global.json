@@ -10,14 +10,14 @@
         "badE": "Invalid e-mail",
         "badP": "Password must contain 8 characters minimum",
         "empty": "empty field",
-        "nbGamePlayed": "Games played",
-        "nbGameWin": "Games win",
-        "nbGameLose": "Games lose",
-        "LongestExchange": "Longest exchange",
-        "nbTouchedBall": "Touched Ball",
-        "nbAce": "Ace",
-        "nbPointMarked": "Point marked",
-        "nbPointLose": "Point Lose"
+        "nbGamePlayed": "Games played: ",
+        "nbGameWin": "Games win: ",
+        "nbGameLose": "Games lose: ",
+        "LongestExchange": "Longest exchange: ",
+        "nbTouchedBall": "Touched Ball: ",
+        "nbAce": "Ace: ",
+        "nbPointMarked": "Point marked: ",
+        "nbPointLose": "Point Lose: "
     },
     "game":{
         "online": "Play online",

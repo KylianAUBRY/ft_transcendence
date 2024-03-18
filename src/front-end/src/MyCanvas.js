@@ -802,6 +802,7 @@ function affDecompte(){
         console.error("Erreur lors de la requête de connexion :", error);
         document.getElementById('badPasswordl2').innerText = 'Wrong Password'
       }); 
+      
     }
  
 
@@ -874,19 +875,6 @@ function affDecompte(){
      console.log(error)
     })
   }
-  
-useEffect(() => {
-  if (currentUser === true){
-    client.get("/api/user")
-    .then(function(res){
-      console.log(res.data)
-      setCurrentUser(true)
-    })
-    .catch(function(error){
-      setCurrentUser(false)
-    })
-  }
-}, [])
 
 
 const validateEmail = (email) => {
@@ -926,7 +914,14 @@ const chartRef = useRef(null);
 const chartRef2 = useRef(null);
 
 const chartRef1 = useRef(null);
-const refTest = useRef(null);
+const ref1 = useRef(null);
+const ref2 = useRef(null);
+const ref3 = useRef(null);
+const ref4 = useRef(null);
+const ref5 = useRef(null);
+const ref6 = useRef(null);
+const ref7 = useRef(null);
+const ref8 = useRef(null);
 
 function getChart() {
   if (currentUser === true){
@@ -945,10 +940,10 @@ function getChart() {
         name = user.username
         winRate = user.winRate
         console.log(name, nbGamePlayed)
-    })
-  }
+    }).then(function(res){
 
 
+  console.log(name, nbGamePlayed)
 
   if (chartRef.current !== null) {
     chartRef.current.destroy();
@@ -997,17 +992,18 @@ if (can2){
   }
 })
   }
+  ref1.current.innerText = t("home.nbGamePlayed") + nbGamePlayed
+  ref2.current.innerText = t("home.nbGameWin") + nbGameWin
+  ref3.current.innerText = t("home.nbGameLose") + nbGameLose
+  ref4.current.innerText = t("home.LongestExchange") + LongestExchange
+  ref5.current.innerText = t("home.nbTouchedBall") + nbTouchedBall
+  ref6.current.innerText = t("home.nbAce") + nbAce
+  ref7.current.innerText = t("home.nbPointMarked") + nbPointMarked
+  ref8.current.innerText = t("home.nbPointLose") + nbPointLose
 
-    if (elements.nbPointLose && nbPointLose){
-      //elements.nbGamePlayed.innerText = "nbGamePlayed: " + nbGamePlayed
-      elements.nbGameWin.innerText = "nbGameWin: " + nbGameWin
-      elements.nbGameLose.innerText = "nbGameLose: " + nbGameLose
-      elements.LongestExchange.innerText = "LongestExchange: " + LongestExchange
-      elements.nbTouchedBall.innerText = "nbTouchedBall: " + nbTouchedBall
-      elements.nbAce.innerText = "nbAce: " + nbAce
-      elements.nbPointMarked.innerText = "nbPointMarked: " + nbPointMarked
-      elements.nbPointLose.innerText = "nbPointLose: " + nbPointLose
-    }
+      
+    })
+  }
 
 }
   
@@ -1035,35 +1031,31 @@ useEffect(() => {
   if (chartRef1.current) {
     getChart()
   }
-  if (refTest.current)
-  {
-    refTest.current.innerText = "nbGamePlayed: " + nbGamePlayed
-  }
   
 }, [isProfilView]);
 
 
     return (
         <div>
-           {/* {props.currentUser ? ( */}
-            <button onClick={handleProfil}><img src='/profil.png' alt='profil' className='profil' id="profil"/></button>
-            {/* ) : null} */}
+           {currentUser ? (
+            <button onClick={handleProfil} className='btnProfil'><img src='/profil.png' alt='profil' className='profil' id="profil"/></button>
+            ) : null}
             {isProfilView ? (
               <div className='profilView'>Username
                 <div className="stats">
                   <div className='graph1'><canvas className='canv1' id='chart1' ref={chartRef1} aria-label='chart' role='img'></canvas></div>
                   <div className='graph2'><canvas className='canv2' id='chart2' aria-label='chart' role='img'></canvas></div>
                   <div className='stats1'>
-                    <p ref={refTest} id='nbGamePlayed'>nbGamePlayed</p>
-                    <p id='nbGameWin'>nbGameWin</p>
-                    <p id='nbGameLose'>nbGameLose</p>
-                    <p id='LongestExchange'>LongestExchange</p>
+                    <p ref={ref1} id='nbGamePlayed'>nbGamePlayed</p>
+                    <p ref={ref2} id='nbGameWin'>nbGameWin</p>
+                    <p ref={ref3} id='nbGameLose'>nbGameLose</p>
+                    <p ref={ref4} id='LongestExchange'>LongestExchange</p>
                   </div>
                   <div className='stats2'>
-                    <p id='nbTouchedBall'>nbTouchedBall</p>
-                    <p id='nbAce'>nbAce</p>
-                    <p id='nbPointMarked'>nbPointMarked</p>
-                    <p id='nbPointLose'>nbPointLose</p>
+                    <p ref={ref5} id='nbTouchedBall'>nbTouchedBall</p>
+                    <p ref={ref6} id='nbAce'>nbAce</p>
+                    <p ref={ref7} id='nbPointMarked'>nbPointMarked</p>
+                    <p ref={ref8} id='nbPointLose'>nbPointLose</p>
                   </div>
                   <div className='history'>
                     {matchArray.map((_, index) => (
