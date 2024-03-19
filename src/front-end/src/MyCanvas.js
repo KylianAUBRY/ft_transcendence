@@ -144,6 +144,14 @@ useEffect(() => {
   setState(5)
   setisLoginPage(true)
   stopDecompte = true
+  console.log(location.pathname, currentUser)
+  if (location.pathname !== '/' && currentUser === false){
+    console.log('test')
+    navigate('/')
+  }
+
+
+
   if (location.pathname === '/' && props.isSize){
     if (currentUser === true){
     client.get(
