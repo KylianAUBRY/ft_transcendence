@@ -17,7 +17,8 @@
         "nbTouchedBall": "Balles touchées",
         "nbAce": "Service gagnant",
         "nbPointMarked": "Points marqués",
-        "nbPointLose": "Points perdus"
+        "nbPointLose": "Points perdus",
+        "WPass: ": "Mauvais mot de passe"
     },
     "game":{
         "online": "Jouer en ligne",

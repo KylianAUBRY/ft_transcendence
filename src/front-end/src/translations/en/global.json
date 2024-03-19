@@ -17,7 +17,8 @@
         "nbTouchedBall": "Touched Ball: ",
         "nbAce": "Ace: ",
         "nbPointMarked": "Point marked: ",
-        "nbPointLose": "Point Lose: "
+        "nbPointLose": "Point Lose: ",
+        "WPass": "Wrong password"
     },
     "game":{
         "online": "Play online",

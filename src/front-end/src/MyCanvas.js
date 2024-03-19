@@ -25,7 +25,6 @@ const client = axios.create({
 let stopDecompte = false
 
 function MyCanvas( props ) {
-  const [currentUser, setCurrentUser] = useState()
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -39,6 +38,15 @@ function MyCanvas( props ) {
   const cameraRef = useRef()
 
 
+  let initialUser = localStorage.getItem('currentUser');
+  if (initialUser === null) {
+    initialUser = false
+  }
+  const [currentUser, setCurrentUser] = useState(JSON.parse(initialUser));
+  const updateUser = (newValue) => {
+    setCurrentUser(newValue);
+    localStorage.setItem('currentUser', JSON.stringify(newValue));
+  };
 
   const [isTableTournament, setisTableTournament] = useState(false)
   const [isSetterTournament, setisSetterTournament] = useState(false)
@@ -105,6 +113,12 @@ function MyCanvas( props ) {
         var localMatch = document.querySelector('.botMatch');
         localMatch.classList.add('visible');
     }, 100); 
+    }else  if(newValue === 52) {
+      setisResultLocal(true)
+      setTimeout(function() {
+        var localMatch = document.querySelector('.localMatch');
+        localMatch.classList.add('visible');
+      }, 100); 
     }else {
       setisTableTournament(false)
       setisSetterTournament(false)
@@ -130,14 +144,13 @@ useEffect(() => {
   setState(5)
   setisLoginPage(true)
   stopDecompte = true
-
   if (location.pathname === '/' && props.isSize){
     if (currentUser === true){
     client.get(
       "/api/logout",
       {withCredentials: true}
     ).then(function(res){
-      setCurrentUser(false)
+      updateUser(false)
     }).catch(function(error){
      console.log(error)
     })
@@ -345,7 +358,6 @@ useEffect(() => {
 
 
 
-
   function searchOpponent(){
     const buttonS = document.getElementById('btnSearch')
     buttonS.style.display = 'none'
@@ -366,7 +378,7 @@ useEffect(() => {
     botMatch.classList.add('hidden');
     if (state === 50){
       updateSetScore('name1', 'Player 1')
-      updateSetScore('name2', 'Player 2')
+      updateSetScore('name2', 'AI-bot')
     }
     setTimeout(function() {
         setisBotMatch(false)
@@ -398,15 +410,28 @@ useEffect(() => {
 
 
   function replayLocal(){
-    setisResultLocal(false)
-    setisLocalMatch(true)
-    setTimeout(function() {
-        var localMatch = document.querySelector('.localMatch');
-        localMatch.classList.add('visible');
-      }, 100); 
-    updateSetScore('player1', 0)
-    updateSetScore('player2', 0)
-    updateSetState(30)
+    if (state === 32){
+      setisResultLocal(false)
+      setisLocalMatch(true)
+      setTimeout(function() {
+          var localMatch = document.querySelector('.localMatch');
+          localMatch.classList.add('visible');
+        }, 100); 
+      updateSetScore('player1', 0)
+      updateSetScore('player2', 0)
+      updateSetState(30)
+    } else if (state === 52){
+      setisResultLocal(false)
+      setisBotMatch(true)
+      setTimeout(function() {
+          var localMatch = document.querySelector('.botMatch');
+          localMatch.classList.add('visible');
+        }, 100); 
+        updateSetScore('player1', 0)
+        updateSetScore('player2', 0)
+      updateSetState(50)
+    }
+    
   }
 
 
@@ -593,6 +618,9 @@ function affResult(){
   } else if (state === 144){
     textWinner.textContent = 'Final Victory of'
     winner.textContent = winnerTournament.player
+  } else if (state === 52){
+    const winnerLocal = document.getElementById('winnerLocal')
+    winnerLocal.textContent = winnerTournament.player
   }
 }
 
@@ -790,7 +818,7 @@ function affDecompte(){
         password: password2
       }
     ).then(function(res){
-        setCurrentUser(true)
+      updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
         loginPage.classList.add('hidden');
@@ -804,7 +832,7 @@ function affDecompte(){
         setPassword2('')
       }).catch(function(error) {
         console.error("Erreur lors de la requête de connexion :", error);
-        refBadPassword.current.innerText = 'Wrong Password'
+        refBadPassword.current.innerText = t("home.WPass")
       }); 
       
     }
@@ -853,7 +881,7 @@ function affDecompte(){
           password: password
         }
       ).then(function(res){
-        setCurrentUser(true)
+        updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
         loginPage.classList.add('hidden');
@@ -878,7 +906,7 @@ function affDecompte(){
       "/api/logout",
       {withCredentials: true}
     ).then(function(res){
-      setCurrentUser(false)
+      updateUser(false)
       navigate('/')
     }).catch(function(error){
      console.log(error)
@@ -949,11 +977,8 @@ function getChart() {
         nbTouchedBall = user.nbTouchedBall
         name = user.username
         winRate = user.winRate
-        console.log(name, nbGamePlayed)
     }).then(function(res){
 
-
-  console.log(name, nbGamePlayed)
 
   if (chartRef.current !== null) {
     chartRef.current.destroy();
@@ -1047,25 +1072,25 @@ useEffect(() => {
 
     return (
         <div>
-           {currentUser ? (
+           {currentUser && state === 10 ? (
             <button onClick={handleProfil} className='btnProfil'><img src='/profil.png' alt='profil' className='profil' id="profil"/></button>
             ) : null}
             {isProfilView ? (
-              <div className='profilView'>Username
+              <div className='profilView'>Your Profile
                 <div className="stats">
                   <div className='graph1'><canvas className='canv1' id='chart1' ref={chartRef1} aria-label='chart' role='img'></canvas></div>
                   <div className='graph2'><canvas className='canv2' id='chart2' aria-label='chart' role='img'></canvas></div>
                   <div className='stats1'>
-                    <p ref={ref1} id='nbGamePlayed'>nbGamePlayed</p>
-                    <p ref={ref2} id='nbGameWin'>nbGameWin</p>
-                    <p ref={ref3} id='nbGameLose'>nbGameLose</p>
-                    <p ref={ref4} id='LongestExchange'>LongestExchange</p>
+                    <p ref={ref1} id='nbGamePlayed'></p>
+                    <p ref={ref2} id='nbGameWin'></p>
+                    <p ref={ref3} id='nbGameLose'></p>
+                    <p ref={ref4} id='LongestExchange'></p>
                   </div>
                   <div className='stats2'>
-                    <p ref={ref5} id='nbTouchedBall'>nbTouchedBall</p>
-                    <p ref={ref6} id='nbAce'>nbAce</p>
-                    <p ref={ref7} id='nbPointMarked'>nbPointMarked</p>
-                    <p ref={ref8} id='nbPointLose'>nbPointLose</p>
+                    <p ref={ref5} id='nbTouchedBall'></p>
+                    <p ref={ref6} id='nbAce'></p>
+                    <p ref={ref7} id='nbPointMarked'></p>
+                    <p ref={ref8} id='nbPointLose'></p>
                   </div>
                   <div className='history'>
                     {matchArray.map((_, index) => (

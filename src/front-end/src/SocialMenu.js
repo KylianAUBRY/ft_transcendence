@@ -11,7 +11,6 @@ function SocialMenu( props ) {
     const [play2, { stop: stop2 }] = useSound('music2.mp3', { loop: true, volume: 0.5 })
     const [play3, { stop: stop3 }] = useSound('music3.mp3', { loop: true, volume: 0.5 })
     const [t, i18n] = useTranslation("global")
-    const [isMessageBox, setisMessageBox] = useState(false)
     const [inPlay, setInPlay] = useState(0)
 
 function displayList(){
@@ -26,7 +25,6 @@ function displayList(){
         lineOne.classList.remove('line-cross');
         lineTwo.classList.remove('line-fade-out');
         lineThree.classList.remove('line-cross');
-        setisMessageBox(false)
         props.setisSocialMenu(false)
     }else{
         btn.classList.toggle("active")
@@ -124,17 +122,14 @@ const handleChangeMusic = event => {
                     <button className='btnFriend'>+</button>
                 </form>
                 <ul className='list'>
-                    <Friend name={"Friend 1"} setisMessageBox={setisMessageBox}/>
-                    <Friend name={"Friend 2"} setisMessageBox={setisMessageBox}/>
-                    <Friend name={"Friend 3"} setisMessageBox={setisMessageBox}/>
-                    <Friend name={"Friend 4"} setisMessageBox={setisMessageBox}/>
-                    <Friend name={"Friend 5"} setisMessageBox={setisMessageBox}/>
-                    <Friend name={"Friend 6"} setisMessageBox={setisMessageBox}/>
-                    <Friend name={"Friend 7"} setisMessageBox={setisMessageBox}/>
+                    <Friend name={"Friend 1"}/>
+                    <Friend name={"Friend 2"}/>
+                    <Friend name={"Friend 3"}/>
+                    <Friend name={"Friend 4"}/>
+                    <Friend name={"Friend 5"}/>
+                    <Friend name={"Friend 6"}/>
+                    <Friend name={"Friend 7"}/>
                 </ul>
-                { isMessageBox ? (
-                    <MessageBox setisMessageBox={setisMessageBox}/>
-                ) : null}
                 <div className='customize'>
                 <p>{t("social.customize")}</p>
                 <div>

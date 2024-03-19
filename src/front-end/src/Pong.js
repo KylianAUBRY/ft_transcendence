@@ -194,6 +194,9 @@ function endGame(winner)
     }else if (stateGame === 143){
       winner === 1 ? winnerTournament.player = formData2.player1 : winnerTournament.player = formData2.player2
       updateSetState(144)
+  }else if (stateGame === 51){
+    winner === 1 ? winnerTournament.player = 'player 1' : winnerTournament.player = 'AI-bot'
+    updateSetState(52)
   }
 }
 
@@ -258,11 +261,18 @@ function endGame(winner)
     if(running) {
       requestAnimationFrame(render);
       processBallMovement();
+      processBotPaddle()
     }
   }
   
 
-
+  function processBotPaddle() {
+    if(racket2.position.z > ball.position.z) {
+      racket2.position.z -= Math.min(racket2.position.z - ball.position.z, 0.05);
+    }else if(racket2.position.z < ball.position.z) {
+      racket2.position.z  += Math.min(ball.position.z - racket2.position.z, 0.05);
+    }
+  }
 
 
 
@@ -344,14 +354,16 @@ function endGame(winner)
   const handleKeys = function () {
     if (!keyListenerActive) return
     if (loaderGltf && loaderGltf.scene) {
-      if (keysPressed[selectedKeys[3]]) {
-        if (racket2.position.z < 6.55)
-          racket2.position.z += 0.05
-      }
-      if (keysPressed[selectedKeys[2]]) {
-        if (racket2.position.z > -6.55)
-          racket2.position.z -= 0.05
-      }
+      if (stateGame < 50 && stateGame > 52){
+        if (keysPressed[selectedKeys[3]]) {
+          if (racket2.position.z < 6.55)
+            racket2.position.z += 0.05
+        }
+        if (keysPressed[selectedKeys[2]]) {
+          if (racket2.position.z > -6.55)
+            racket2.position.z -= 0.05
+        }
+    }
       if (keysPressed[selectedKeys[0]]) {
         if (racket1.position.z < 6.55)
           racket1.position.z += 0.05  
@@ -363,7 +375,7 @@ function endGame(winner)
     }
     requestAnimationFrame(handleKeys);
   };
-  if (stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143) {
+  if (stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51) {
     if (newRound === true){
       newRound = false
         startRender()
