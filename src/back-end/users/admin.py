@@ -3,5 +3,5 @@ from .models import *
 
 # Register your models here.
 
-admin.site.register(appuser)
+admin.site.register(AppUser)
 admin.site.register(HistoryModel)

@@ -6,7 +6,7 @@ COPY ./back-end /app/back-end
 WORKDIR /app/back-end
 
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends \
+	&& apt-get install -y --no-install-recommends postgresql-client\
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN  pip install --upgrade pip \

@@ -1,7 +1,7 @@
-from . models import appuser
+from . models import AppUser
 
 def updateUserStatistic(user_id, isWin, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose):
-    user = appuser.objects.get(pk=user_id)
+    user = AppUser.objects.get(pk=user_id)
 
     # Update nbGamePlayed, nbGameWin/nbGameLose, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose
     user.nbGamePlayed += 1
