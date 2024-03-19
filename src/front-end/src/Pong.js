@@ -354,14 +354,16 @@ function endGame(winner)
   const handleKeys = function () {
     if (!keyListenerActive) return
     if (loaderGltf && loaderGltf.scene) {
-      if (keysPressed[selectedKeys[3]]) {
-        if (racket2.position.z < 6.55)
-          racket2.position.z += 0.05
-      }
-      if (keysPressed[selectedKeys[2]]) {
-        if (racket2.position.z > -6.55)
-          racket2.position.z -= 0.05
-      }
+      if (stateGame < 50 && stateGame > 52){
+        if (keysPressed[selectedKeys[3]]) {
+          if (racket2.position.z < 6.55)
+            racket2.position.z += 0.05
+        }
+        if (keysPressed[selectedKeys[2]]) {
+          if (racket2.position.z > -6.55)
+            racket2.position.z -= 0.05
+        }
+    }
       if (keysPressed[selectedKeys[0]]) {
         if (racket1.position.z < 6.55)
           racket1.position.z += 0.05  

@@ -420,8 +420,8 @@ useEffect(() => {
           var localMatch = document.querySelector('.botMatch');
           localMatch.classList.add('visible');
         }, 100); 
-      updateSetScore('name1', 'Player 1')
-      updateSetScore('name2', 'AI-bot')
+        updateSetScore('player1', 0)
+        updateSetScore('player2', 0)
       updateSetState(50)
     }
     
