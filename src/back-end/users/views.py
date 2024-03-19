@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .serializer import UserRegisterSerializer, UserLoginSerializer, UserSerializer, HistorySerializer, ServerSerializer
 from rest_framework import permissions, status
 from .validations import custom_validation, validate_email, validate_password
-from . models import HistoryModel, GameServerModel
+from . models import HistoryModel, GameServerModel, WaitingPlayerModel
 from django.db.models import Q
 from . utils import *
 #from ..GameServer import test
@@ -23,7 +23,7 @@ class UserRegister(APIView):
         if serializer.is_valid(raise_exception=True):
             user = serializer.create(clean_data)
             if user:
-                return Response(serializer.data, status=status.
+                return Response(None, status=status.
                                 HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -44,9 +44,9 @@ class UserLogin(APIView):
 
 # Post request to logout user
 class UserLogout(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
     authentication_classes = (SessionAuthentication,)
-    
+
     def get(self, request):
         logout(request)
         return Response(status=status.HTTP_200_OK)
@@ -83,6 +83,28 @@ class UpdateUserView(APIView):
         except Exception as e:
             return Response({'message': 'User update failed', 'error': str(e)}, status=500)
 
+class UpdateUserOption(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request):
+        data = request.data
+
+        user_id = data.get('userId')
+        language = data.get('language')
+        color = data.get('color')
+        music = data.get('music')
+        key1 = data.get('key1')
+        key2 = data.get('key2')
+        key3 = data.get('key3')
+        key4 = data.get('key4')
+        
+        try:
+            updateUserOption(user_id, language, color, music, key1, key2, key3, key4)
+            return Response({'message': 'User statistics updated successfully'})
+        except Exception as e:
+            return Response({'message': 'User update failed', 'error': str(e)}, status=500)
+
 # Get all match history from a user
 class HistoryView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -93,66 +115,24 @@ class HistoryView(APIView):
         history_object = HistoryModel.objects.filter(userId=user_id)
         serializer = HistorySerializer(history_object, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
- 
-# Post match just played from game server   
-class AddNewMatchView(APIView):
-    permission_classes = (permissions.AllowAny,)
 
+# Add player to a waiting queue
+class JoinQueue(APIView):
     def post(self, request):
-        data = request.data
-        serializer = HistorySerializer(data=data)
-        if serializer.is_valid(raise_exception=True):
-            game = serializer.create(data)
-            if game:
-                return Response(serializer.data, status=status.
-                                HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        user_id = request.user.userId
+        WaitingPlayerModel.objects.create(player_id=user_id)
+        return Response({'message': 'You have joined the queue.'}, status=status.HTTP_200_OK)
+    def get(self, request):
+        return Response({'error': 'Post request required.'}, status=status.HTTP_400_BAD_REQUEST)
 
 # Start new game
-class StartNewGame(APIView):
-
+class CheckJoinGame(APIView):
     def get(self, request):
-
-        # Search if game need a player
-        game_server = GameServerModel.objects.filter(status='waiting').first()
+        user_id = request.user.userId
+        game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id))
         if game_server:
-            # Game server available, send connection information server to client
-                game_server.secondPlayerAddr = request.META.get('REMOTE_ADDR')
-                game_server.state = 'full'
-                game_server.save()
-                serializer = ServerSerializer(game_server)
-                return Response(serializer.data)
+            return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
+            # send server name to client to start the game
         else:
-            # No server waiting, start a new server and send connection info to user
-                # Look for an unused port
-                port = 8000
-                is_port_used = True
-                while (is_port_used):
-                    port += 1
-                    if (is_port_in_use(port)):
-                        is_port_used = True
-                    else:
-                        is_port_used = False
-
-                addr = "127.0.0.1:" + port
-                game_server = GameServerModel.objects.create(serverAddr=addr)
-                game_server.state = 'waiting'
-                game_server.firstPlayerAddr = request.META.get('REMOTE_ADDR')
-                game_server.save()
-
-                #GameServer.main(game_server.serverId, "127.0.0.1", port)
-
-                serializer = ServerSerializer(game_server)
-                return Response(serializer.data)
-
-# Get game server request when game is finished to delete game server from database
-class DeleteServer(APIView):
-    def get(self, request):
-        server_id = request.server.server_id
-        try:
-            server_to_delete = GameServerModel.objects.get(pk=server_id)
-            server_to_delete.delete()
-        except GameServerModel.DoesNotExist:
-            print("Object does not exist.")
-        except Exception as e:
-            print("An error as occured")
+            return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
+            # send 'in queue'

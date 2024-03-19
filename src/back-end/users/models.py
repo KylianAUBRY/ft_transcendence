@@ -33,6 +33,9 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 	user_id = models.AutoField(primary_key=True)
 	email = models.EmailField(max_length=50, unique=True)
 	username = models.CharField(max_length=50)
+	language = models.CharField(max_length=50, default='French')
+	color = models.IntegerField()
+	music = models.IntegerField()
 	nbGamePlayed = models.IntegerField(default=0)
 	nbGameWin = models.IntegerField(default=0)
 	nbGameLose = models.IntegerField(default=0)
@@ -41,6 +44,10 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 	LongestExchange = models.IntegerField(default=0)
 	nbPointMarked = models.IntegerField(default=0)
 	nbPointLose = models.IntegerField(default=0)
+	key1 = models.CharField(max_length=50, default="KeyA")
+	key2 = models.CharField(max_length=50, default="KeyD")
+	key3 = models.CharField(max_length=50, default="ArrowLeft")
+	key4 = models.CharField(max_length=50, default="ArrowRight")
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
 	objects = AppUserManager()
@@ -63,9 +70,11 @@ class HistoryModel(models.Model):
 
 class GameServerModel(models.Model):
 	serverId = models.AutoField(primary_key=True)
-	serverAddr = models.CharField(max_length=20)
-	firstPlayerAddr = models.CharField(max_length=20, default=0)
-	secondPlayerAddr = models.CharField(max_length=20, default=0)
+	firstPlayerId = models.IntegerField(default=-1)
+	secondPlayerId = models.IntegerField(default=-1)
 	state = models.CharField(max_length=7)
 	def __str__(self):
 		return f"{self.serverId} : {self.serverAddr}"
+
+class WaitingPlayerModel(models.Model):
+	player_id = models.IntegerField()
