@@ -25,7 +25,6 @@ const client = axios.create({
 let stopDecompte = false
 
 function MyCanvas( props ) {
-  const [currentUser, setCurrentUser] = useState()
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -39,6 +38,15 @@ function MyCanvas( props ) {
   const cameraRef = useRef()
 
 
+  let initialUser = localStorage.getItem('currentUser');
+  if (initialUser === null) {
+    initialUser = false
+  }
+  const [currentUser, setCurrentUser] = useState(JSON.parse(initialUser));
+  const updateUser = (newValue) => {
+    setCurrentUser(newValue);
+    localStorage.setItem('currentUser', JSON.stringify(newValue));
+  };
 
   const [isTableTournament, setisTableTournament] = useState(false)
   const [isSetterTournament, setisSetterTournament] = useState(false)
@@ -136,14 +144,14 @@ useEffect(() => {
   setState(5)
   setisLoginPage(true)
   stopDecompte = true
-
+  console.log(currentUser)
   if (location.pathname === '/' && props.isSize){
     if (currentUser === true){
     client.get(
       "/api/logout",
       {withCredentials: true}
     ).then(function(res){
-      setCurrentUser(false)
+      updateUser(false)
     }).catch(function(error){
      console.log(error)
     })
@@ -812,7 +820,7 @@ function affDecompte(){
         password: password2
       }
     ).then(function(res){
-        setCurrentUser(true)
+      updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
         loginPage.classList.add('hidden');
@@ -875,7 +883,7 @@ function affDecompte(){
           password: password
         }
       ).then(function(res){
-        setCurrentUser(true)
+        updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
         loginPage.classList.add('hidden');
@@ -900,7 +908,7 @@ function affDecompte(){
       "/api/logout",
       {withCredentials: true}
     ).then(function(res){
-      setCurrentUser(false)
+      updateUser(false)
       navigate('/')
     }).catch(function(error){
      console.log(error)
