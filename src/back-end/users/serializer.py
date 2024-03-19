@@ -54,4 +54,4 @@ class HistorySerializer(serializers.ModelSerializer):
 class ServerSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameServerModel
-        fields = ('serverAddr')
+        fields = ('serverId')
