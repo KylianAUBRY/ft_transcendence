@@ -144,7 +144,6 @@ useEffect(() => {
   setState(5)
   setisLoginPage(true)
   stopDecompte = true
-  console.log(currentUser)
   if (location.pathname === '/' && props.isSize){
     if (currentUser === true){
     client.get(
@@ -620,7 +619,6 @@ function affResult(){
     textWinner.textContent = 'Final Victory of'
     winner.textContent = winnerTournament.player
   } else if (state === 52){
-    console.log('test')
     const winnerLocal = document.getElementById('winnerLocal')
     winnerLocal.textContent = winnerTournament.player
   }
@@ -979,11 +977,8 @@ function getChart() {
         nbTouchedBall = user.nbTouchedBall
         name = user.username
         winRate = user.winRate
-        console.log(name, nbGamePlayed)
     }).then(function(res){
 
-
-  console.log(name, nbGamePlayed)
 
   if (chartRef.current !== null) {
     chartRef.current.destroy();
@@ -1077,25 +1072,25 @@ useEffect(() => {
 
     return (
         <div>
-           {currentUser ? (
+           {currentUser && state === 10 ? (
             <button onClick={handleProfil} className='btnProfil'><img src='/profil.png' alt='profil' className='profil' id="profil"/></button>
             ) : null}
             {isProfilView ? (
-              <div className='profilView'>Username
+              <div className='profilView'>Your Profile
                 <div className="stats">
                   <div className='graph1'><canvas className='canv1' id='chart1' ref={chartRef1} aria-label='chart' role='img'></canvas></div>
                   <div className='graph2'><canvas className='canv2' id='chart2' aria-label='chart' role='img'></canvas></div>
                   <div className='stats1'>
-                    <p ref={ref1} id='nbGamePlayed'>nbGamePlayed</p>
-                    <p ref={ref2} id='nbGameWin'>nbGameWin</p>
-                    <p ref={ref3} id='nbGameLose'>nbGameLose</p>
-                    <p ref={ref4} id='LongestExchange'>LongestExchange</p>
+                    <p ref={ref1} id='nbGamePlayed'></p>
+                    <p ref={ref2} id='nbGameWin'></p>
+                    <p ref={ref3} id='nbGameLose'></p>
+                    <p ref={ref4} id='LongestExchange'></p>
                   </div>
                   <div className='stats2'>
-                    <p ref={ref5} id='nbTouchedBall'>nbTouchedBall</p>
-                    <p ref={ref6} id='nbAce'>nbAce</p>
-                    <p ref={ref7} id='nbPointMarked'>nbPointMarked</p>
-                    <p ref={ref8} id='nbPointLose'>nbPointLose</p>
+                    <p ref={ref5} id='nbTouchedBall'></p>
+                    <p ref={ref6} id='nbAce'></p>
+                    <p ref={ref7} id='nbPointMarked'></p>
+                    <p ref={ref8} id='nbPointLose'></p>
                   </div>
                   <div className='history'>
                     {matchArray.map((_, index) => (
