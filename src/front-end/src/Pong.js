@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import * as THREE from 'three';
 import { gsap } from 'gsap/gsap-core';
 import { useLocation } from 'react-router-dom';
-import WebSocketInstance from './WebSocketInstance';
 
 const loader = new GLTFLoader();
 let loaderGltf
