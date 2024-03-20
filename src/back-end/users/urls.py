@@ -7,8 +7,7 @@ urlpatterns = [
     path('logout', views.UserLogout.as_view(), name='logout'),
     path('user', views.UserView.as_view(), name='user'),
     path('history', views.HistoryView.as_view(), name='history'),
-    path('AddNewMatch', views.AddNewMatchView.as_view(), name='AddNewMatch'),
     path('UpdateUser', views.UpdateUserView.as_view(), name='UpdateUser'),
-    path('StartGame', views.StartNewGame.as_view(), name='StartGame'),
-    path('DeleteServer', views.DeleteServer.as_view(), name='DeleteServer')
+    path('JoinQueue', views.JoinQueue.as_view(), name='JoinQueue'),
+    path('CheckJoinGame', views.CheckJoinGame.as_view(), name='CheckJoinGame')
 ]
