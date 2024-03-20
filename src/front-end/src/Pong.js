@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import * as THREE from 'three';
 import { gsap } from 'gsap/gsap-core';
 import { useLocation } from 'react-router-dom';
+import WebSocketInstance from './WebSocketInstance';
 
 const loader = new GLTFLoader();
 let loaderGltf
@@ -65,7 +66,13 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
         console.error('Erreur lors du chargement du fichier GLTF', error);
       });
     }, []);
-    
+
+
+
+
+
+// GAME LOGIC //
+
  function startBallMovement() {
    var direction = Math.random() > 0.5 ? -1 : 1;
    ball.velocity = {
@@ -74,11 +81,6 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     };
     ball.stopped = false;
   }
-
-
-
-
-  
 
   
   function processBallMovement() {
@@ -160,12 +162,50 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
         ballX < paddleX + halfPaddleWidth;
   }
   
+  function stopBall(){ 
+    ball.stopped = true;
+  }
+  
+  function startRender(){
+    running = true;
+    startVal = 0
+    render();  
+  }
+  
+  function stopRender() {
+    running = false;
+  }
+  
+  function render() {
+    if(running) {
+      requestAnimationFrame(render);
+      processBallMovement();
+      processBotPaddle()
+    }
+  }
+  
+  function processBotPaddle() {
+    if(racket2.position.z > ball.position.z) {
+      racket2.position.z -= Math.min(racket2.position.z - ball.position.z, 0.05);
+    }else if(racket2.position.z < ball.position.z) {
+      racket2.position.z  += Math.min(ball.position.z - racket2.position.z, 0.05);
+    }
+  }
+
+// GAME LOGIC //
 
 
 
 
 
 
+
+
+
+
+
+
+// POINT MARKED //
 
 function endGame(winner)
 {
@@ -235,53 +275,6 @@ function endGame(winner)
         
       }
   }
-  
-
-
-
-
-  
-  function stopBall(){ 
-    ball.stopped = true;
-  }
-  
-
-  
-  function startRender(){
-    running = true;
-    startVal = 0
-    render();  
-  }
-  
-  function stopRender() {
-    running = false;
-  }
-  
-  function render() {
-    if(running) {
-      requestAnimationFrame(render);
-      processBallMovement();
-      processBotPaddle()
-    }
-  }
-  
-
-  function processBotPaddle() {
-    if(racket2.position.z > ball.position.z) {
-      racket2.position.z -= Math.min(racket2.position.z - ball.position.z, 0.05);
-    }else if(racket2.position.z < ball.position.z) {
-      racket2.position.z  += Math.min(ball.position.z - racket2.position.z, 0.05);
-    }
-  }
-
-
-
-
-
-
-
-
-
 
 
   function reset(bool) {
@@ -337,9 +330,16 @@ function endGame(winner)
     }
     
   }
+
+  // POINT MARKED //
+
+
+
+
+
   
 
-
+// KEY LISTENER //
 
   const onKeyPress = function (event) {
     if (!keyListenerActive) return
@@ -375,16 +375,22 @@ function endGame(winner)
     }
     requestAnimationFrame(handleKeys);
   };
+
+// KEY LISTENER //
+
+
+
+
+
+
+
+// START GAME //
+
   if (stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51) {
     if (newRound === true){
       newRound = false
         startRender()
       }
-      
-      
-   
-    
-      
     keyListenerActive = true
     document.addEventListener("keydown", onKeyPress)
     document.addEventListener("keyup", onKeyRelease)
@@ -395,8 +401,15 @@ function endGame(winner)
     document.removeEventListener("keydown", onKeyPress)
     document.removeEventListener("keyup", onKeyRelease)
   }
+// START GAME //
+
+
+
+
+
 
   
+// RELOAD //
 
   useEffect(() => {
     if (location.pathname === '/lobby'){
@@ -413,12 +426,70 @@ function endGame(winner)
           stop = true
       }
       newRound = true
-        
-      
-      
       }
   }, [location.pathname]);
   
+
+// RELOAD //
+
+
+
+
+
+
+
+
+
+
+
+// WEBSOCKET //
+/*
+  const [playerId, setPlayerId] = useState(null);
+  const [players, setPlayers] = useState({});
+  const [ballPosition, setBallPosition] = useState({ x: 0, y: 0 });
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    const newSocket = io('ws://localhost:8000');
+    newSocket.on('connect', () => {
+      console.log('Socket.IO connection established.');
+    });
+    newSocket.on('playerId', (data) => {
+      setPlayerId(data.playerId);
+    });
+    newSocket.on('stateUpdate', (data) => {
+      const { objects } = data;
+      setPlayers(objects.players);
+      setBallPosition(objects.ball);
+    });
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  const handlePlayerMovement = (direction) => {
+    if (socket) {
+      socket.emit('playerAction', {
+        type: 'playerAction',
+        playerId: playerId,
+        action: `move_${direction}`
+      });
+    }
+  };
+
+*/
+// WEBSOCKET //
+
+
+
+
+
+
+
+
+
 
 
 
