@@ -6,8 +6,10 @@ COPY ./back-end /app/back-end
 WORKDIR /app/back-end
 
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends \
+	&& apt-get install -y --no-install-recommends postgresql-client\
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN  pip install --upgrade pip \
 	&& pip install -r requirements.txt
+
+CMD python3 manage.py makemigrations && python3 manage.py migrate && daphne -b 0.0.0.0 -p 8000 backend.asgi:application
