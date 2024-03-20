@@ -133,6 +133,8 @@ const handleChangeMusic = event => {
                 <div className='customize'>
                 <p>{t("social.customize")}</p>
                 <div>
+                <div className='options'>
+                <div>
                     {t("social.language")}
                     <select name="lang" id="lang-select" onChange={handleChangeLang} className='lang'>
                         <option value="en">{t("social.english")}</option>
@@ -140,7 +142,6 @@ const handleChangeMusic = event => {
                         <option value="es">{t("social.spanish")}</option>
                     </select>
                 </div>
-                <div>
                 <div>
                     {t("social.music")}
                     <select name="music" id="music-select" onChange={handleChangeMusic}>
@@ -159,6 +160,7 @@ const handleChangeMusic = event => {
                         <option value="dark grey">{t("social.grey2")}</option>
                         <option value="purple">{t("social.purple")}</option>
                     </select>
+                </div>
                 </div>
                 <div>
                 <div>
