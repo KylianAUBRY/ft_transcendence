@@ -34,7 +34,7 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 	email = models.EmailField(max_length=50, unique=True)
 	username = models.CharField(max_length=50)
 	language = models.CharField(max_length=50, default='French')
-	color = models.CharField(default="white")
+	color = models.CharField(max_length=50, default="white")
 	music = models.IntegerField(default=0)
 	nbGamePlayed = models.IntegerField(default=0)
 	nbGameWin = models.IntegerField(default=0)
