@@ -1,6 +1,5 @@
-from . models import AppUser
-
 def updateUserStatistic(user_id, isWin, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose):
+    from . models import AppUser
     user = AppUser.objects.get(pk=user_id)
 
     # Update nbGamePlayed, nbGameWin/nbGameLose, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose
@@ -23,7 +22,8 @@ def updateUserStatistic(user_id, isWin, nbTouchedBall, nbAce, nbLongestExchange,
     user.save()
 
 def updateUserOption(user_id, language, color, music, key1, key2, key3, key4):
-    user = appuser.objects.get(pk=user_id)
+    from . models import AppUser
+    user = AppUser.objects.get(pk=user_id)
 
     user.language = language
     user.color = int(color)
