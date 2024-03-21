@@ -34,8 +34,8 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 	email = models.EmailField(max_length=50, unique=True)
 	username = models.CharField(max_length=50)
 	language = models.CharField(max_length=50, default='French')
-	color = models.IntegerField()
-	music = models.IntegerField()
+	color = models.CharField(default="white")
+	music = models.IntegerField(default=0)
 	nbGamePlayed = models.IntegerField(default=0)
 	nbGameWin = models.IntegerField(default=0)
 	nbGameLose = models.IntegerField(default=0)
@@ -56,15 +56,15 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 
 class HistoryModel(models.Model):
 	gameId = models.AutoField(primary_key=True)
-	userId = models.IntegerField()
+	userId = models.IntegerField(default=-1)
 	userUsername = models.CharField(max_length=50)
-	opponentId = models.IntegerField()
+	opponentId = models.IntegerField(default=-1)
 	opponentUsername = models.CharField(max_length=50)
-	userScore = models.IntegerField()
-	opponentScore = models.IntegerField()
-	isWin = models.BooleanField()
-	gameDate = models.DateField()
-	gameTime = models.TimeField()
+	userScore = models.IntegerField(default=-1)
+	opponentScore = models.IntegerField(default=-1)
+	isWin = models.BooleanField(default=False)
+	gameDate = models.DateField(default="0000-00-00")
+	gameTime = models.TimeField(default="00:00")
 	def __str__(self):
 		return f"{self.gameId} | {self.userId} | {self.opponentId}"
 
@@ -72,9 +72,9 @@ class GameServerModel(models.Model):
 	serverId = models.AutoField(primary_key=True)
 	firstPlayerId = models.IntegerField(default=-1)
 	secondPlayerId = models.IntegerField(default=-1)
-	state = models.CharField(max_length=7)
+	state = models.CharField(max_length=7, default="")
 	def __str__(self):
 		return f"{self.serverId} : {self.serverAddr}"
 
 class WaitingPlayerModel(models.Model):
-	player_id = models.IntegerField()
+	player_id = models.IntegerField(default=-1)
