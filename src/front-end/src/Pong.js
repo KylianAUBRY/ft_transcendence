@@ -1,5 +1,5 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { gsap } from 'gsap/gsap-core';
 import { useLocation } from 'react-router-dom';
@@ -410,10 +410,10 @@ function endGame(winner)
          console.log(error)
         })
       } while (!serv)
-      if (gameId)
+    /*  if (gameId)
       {
         serverUpdate(gameId)
-      }
+      }*/
     }
   } else {
     keyListenerActive = false
@@ -424,7 +424,7 @@ function endGame(winner)
 
 
 
-
+/*
 
   async function serverUpdate(gameId){
     while (match){
@@ -441,12 +441,12 @@ function endGame(winner)
         });
         setSocket(newSocket);
     
-        /*return () => {
+        return () => {
           newSocket.disconnect();
-        };*/
+        };
       }, []);
     }
-  }
+  }*/
 
 /*
   async function serverGame() {

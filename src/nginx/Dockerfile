@@ -6,6 +6,7 @@ COPY ./front-end /app/front-end
 
 WORKDIR /app/front-end
 
+RUN npm update
 RUN npm install
 RUN npm run build
 FROM nginx:1.25.3
