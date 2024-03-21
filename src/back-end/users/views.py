@@ -69,7 +69,7 @@ class UpdateUserView(APIView):
     def post(self, request):
         data = request.data
 
-        user_id = data.get('user_id')
+        user_id = data.get('userId')
         isWin = data.get('isWin')
         nbTouchedBall = data.get('nbTouchedBall')
         nbAce = data.get('nbAce')
@@ -111,7 +111,7 @@ class HistoryView(APIView):
     authentication_classes = (SessionAuthentication,)
     
     def get(self, request):
-        user_id = request.user.user_id
+        user_id = request.user.userId
         history_object = HistoryModel.objects.filter(userId=user_id)
         serializer = HistorySerializer(history_object, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
