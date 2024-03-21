@@ -381,6 +381,7 @@ function endGame(winner)
   let userId
   let gameId
   const [socket, setSocket] = useState(null);
+  const [playerId, setPlayerId] = useState(null);
 
   if (stateGame === 21 || stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51) {
     if (newRound === true){
@@ -432,6 +433,9 @@ function endGame(winner)
         newSocket.on('connect', () => {
           console.log('Socket.IO connection established.');
         });
+        newSocket.on('playerId', (data) => {
+          setPlayerId(data.playerId);
+        });
         newSocket.on('state_update', (data) => {
           console.log('state_update', data)
         });
@@ -444,7 +448,7 @@ function endGame(winner)
     }
   }
 
-
+/*
   async function serverGame() {
     if (socket) {
       socket.emit('playerAction', {
@@ -456,7 +460,7 @@ function endGame(winner)
       });
     }
   }
-
+*/
 
 
 // WEBSOCKET //
