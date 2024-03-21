@@ -20,7 +20,7 @@ let stop = false
 
 
 
-const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys }) => {
+const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client }) => {
   const location = useLocation()
   if (racket1 && racket2){
     racket1.material = new THREE.MeshBasicMaterial({ color: racketColor })
@@ -65,13 +65,7 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
         console.error('Erreur lors du chargement du fichier GLTF', error);
       });
     }, []);
-
-
-
-
-
-// GAME LOGIC //
-
+    
  function startBallMovement() {
    var direction = Math.random() > 0.5 ? -1 : 1;
    ball.velocity = {
@@ -80,6 +74,11 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     };
     ball.stopped = false;
   }
+
+
+
+
+  
 
   
   function processBallMovement() {
@@ -161,50 +160,12 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
         ballX < paddleX + halfPaddleWidth;
   }
   
-  function stopBall(){ 
-    ball.stopped = true;
-  }
-  
-  function startRender(){
-    running = true;
-    startVal = 0
-    render();  
-  }
-  
-  function stopRender() {
-    running = false;
-  }
-  
-  function render() {
-    if(running) {
-      requestAnimationFrame(render);
-      processBallMovement();
-      processBotPaddle()
-    }
-  }
-  
-  function processBotPaddle() {
-    if(racket2.position.z > ball.position.z) {
-      racket2.position.z -= Math.min(racket2.position.z - ball.position.z, 0.05);
-    }else if(racket2.position.z < ball.position.z) {
-      racket2.position.z  += Math.min(ball.position.z - racket2.position.z, 0.05);
-    }
-  }
-
-// GAME LOGIC //
 
 
 
 
 
 
-
-
-
-
-
-
-// POINT MARKED //
 
 function endGame(winner)
 {
@@ -274,6 +235,53 @@ function endGame(winner)
         
       }
   }
+  
+
+
+
+
+  
+  function stopBall(){ 
+    ball.stopped = true;
+  }
+  
+
+  
+  function startRender(){
+    running = true;
+    startVal = 0
+    render();  
+  }
+  
+  function stopRender() {
+    running = false;
+  }
+  
+  function render() {
+    if(running) {
+      requestAnimationFrame(render);
+      processBallMovement();
+      processBotPaddle()
+    }
+  }
+  
+
+  function processBotPaddle() {
+    if(racket2.position.z > ball.position.z) {
+      racket2.position.z -= Math.min(racket2.position.z - ball.position.z, 0.05);
+    }else if(racket2.position.z < ball.position.z) {
+      racket2.position.z  += Math.min(ball.position.z - racket2.position.z, 0.05);
+    }
+  }
+
+
+
+
+
+
+
+
+
 
 
   function reset(bool) {
@@ -329,16 +337,9 @@ function endGame(winner)
     }
     
   }
-
-  // POINT MARKED //
-
-
-
-
-
   
 
-// KEY LISTENER //
+
 
   const onKeyPress = function (event) {
     if (!keyListenerActive) return
@@ -375,17 +376,13 @@ function endGame(winner)
     requestAnimationFrame(handleKeys);
   };
 
-// KEY LISTENER //
 
+  let serv
+  let userId
+  let gameId
+  const [socket, setSocket] = useState(null);
 
-
-
-
-
-
-// START GAME //
-
-  if (stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51) {
+  if (stateGame === 21 || stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51) {
     if (newRound === true){
       newRound = false
         startRender()
@@ -394,50 +391,71 @@ function endGame(winner)
     document.addEventListener("keydown", onKeyPress)
     document.addEventListener("keyup", onKeyRelease)
     handleKeys()
+    if (stateGame === 21){
+      client.post(
+        "/api/JoinQueue",
+        {
+          userId: userId,
+        }
+      )
+      do {
+        client.get(
+          "/api/CheckJoinGame",
+          {withCredentials: true}
+        ).then(function(res){
+          console.log(res)
+          serv = res
+        }).catch(function(error){
+         console.log(error)
+        })
+      } while (!serv)
+      if (gameId)
+      {
+        serverUpdate(gameId)
+      }
+    }
   } else {
     keyListenerActive = false
     keysPressed = {}
     document.removeEventListener("keydown", onKeyPress)
     document.removeEventListener("keyup", onKeyRelease)
   }
-// START GAME //
 
 
 
 
 
-
-  
-// RELOAD //
-
-  useEffect(() => {
-    if (location.pathname === '/lobby'){
-      
-      if (running === true){
-        stopRender()
-        ball.velocity.x = 0
-        ball.velocity.y = 0
-        ball.position.x = 0
-        ball.position.z = 0
-        racket1.position.z = 0
-        racket2.position.z = 0
-      } else if (preparationNewRound === true){
-          stop = true
-      }
-      newRound = true
-      }
-  }, [location.pathname]);
-  
-
-// RELOAD //
+  async function serverUpdate(gameId){
+    while (match){
+      useEffect(() => {
+        const newSocket = io('ws://localhost:8080/ws/game/' + gameId);
+        newSocket.on('connect', () => {
+          console.log('Socket.IO connection established.');
+        });
+        newSocket.on('state_update', (data) => {
+          console.log('state_update', data)
+        });
+        setSocket(newSocket);
+    
+        /*return () => {
+          newSocket.disconnect();
+        };*/
+      }, []);
+    }
+  }
 
 
-
-
-
-
-
-
+  async function serverGame() {
+    if (socket) {
+      socket.emit('playerAction', {
+        move: up down or none,
+        idMatch: gameId,
+        idPlayer: player_id,
+        isReady: False or True (si tout charge de ton côté),
+        username: username 
+      });
+    }
+  }
 
 
 
@@ -486,9 +504,29 @@ function endGame(winner)
 
 
 
+  
 
-
-
+  useEffect(() => {
+    if (location.pathname === '/lobby'){
+      
+      if (running === true){
+        stopRender()
+        ball.velocity.x = 0
+        ball.velocity.y = 0
+        ball.position.x = 0
+        ball.position.z = 0
+        racket1.position.z = 0
+        racket2.position.z = 0
+      } else if (preparationNewRound === true){
+          stop = true
+      }
+      newRound = true
+        
+      
+      
+      }
+  }, [location.pathname]);
+  
 
 
 
