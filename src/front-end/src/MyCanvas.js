@@ -48,6 +48,17 @@ function MyCanvas( props ) {
     localStorage.setItem('currentUser', JSON.stringify(newValue));
   };
 
+
+  let initialToken = localStorage.getItem('csrfToken');
+  if (initialToken === null) {
+    initialToken = false
+  }
+  const [csrfToken, setcsrfToken] = useState(JSON.parse(initialToken));
+  const updatecsrfToken = (newValue) => {
+    setCurrentUser(newValue);
+    localStorage.setItem('csrfToken', JSON.stringify(newValue));
+  };
+
   const [isTableTournament, setisTableTournament] = useState(false)
   const [isSetterTournament, setisSetterTournament] = useState(false)
   const [isMatchTournament, setisMatchTournament] = useState(false)
@@ -152,15 +163,34 @@ useEffect(() => {
 
   if (location.pathname === '/' && props.isSize){
     if (currentUser === true){
-    client.get(
+   /* client.get(
       "/api/logout",
       {withCredentials: true}
     ).then(function(res){
       updateUser(false)
     }).catch(function(error){
      console.log(error)
-    })
+    })*/
     }
+
+
+    fetch('http://localhost:8080/api/getCSRFToken')
+    .then(response => response.json())
+    .then(data => {
+      updatecsrfToken(data.csrfToken)
+        // Include csrfToken in subsequent requests
+        console.log(data)
+        console.log('token', csrfToken)
+
+        
+
+
+    })
+    .catch(error => {
+        console.error('Error retrieving CSRF token:', error);
+    });
+
+
     
     const initialFormData8 = {
       player1: '',
@@ -402,12 +432,18 @@ useEffect(() => {
         console.log(user)
     }).then(function(res){
 
-
+        console.log(csrfToken)
         console.log('userId', userId)
         client.post(
           "/api/JoinQueue",
           {
             userId: userId,
+          },
+          {
+            headers: {
+              'X-CSRFToken': csrfToken,
+              'Content-Type': 'application/json'
+            }
           }
         ).then(function(res){
 
@@ -959,12 +995,21 @@ function affDecompte(){
       document.getElementById('badPassword').innerText = t("home.badP")
       return
     }
+    console.log(csrfToken)
+
+
     client.post(
       "/api/register",
       {
         email: email,
         username: username,
         password: password
+      },
+      {
+        headers: {
+          'X-CSRFToken': csrfToken,
+          'Content-Type': 'application/json'
+        }
       }
     ).then(function(res){
       client.post(
@@ -989,7 +1034,31 @@ function affDecompte(){
         setPassword('')
       })
     }
-    ) 
+    ) /*
+    fetch('http://localhost:8080/api/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+        username: username,
+        password: password
+      }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Registration successful:', data);
+    })
+    .catch(error => {
+      console.error('There was a problem registering:', error);
+    });*/
+
   }
 
 
