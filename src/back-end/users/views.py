@@ -120,9 +120,9 @@ class HistoryView(APIView):
 class JoinQueue(APIView):
     permission_classes = (permissions.AllowAny,)
     authentication_classes = (SessionAuthentication,)
-    
+
     def post(self, request):
-        user_id = request.user.userId
+        user_id = request.userId
         WaitingPlayerModel.objects.create(player_id=user_id)
         return Response({'message': 'You have joined the queue.'}, status=status.HTTP_200_OK)
     def get(self, request):
@@ -134,7 +134,7 @@ class CheckJoinGame(APIView):
     authentication_classes = (SessionAuthentication,)
 
     def get(self, request):
-        user_id = request.user.userId
+        user_id = request.userId
         game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id))
         if game_server:
             return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
