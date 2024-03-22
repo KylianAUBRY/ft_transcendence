@@ -22,7 +22,6 @@ services:
     build:
       context: ./
       dockerfile: ./back-end/Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
     restart: always
     networks:
       - main

@@ -373,6 +373,93 @@ useEffect(() => {
     btn.style.paddingTop = '0%'
     const loadDiv = document.getElementById('loader-container')
     loadDiv.style.display = 'block'
+
+
+
+
+    client.get("/api/user")
+      .then(res => {
+        user = res.data.user
+        LongestExchange = user.LongestExchange
+        aceRate = user.aceRate
+        nbAce = user.nbAce
+        nbGameLose = user.nbGameLose
+        nbGamePlayed = user.nbGamePlayed
+        nbGameWin = user.nbGameWin
+        nbPointLose = user.nbPointLose
+        nbPointMarked = user.nbPointMarked
+        nbTouchedBall = user.nbTouchedBall
+        name = user.username
+        winRate = user.winRate
+        userId = user.user_id
+        language = user.language
+        color = user.color
+        music = user.music
+        key1 = user.key1
+        key2 = user.key2
+        key3 = user.key3
+        key4 = user.key4
+        console.log(user)
+    }).then(function(res){
+
+
+        console.log('userId', userId)
+        client.post(
+          "/api/JoinQueue",
+          {
+            userId: userId,
+          }
+        ).then(function(res){
+
+
+
+
+          console.log('reussi', res)
+
+
+
+
+        }).catch(function(err){
+          console.error(err)
+        })
+
+
+
+
+    }).catch(function(err){
+      console.error(err)
+    })
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    do {
+      client.get(
+        "/api/CheckJoinGame",
+        {withCredentials: true}
+      ).then(function(res){
+        console.log(res)
+        serv = res
+      }).catch(function(error){
+       console.log(error)
+      })
+    } while (!serv)
+*/
   }
 
 
@@ -945,6 +1032,14 @@ let nbPointMarked
 let nbTouchedBall
 let name
 let winRate
+let userId
+let language
+let color
+let music
+let key1
+let key2
+let key3
+let key4
 
 
 
@@ -983,68 +1078,78 @@ function getChart() {
         nbTouchedBall = user.nbTouchedBall
         name = user.username
         winRate = user.winRate
+        userId = user.userId
+        language = user.language
+        color = user.color
+        music = user.music
+        key1 = user.key1
+        key2 = user.key2
+        key3 = user.key3
+        key4 = user.key4
     }).then(function(res){
 
 
-  if (chartRef.current !== null) {
-    chartRef.current.destroy();
-  }
+      if (chartRef.current !== null) {
+        chartRef.current.destroy();
+      }
 
 
 
-  chartRef.current = new Chart(chartRef1.current, {
-  type: 'pie',
-  data: {
-    labels: [
-      'Wins',
-      'Lose'
-    ],
-    datasets: [{
-      data: [nbGameWin, nbGameLose],
-      backgroundColor: [
-        'green',
-        'red'
-      ],
-      hoverOffset: 4
-    }]
-  }
-})
+        chartRef.current = new Chart(chartRef1.current, {
+        type: 'pie',
+        data: {
+          labels: [
+            'Wins',
+            'Lose'
+          ],
+          datasets: [{
+            data: [nbGameWin, nbGameLose],
+            backgroundColor: [
+              'green',
+              'red'
+            ],
+            hoverOffset: 4
+          }]
+        }
+      })
   
-  let can2 = document.getElementById('chart2')
-if (can2){
-  if (chartRef2.current !== null) {
-    chartRef2.current.destroy();
-  }
-  chartRef2.current = new Chart(can2, {
-  type: 'pie',
-  data: {
-    labels: [
-      'Points Wins',
-      'Points Loses'
-    ],
-    datasets: [{
-      data: [nbPointMarked, nbPointLose],
-      backgroundColor: [
-        'green',
-        'red'
-      ],
-      hoverOffset: 4
-    }]
-  }
-})
-  }
-  ref1.current.innerText = t("home.nbGamePlayed") + nbGamePlayed
-  ref2.current.innerText = t("home.nbGameWin") + nbGameWin
-  ref3.current.innerText = t("home.nbGameLose") + nbGameLose
-  ref4.current.innerText = t("home.LongestExchange") + LongestExchange
-  ref5.current.innerText = t("home.nbTouchedBall") + nbTouchedBall
-  ref6.current.innerText = t("home.nbAce") + nbAce
-  ref7.current.innerText = t("home.nbPointMarked") + nbPointMarked
-  ref8.current.innerText = t("home.nbPointLose") + nbPointLose
+        let can2 = document.getElementById('chart2')
+      if (can2){
+        if (chartRef2.current !== null) {
+          chartRef2.current.destroy();
+        }
+        chartRef2.current = new Chart(can2, {
+        type: 'pie',
+        data: {
+          labels: [
+            'Points Wins',
+            'Points Loses'
+          ],
+          datasets: [{
+            data: [nbPointMarked, nbPointLose],
+            backgroundColor: [
+              'green',
+              'red'
+            ],
+            hoverOffset: 4
+          }]
+        }
+      })
+      }
+      ref1.current.innerText = t("home.nbGamePlayed") + nbGamePlayed
+      ref2.current.innerText = t("home.nbGameWin") + nbGameWin
+      ref3.current.innerText = t("home.nbGameLose") + nbGameLose
+      ref4.current.innerText = t("home.LongestExchange") + LongestExchange
+      ref5.current.innerText = t("home.nbTouchedBall") + nbTouchedBall
+      ref6.current.innerText = t("home.nbAce") + nbAce
+      ref7.current.innerText = t("home.nbPointMarked") + nbPointMarked
+      ref8.current.innerText = t("home.nbPointLose") + nbPointLose
 
-      
-    })
-  }
+          
+        }).catch(function(err){
+          console.error(err)
+        })
+      }
 
 }
   

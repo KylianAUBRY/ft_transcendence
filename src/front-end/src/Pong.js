@@ -392,7 +392,7 @@ function endGame(winner)
     document.addEventListener("keydown", onKeyPress)
     document.addEventListener("keyup", onKeyRelease)
     handleKeys()
-    if (stateGame === 21){
+  /*  if (stateGame === 21){
       client.post(
         "/api/JoinQueue",
         {
@@ -410,11 +410,11 @@ function endGame(winner)
          console.log(error)
         })
       } while (!serv)
-    /*  if (gameId)
+      if (gameId)
       {
         serverUpdate(gameId)
-      }*/
-    }
+      }
+    }*/
   } else {
     keyListenerActive = false
     keysPressed = {}
