@@ -54,24 +54,6 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:443',
 ]
 
-# Allowed headers
-CORS_ALLOW_HEADERS = (
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'X-tz',
-    'x-tz',
-    'x-requested-with',
-)
-
-# # CSRF COOKIE NAME
-CSRF_COOKIE_NAME = "csrftoken"
-
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 
