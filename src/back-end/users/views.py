@@ -9,6 +9,7 @@ from .validations import custom_validation, validate_email, validate_password
 from . models import HistoryModel, GameServerModel, WaitingPlayerModel
 from django.db.models import Q
 from . utils import *
+from django.middleware.csrf import get_token
 import sys
 import json
 #from ..GameServer import test
@@ -123,7 +124,7 @@ class JoinQueue(APIView):
     permission_classes = (permissions.AllowAny,)
     authentication_classes = (SessionAuthentication,)
 
-    def get(self, request):
+    def post(self, request):
         data = request.data
         user_id = data.get("userId")
         WaitingPlayerModel.objects.create(player_id=user_id)
@@ -144,3 +145,9 @@ class CheckJoinGame(APIView):
         else:
             return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
             # send 'in queue'
+        
+class getCSRFToken(APIView):
+    
+    def get(self, request):
+        token = get_token(request)
+        return Response({"type": "csrfToken", "csrfToken": token}, status=status.HTTP_200_OK)
