@@ -27,7 +27,7 @@ class AppUserManager(BaseUserManager):
 		return user
 
 class AppUser(AbstractBaseUser, PermissionsMixin):
-	user_id = models.AutoField(primary_key=True)
+	userId = models.AutoField(primary_key=True)
 	email = models.EmailField(max_length=50, unique=True)
 	username = models.CharField(max_length=50)
 	date_joined = models.DateField(default=datetime.datetime.now().date())
