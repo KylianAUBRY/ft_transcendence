@@ -133,7 +133,6 @@ class JoinQueue(APIView):
 # Start new game
 class CheckJoinGame(APIView):
     permission_classes = (permissions.AllowAny,)
-    authentication_classes = (SessionAuthentication,)
 
     def get(self, request):
         data = request.data
