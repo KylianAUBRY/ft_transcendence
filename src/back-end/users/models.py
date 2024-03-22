@@ -75,4 +75,4 @@ class GameServerModel(models.Model):
 		return f"{self.serverId} : {self.serverAddr}"
 
 class WaitingPlayerModel(models.Model):
-	player_id = models.IntegerField(default=-1)
+	player_id = models.IntegerField()

@@ -9,6 +9,8 @@ from .validations import custom_validation, validate_email, validate_password
 from . models import HistoryModel, GameServerModel, WaitingPlayerModel
 from django.db.models import Q
 from . utils import *
+import sys
+import json
 #from ..GameServer import test
 
 # Create your views here.
@@ -66,7 +68,7 @@ class UpdateUserView(APIView):
     authentication_classes = (SessionAuthentication,)
 
     # Update nbGamePlayed, nbGameWin/nbGameLose, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose   on  user_id
-    def post(self, request):
+    def get(self, request):
         data = request.data
 
         user_id = data.get('userId')
@@ -87,7 +89,7 @@ class UpdateUserOption(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (SessionAuthentication,)
 
-    def post(self, request):
+    def get(self, request):
         data = request.data
 
         user_id = data.get('userId')
@@ -121,12 +123,11 @@ class JoinQueue(APIView):
     permission_classes = (permissions.AllowAny,)
     authentication_classes = (SessionAuthentication,)
 
-    def post(self, request):
-        user_id = request.userId
+    def get(self, request):
+        data = request.data
+        user_id = data.get("userId")
         WaitingPlayerModel.objects.create(player_id=user_id)
         return Response({'message': 'You have joined the queue.'}, status=status.HTTP_200_OK)
-    def get(self, request):
-        return Response({'error': 'Post request required.'}, status=status.HTTP_400_BAD_REQUEST)
 
 # Start new game
 class CheckJoinGame(APIView):
@@ -134,7 +135,8 @@ class CheckJoinGame(APIView):
     authentication_classes = (SessionAuthentication,)
 
     def get(self, request):
-        user_id = request.userId
+        data = request.data
+        user_id = data.get("userId")
         game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id))
         if game_server:
             return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
