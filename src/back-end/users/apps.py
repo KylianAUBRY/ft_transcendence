@@ -12,7 +12,7 @@ async def ManageGameQueue():
                 player1 = WaitingPlayerModel.objects.first()
                 if player1:
                     break
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(1)
             player1Id = player1.player_id
             player1.objects.delete()
 
@@ -20,7 +20,7 @@ async def ManageGameQueue():
                 player2 = WaitingPlayerModel.objects.first()
                 if player2:
                     break
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(1)
             player2Id = player2.player_id
             player2.objects.delete()
 
@@ -31,7 +31,7 @@ async def ManageGameQueue():
             game_server.save()
 
         game_server = None
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(1)
 
 class UsersConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
