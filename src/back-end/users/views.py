@@ -18,7 +18,7 @@ import json
 
 # Post request to create a new user
 class UserRegister(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         clean_data = custom_validation(request.data)
@@ -32,8 +32,7 @@ class UserRegister(APIView):
 
 # Post request to login user
 class UserLogin(APIView):
-    permission_classes = (permissions.AllowAny,)
-    authentication_classes = (SessionAuthentication,)
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         data = request.data
@@ -47,8 +46,7 @@ class UserLogin(APIView):
 
 # Post request to logout user
 class UserLogout(APIView):
-    permission_classes = (permissions.AllowAny,)
-    authentication_classes = (SessionAuthentication,)
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         logout(request)
@@ -56,17 +54,15 @@ class UserLogout(APIView):
 
 # Get info of user connected
 class UserView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
-
+    permission_classes = [permissions.AllowAny]
+    
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response({'user': serializer.data}, status=status.HTTP_200_OK)
 
 # Maj of user info after a match
 class UpdateUserView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
+    permission_classes = [permissions.AllowAny]
 
     # Update nbGamePlayed, nbGameWin/nbGameLose, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose   on  user_id
     def get(self, request):
@@ -87,8 +83,7 @@ class UpdateUserView(APIView):
             return Response({'message': 'User update failed', 'error': str(e)}, status=500)
 
 class UpdateUserOption(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         data = request.data
@@ -110,8 +105,7 @@ class UpdateUserOption(APIView):
 
 # Get all match history from a user
 class HistoryView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
+    permission_classes = [permissions.AllowAny]
     
     def get(self, request):
         user_id = request.user.userId
@@ -121,8 +115,7 @@ class HistoryView(APIView):
 
 # Add player to a waiting queue
 class JoinQueue(APIView):
-    permission_classes = (permissions.AllowAny,)
-    authentication_classes = (SessionAuthentication,)
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         data = request.data
@@ -146,8 +139,7 @@ class CheckJoinGame(APIView):
             # send 'in queue'
         
 class getCSRFToken(APIView):
-    permission_classes = (permissions.AllowAny,)
-    authentication_classes = (SessionAuthentication,)
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         token = get_token(request)
