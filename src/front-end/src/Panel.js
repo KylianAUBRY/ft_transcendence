@@ -30,6 +30,7 @@ const panelRef = useRef()
 const { camera } = useThree();
 const [isPanel, setIsPanel] = useState(true);
 const [oneTime, setoneTime] = useState(true);
+const [click, setClick] = useState(-10)
 const navigate = useNavigate();
 const location = useLocation()
 
@@ -140,30 +141,40 @@ function handleBtnExit(){
   }
 }
 
+document.addEventListener('keydown', function(event) {
+  // Vérifie si la touche pressée est la touche "Entrée" (code 13)
+  if (event.keyCode === 13) {
+    // Appel de la fonction Click()
+    Click(loaderGltf.scene.rotation.y);
+  }
+});
 
 
 
-function Click (rota)  {
-    if (rota === 0 || (rota < -6.27 && rota > -6.31) || (rota < 6.31 && rota > 6.27)){
+  useEffect(() => {
+    if (click === -10)
+      return
+    const rota = click
+    if (rota === 0 || (rota < -6.27 && rota > -6.31) || (rota < 6.31 && rota > 6.27)) {
       //clique online 
       props.updateSetState(20)
       stateG = 2
       rotaPanel = 0
       setIsPanel(true)
       navigate('/online');
-    } else if ((rota < 4.74 && rota > 4.70) || (rota < -1.56 && rota > -1.60)){
+    } else if ((rota < 4.74 && rota > 4.70) || (rota < -1.56 && rota > -1.60)) {
       // local
       stateG = 3
       rotaPanel = (3 * Math.PI) / 2
       setIsPanel(false)
       gsap.to(camera.position, {
-        duration:1,
+        duration: 1,
         x: 0,
         y: 15,
         z: 0,
       })
       gsap.to(camera.rotation, {
-        duration:2,
+        duration: 2,
         x: -Math.PI / 2,
         y: 0,
         z: Math.PI,
@@ -172,20 +183,20 @@ function Click (rota)  {
           navigate('/local');
         }
       })
-      
-    } else if ((rota < 3.17 && rota > 3.13) || (rota < -3.13 && rota > -3.17)){
+
+    } else if ((rota < 3.17 && rota > 3.13) || (rota < -3.13 && rota > -3.17)) {
       // tounament
       stateG = 4
       rotaPanel = Math.PI
       setIsPanel(false)
       gsap.to(camera.position, {
-        duration:1,
+        duration: 1,
         x: 0,
         y: 15,
         z: 0,
       })
       gsap.to(camera.rotation, {
-        duration:2,
+        duration: 2,
         x: -Math.PI / 2,
         y: 0,
         z: Math.PI,
@@ -194,7 +205,7 @@ function Click (rota)  {
           navigate('/tournament');
         }
       })
-    } else if ((rota < 1.60 && rota > 1.56) || (rota < -4.70 && rota > -4.74)){
+    } else if ((rota < 1.60 && rota > 1.56) || (rota < -4.70 && rota > -4.74)) {
       // computer
       props.updateSetState(50)
       stateG = 5
@@ -202,8 +213,8 @@ function Click (rota)  {
       setIsPanel(true)
       navigate('/bot');
     }
-  }
-
+    setClick(-10)
+  }, [click]); 
 
 
 // Touche apuyee
@@ -373,19 +384,24 @@ useEffect(() => {
 }, [location.pathname]);
 
 
+function Click (rota) {
+  setClick(rota)
+}
+
+
 // Envoi de la balise html
     if (gltf) {
       return (
         <>
         {isPanel ? (
-          <mesh ref={panelRef} >
+          <mesh ref={panelRef} onClick={()=>{Click(loaderGltf.scene.rotation.y)}}>
             <mesh
                 geometry={cone.geometry}
                 material={cone.material}
                 position={cone.position}
                 scale={cone.scale}
                 rotation={cone.rotation}
-                onClick={()=>{Click(loaderGltf.scene.rotation.y)}}
+                
             />
             <Screen model={child2} Gltf={gltf.scene} text={t("game.computer")} meshTextPos={[0, 7.5, 4.3]} meshTextRot={[0.4, 0, 0]} textPos={[0, 0, 0]} textRot={[0, 0, 0]} />
             <Screen model={child3} Gltf={gltf.scene} text={t("game.online")}  meshTextPos={[4.3, 7.5, 0]} meshTextRot={[0, Math.PI / 2, 0]} textPos={[0, 0, 0]} textRot={[0.4, 0, 0]} />
