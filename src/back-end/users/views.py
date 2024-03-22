@@ -126,10 +126,10 @@ class JoinQueue(APIView):
         return Response({'message': 'You have joined the queue.'}, status=status.HTTP_200_OK)
 
 # Start new game
+@csrf_exempt
 class CheckJoinGame(APIView):
     permission_classes = (permissions.AllowAny,)
 
-    @csrf_exempt
     def get(self, request):
         data = request.data
         user_id = data.get("userId")
@@ -140,7 +140,8 @@ class CheckJoinGame(APIView):
         else:
             return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
             # send 'in queue'
-        
+
+@csrf_exempt
 class getCSRFToken(APIView):
     permission_classes = [permissions.AllowAny]
 
