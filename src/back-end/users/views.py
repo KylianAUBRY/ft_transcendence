@@ -147,7 +147,9 @@ class CheckJoinGame(APIView):
             # send 'in queue'
         
 class getCSRFToken(APIView):
-    
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (SessionAuthentication,)
+
     def get(self, request):
         token = get_token(request)
         return Response({"type": "csrfToken", "csrfToken": token}, status=status.HTTP_200_OK)
