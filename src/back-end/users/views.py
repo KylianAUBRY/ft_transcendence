@@ -118,6 +118,9 @@ class HistoryView(APIView):
 
 # Add player to a waiting queue
 class JoinQueue(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (SessionAuthentication,)
+    
     def post(self, request):
         user_id = request.user.userId
         WaitingPlayerModel.objects.create(player_id=user_id)
@@ -127,6 +130,9 @@ class JoinQueue(APIView):
 
 # Start new game
 class CheckJoinGame(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (SessionAuthentication,)
+
     def get(self, request):
         user_id = request.user.userId
         game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id))
