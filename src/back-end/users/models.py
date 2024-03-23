@@ -17,13 +17,14 @@ class AppUserManager(BaseUserManager):
 		user.set_password(password)
 		user.save(using=self._db)
 		return user
-	def create_superuser(self, email, password):
+	def create_superuser(self, email, username, password):
 		if not email:
 			raise ValueError('An email is required.')
 		if not password:
 			raise ValueError('A password is required.')
-		user = self.create_user(email=self.normalize_email(email), password=password)
+		user = self.create_user(email=self.normalize_email(email), username=username, password=password)
 		user.is_superuser = True
+		user.is_staff = True
 		user.save(using=self._db)
 		return user
 
@@ -47,6 +48,7 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 	key2 = models.CharField(max_length=50, default="KeyD")
 	key3 = models.CharField(max_length=50, default="ArrowLeft")
 	key4 = models.CharField(max_length=50, default="ArrowRight")
+	is_staff = models.BooleanField(default=False)
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
 	objects = AppUserManager()
