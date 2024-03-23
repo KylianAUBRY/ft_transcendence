@@ -12,6 +12,29 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+# ----------.env------------ #
+
+import os
+import dotenv
+
+dotenv.load_dotenv()
+
+REQUIRED_ENV_VARIABLES = ['POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'DATABASE_HOST_NAME', 'DATABASE_PORT']
+
+# Checking for the existence of environment variables.
+for env_variable in REQUIRED_ENV_VARIABLES:
+    if env_variable not in os.environ:
+        raise Exception(f"The environment variable {env_variable} is missing. Make sure to define it in your .env file.")
+
+POSTGRES_DB = os.environ['POSTGRES_DB']
+POSTGRES_USER = os.environ['POSTGRES_USER']
+POSTGRES_PASSWORD = os.environ['POSTGRES_PASSWORD']
+DATABASE_HOST_NAME = os.environ['DATABASE_HOST_NAME']
+DATABASE_PORT = os.environ['DATABASE_PORT']
+
+# -------------------------- #
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -112,11 +135,11 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'admin',
-        'PASSWORD': 'test',
-        'HOST': 'db',
-        'PORT': '5432',
+        'NAME': POSTGRES_DB,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': DATABASE_HOST_NAME,
+        'PORT': DATABASE_PORT,
     }
 }
 

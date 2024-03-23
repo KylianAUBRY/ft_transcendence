@@ -88,26 +88,30 @@ function MyCanvas( props ) {
         setisOnlineLoad(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.onlineLoad');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
     }, 100); 
    }else if (newValue === 30){
       setisLocalMatch(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.localMatch');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
     }, 100); 
     } else  if(newValue === 32) {
       setisResultLocal(true)
       setTimeout(function() {
         var localMatch = document.querySelector('.localMatch');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
       }, 100); 
     }
     else if (newValue === 40){
       setisTableTournament(true)
       setTimeout(function() {
         var localMatch = document.querySelector('.tournament');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
     }, 100); 
       setisSetterTournament(true)
       setisMatchTournament(false)
@@ -115,7 +119,8 @@ function MyCanvas( props ) {
       setisTableTournament(true)
       setTimeout(function() {
         var localMatch = document.querySelector('.tournament');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
     }, 100); 
       setisResultTournamnt(true)
 
@@ -123,13 +128,15 @@ function MyCanvas( props ) {
         setisBotMatch(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.botMatch');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
     }, 100); 
     }else  if(newValue === 52) {
       setisResultLocal(true)
       setTimeout(function() {
         var localMatch = document.querySelector('.localMatch');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
       }, 100); 
     }else {
       setisTableTournament(false)
@@ -224,7 +231,8 @@ useEffect(() => {
     setisLoginPage(true)
     setTimeout(function() {
       var loginPage = document.getElementById('loginPage');
-      loginPage.classList.add('visible');
+      if (loginPage)
+        loginPage.classList.add('visible');
   }, 100); 
   } else if (location.pathname === '/lobby' && props.isSize){
     const initialFormData8 = {
@@ -389,7 +397,7 @@ useEffect(() => {
 
 
   function searchOpponent(){
-    const buttonS = document.getElementById('btnSearch')
+    /*const buttonS = document.getElementById('btnSearch')
     buttonS.style.display = 'none'
     const buttonE = document.getElementById('btnExitMatchOnline')
     buttonE.style.margin = '0'
@@ -399,7 +407,7 @@ useEffect(() => {
     loadDiv.style.display = 'block'
 
 
-
+*/
 
     client.get("/api/user")
       .then(res => {
@@ -428,16 +436,16 @@ useEffect(() => {
 
         console.log(csrfToken)
         console.log('userId', userId)
-        client.post(
+      /*  client.post(
           "/api/JoinQueue",
-          {
-            userId: userId,
-          },
           {
             headers: {
               'X-CSRFToken': csrfToken,
               'Content-Type': 'application/json'
             }
+          },
+          {
+            userId: userId,
           }
         ).then(function(res){
 
@@ -449,13 +457,33 @@ useEffect(() => {
 
     }).catch(function(err){
       console.error(err)
+    })*/
+
+    fetch('http://localhost:8080/api/JoinQueue', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: userId
+      }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Registration successful:', data);
+    })
+    .catch(error => {
+      console.error('There was a problem registering:', error);
     })
 
-    
 
 
-
-
+  })
 
 
 
@@ -1018,6 +1046,11 @@ function affDecompte(){
           password: password
         }
       ).then(function(res){
+
+
+
+
+        searchOpponent()
         updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
