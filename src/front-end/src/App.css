@@ -73,6 +73,7 @@ canvas {
   padding-left: 10px;
   background: transparent;
   transition: border-color 0.2s;
+  user-select: none;
 }
 
 .Tinput::placeholder {
@@ -1141,6 +1142,7 @@ canvas {
   padding-left: 10px;
   background: transparent;
   transition: border-color 0.2s;
+  user-select: none;
 }
 
 .Winput::placeholder {
