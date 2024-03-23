@@ -19,12 +19,20 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 axios.defaults.withCredentials = true
 
 const url = window.location.href
+const url2 = new URL(url);
+const baseUrl = `${url2.protocol}//${url2.hostname}`;
 
-console.log(url)
 
+
+//console.log(url)
+
+const path = baseUrl + ':8080'
+console.log(path); 
 const client = axios.create({
-  baseURL: url
+  baseURL: path
 })
+
+
 
 let stopDecompte = false
 
@@ -439,7 +447,7 @@ useEffect(() => {
         console.log(csrfToken)
         console.log('userId', userId)
 
-    fetch(url + 'JoinQueue', {
+    fetch(baseUrl + ':8080/' + 'api/JoinQueue', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
