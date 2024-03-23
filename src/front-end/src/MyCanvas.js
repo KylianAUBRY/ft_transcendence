@@ -18,9 +18,21 @@ axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 axios.defaults.withCredentials = true
 
+const url = window.location.href
+const url2 = new URL(url);
+const baseUrl = `${url2.protocol}//${url2.hostname}`;
+
+
+
+//console.log(url)
+
+const path = baseUrl + ':8080'
+console.log(path); 
 const client = axios.create({
-  baseURL: 'http://localhost:8080'
+  baseURL: path
 })
+
+
 
 let stopDecompte = false
 
@@ -76,8 +88,6 @@ function MyCanvas( props ) {
   const [selectedKeys, setSelectedKeys] = useState(['KeyA', 'KeyD', 'ArrowLeft', 'ArrowRight']);
   const [isProfilView, setIsProfilView] = useState(false)
  
-
-
 
 
 
@@ -436,30 +446,8 @@ useEffect(() => {
 
         console.log(csrfToken)
         console.log('userId', userId)
-      /*  client.post(
-          "/api/JoinQueue",
-          {
-            headers: {
-              'X-CSRFToken': csrfToken,
-              'Content-Type': 'application/json'
-            }
-          },
-          {
-            userId: userId,
-          }
-        ).then(function(res){
 
-          console.log('reussi', res)
-
-        }).catch(function(err){
-          console.error(err)
-        })
-
-    }).catch(function(err){
-      console.error(err)
-    })*/
-
-    fetch('http://localhost:8080/api/JoinQueue', {
+    fetch(baseUrl + ':8080/' + 'api/JoinQueue', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1046,11 +1034,6 @@ function affDecompte(){
           password: password
         }
       ).then(function(res){
-
-
-
-
-        searchOpponent()
         updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
