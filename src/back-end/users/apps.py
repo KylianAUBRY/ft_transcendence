@@ -5,7 +5,7 @@ import asyncio
 async def ManageGameQueue():
     from . models import GameServerModel, WaitingPlayerModel
     while True:
-        game_server = GameServerModel.objects.filter(status='waiting').first()
+        game_server = GameServerModel.objects.filter(state='waiting').first()
         if game_server:
 
             while True:
