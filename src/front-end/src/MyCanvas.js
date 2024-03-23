@@ -455,18 +455,45 @@ useEffect(() => {
       body: JSON.stringify({
         userId: userId
       }),
-    })
-    .then(response => {
+    }).then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       return response.json();
-    })
-    .then(data => {
-      console.log('Registration successful:', data);
-    })
-    .catch(error => {
-      console.error('There was a problem registering:', error);
+    }).then(data => {
+      console.log(data);
+
+
+      fetch(baseUrl + ':8080/' + 'api/CheckJoinGame', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId
+        }),
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      }).then(data => {
+        console.log(data);
+      }).catch(error => {
+        console.error('There was a problem CheckJoinGame:', error);
+      })
+  
+
+
+
+
+
+
+
+
+
+    }).catch(error => {
+      console.error('There was a problem JoinQueue:', error);
     })
 
 
