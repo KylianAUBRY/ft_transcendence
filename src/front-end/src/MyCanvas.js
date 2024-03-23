@@ -461,7 +461,7 @@ useEffect(() => {
       }
       return response.json();
     }).then(data => {
-      console.log(data);
+      console.log('JoinQueue', data);
 
 
       fetch(baseUrl + ':8080/' + 'api/CheckJoinGame', {
@@ -478,7 +478,7 @@ useEffect(() => {
         }
         return response.json();
       }).then(data => {
-        console.log(data);
+        console.log('CheckJoinGame', data);
       }).catch(error => {
         console.error('There was a problem CheckJoinGame:', error);
       })
