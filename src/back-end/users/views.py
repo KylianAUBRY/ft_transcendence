@@ -13,7 +13,6 @@ from django.middleware.csrf import get_token
 import sys
 import json
 from django.views.decorators.csrf import csrf_exempt
-#from ..GameServer import test
 
 # Create your views here.
 
