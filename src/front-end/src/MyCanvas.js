@@ -465,7 +465,7 @@ useEffect(() => {
 
 
       fetch(baseUrl + ':8080/' + 'api/CheckJoinGame', {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
