@@ -231,7 +231,8 @@ useEffect(() => {
     setisLoginPage(true)
     setTimeout(function() {
       var loginPage = document.getElementById('loginPage');
-      loginPage.classList.add('visible');
+      if (loginPage)
+        loginPage.classList.add('visible');
   }, 100); 
   } else if (location.pathname === '/lobby' && props.isSize){
     const initialFormData8 = {
@@ -396,7 +397,7 @@ useEffect(() => {
 
 
   function searchOpponent(){
-    const buttonS = document.getElementById('btnSearch')
+    /*const buttonS = document.getElementById('btnSearch')
     buttonS.style.display = 'none'
     const buttonE = document.getElementById('btnExitMatchOnline')
     buttonE.style.margin = '0'
@@ -406,7 +407,7 @@ useEffect(() => {
     loadDiv.style.display = 'block'
 
 
-
+*/
 
     client.get("/api/user")
       .then(res => {
@@ -435,7 +436,7 @@ useEffect(() => {
 
         console.log(csrfToken)
         console.log('userId', userId)
-        client.post(
+      /*  client.post(
           "/api/JoinQueue",
           {
             headers: {
@@ -456,13 +457,33 @@ useEffect(() => {
 
     }).catch(function(err){
       console.error(err)
+    })*/
+
+    fetch('http://localhost:8080/api/JoinQueue', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: userId
+      }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Registration successful:', data);
+    })
+    .catch(error => {
+      console.error('There was a problem registering:', error);
     })
 
-    
 
 
-
-
+  })
 
 
 
@@ -1025,6 +1046,11 @@ function affDecompte(){
           password: password
         }
       ).then(function(res){
+
+
+
+
+        searchOpponent()
         updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
