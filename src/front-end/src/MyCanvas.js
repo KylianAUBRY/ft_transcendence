@@ -403,11 +403,11 @@ useEffect(() => {
   });
 
 
+let gameId = null
 
 
-
-  function searchOpponent(){
-    /*const buttonS = document.getElementById('btnSearch')
+  async function searchOpponent(){
+    const buttonS = document.getElementById('btnSearch')
     buttonS.style.display = 'none'
     const buttonE = document.getElementById('btnExitMatchOnline')
     buttonE.style.margin = '0'
@@ -417,7 +417,7 @@ useEffect(() => {
     loadDiv.style.display = 'block'
 
 
-*/
+
 
     client.get("/api/user")
       .then(res => {
@@ -460,33 +460,25 @@ useEffect(() => {
         throw new Error('Network response was not ok');
       }
       return response.json();
-    }).then(data => {
+    }).then(async data => {
       console.log('JoinQueue', data);
 
 
-      fetch(baseUrl + ':8080/' + 'api/CheckJoinGame', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: userId
-        }),
-      }).then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+
+      while (gameId === null) {
+        const data = await checkJoinGame();
+        
+        if (data.hasOwnProperty('game_id')) {
+          console.log('La ressource est un game_id:', data.game_id);
+          gameId = data.game_id;
         }
-        return response.json();
-      }).then(data => {
-        console.log('CheckJoinGame', data);
-      }).catch(error => {
-        console.error('There was a problem CheckJoinGame:', error);
-      })
-  
+    
+        // Ajouter une pause (attente) avant de renvoyer la requête
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Attendez 1 seconde avant de renvoyer la requête
+      }
 
-
-
-
+      
+      console.log('trouve', gameId)
 
 
 
@@ -500,33 +492,34 @@ useEffect(() => {
 
   })
 
-
-
-
-
-
-
-
-
-
-
-
-    /*
-    do {
-      client.get(
-        "/api/CheckJoinGame",
-        {withCredentials: true}
-      ).then(function(res){
-        console.log(res)
-        serv = res
-      }).catch(function(error){
-       console.log(error)
-      })
-    } while (!serv)
-*/
   }
 
 
+
+  const checkJoinGame = async () => {
+    try {
+      const response = await fetch(baseUrl + ':8080/' + 'api/CheckJoinGame', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const data = await response.json();
+      console.log('CheckJoinGame', data);
+      return data;
+    } catch (error) {
+      console.error('There was a problem CheckJoinGame:', error);
+      throw error;
+    }
+  };
 
 
   function goMatchBot(){

@@ -38,6 +38,8 @@ function App() {
 
         <Route exact path="/bot" element={<MyCanvas isSize={isSize} position={[17, 4, 0]} rotation={[0, Math.PI / 2, 0]} route={'/bot'}/>}/>
 
+        <Route exact path="/register42" element={<MyCanvas isSize={isSize} position={[0, 50, 0]} rotation={[-Math.PI / 2, 0, Math.PI]} route={'/register42'}/>}/>
+
         <Route path="*" element={<div>Pages not Found</div>} />
 
       </Routes>
