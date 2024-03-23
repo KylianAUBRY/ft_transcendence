@@ -88,26 +88,30 @@ function MyCanvas( props ) {
         setisOnlineLoad(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.onlineLoad');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
     }, 100); 
    }else if (newValue === 30){
       setisLocalMatch(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.localMatch');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
     }, 100); 
     } else  if(newValue === 32) {
       setisResultLocal(true)
       setTimeout(function() {
         var localMatch = document.querySelector('.localMatch');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
       }, 100); 
     }
     else if (newValue === 40){
       setisTableTournament(true)
       setTimeout(function() {
         var localMatch = document.querySelector('.tournament');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
     }, 100); 
       setisSetterTournament(true)
       setisMatchTournament(false)
@@ -115,7 +119,8 @@ function MyCanvas( props ) {
       setisTableTournament(true)
       setTimeout(function() {
         var localMatch = document.querySelector('.tournament');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
     }, 100); 
       setisResultTournamnt(true)
 
@@ -123,13 +128,15 @@ function MyCanvas( props ) {
         setisBotMatch(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.botMatch');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
     }, 100); 
     }else  if(newValue === 52) {
       setisResultLocal(true)
       setTimeout(function() {
         var localMatch = document.querySelector('.localMatch');
-        localMatch.classList.add('visible');
+        if (localMatch)
+          localMatch.classList.add('visible');
       }, 100); 
     }else {
       setisTableTournament(false)
@@ -431,13 +438,13 @@ useEffect(() => {
         client.post(
           "/api/JoinQueue",
           {
-            userId: userId,
-          },
-          {
             headers: {
               'X-CSRFToken': csrfToken,
               'Content-Type': 'application/json'
             }
+          },
+          {
+            userId: userId,
           }
         ).then(function(res){
 
