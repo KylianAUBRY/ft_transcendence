@@ -1102,9 +1102,10 @@ canvas {
 
 .form{
   width: 100%;
-  height: 100%;
+  height: 70%;
   display: flex;
   flex-direction: row;
+  padding: 0;
 }
 
 .signinForm{
@@ -1345,4 +1346,14 @@ canvas {
   height: 6%;
   right: 1%;
   top: 1%;
+}
+
+.btn42{
+  margin: 0;
+  padding: 0;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -7%;
 }

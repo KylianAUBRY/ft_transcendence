@@ -1285,6 +1285,13 @@ useEffect(() => {
 }, [isProfilView]);
 
 
+function handle42register(){
+  console.log('register 42')
+}
+
+
+
+
     return (
         <div>
            {currentUser && state === 10 ? (
@@ -1328,7 +1335,7 @@ useEffect(() => {
             <div className='bad' id='badEmail2'></div>
           </div>
           <div className='Wgroup'>
-            <input placeholder='password' id='password' name='password' className='Winput' onChange={e => setPassword2(e.target.value)}></input>
+            <input placeholder='password' id='password' name='password' className='Winput' type='password' onChange={e => setPassword2(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password'>{t("home.password")}</label>
             <div className='bad' id='badPassword2' ref={refBadPassword}></div>
           </div>
@@ -1348,7 +1355,7 @@ useEffect(() => {
             <div className='bad' id='badLogin'></div>
           </div>
           <div className='Wgroup'>
-            <input placeholder='password' id='password2' name='password2' className='Winput' onChange={e => setPassword(e.target.value)}></input>
+            <input placeholder='password' id='password2' name='password2' className='Winput' type='password' onChange={e => setPassword(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password2'>{t("home.password")}</label>
             <div className='bad' id='badPassword'></div>
           </div>
@@ -1357,6 +1364,9 @@ useEffect(() => {
           </div>
         </form>
         </div>
+        <div className='btn42'>
+            <button className='btnlogin' onClick={handle42register}>Login with 42</button>      
+          </div>
       </div>
       ) : null}
     { state === 10 ? (
