@@ -12,6 +12,7 @@ from . utils import *
 from django.middleware.csrf import get_token
 import sys
 import json
+from django.views.decorators.csrf import csrf_exempt
 #from ..GameServer import test
 
 # Create your views here.
@@ -117,6 +118,7 @@ class HistoryView(APIView):
 class JoinQueue(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @csrf_exempt
     def post(self, request):
         data = request.data
         user_id = data.get("userId")
@@ -124,6 +126,7 @@ class JoinQueue(APIView):
         return Response({'message': 'You have joined the queue.'}, status=status.HTTP_200_OK)
 
 # Start new game
+@csrf_exempt
 class CheckJoinGame(APIView):
     permission_classes = (permissions.AllowAny,)
 
@@ -137,10 +140,12 @@ class CheckJoinGame(APIView):
         else:
             return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
             # send 'in queue'
-        
+
+@csrf_exempt
 class getCSRFToken(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @csrf_exempt
     def get(self, request):
         token = get_token(request)
         return Response({"type": "csrfToken", "csrfToken": token}, status=status.HTTP_200_OK)
