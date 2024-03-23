@@ -1034,11 +1034,6 @@ function affDecompte(){
           password: password
         }
       ).then(function(res){
-
-
-
-
-        searchOpponent()
         updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
