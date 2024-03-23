@@ -55,7 +55,7 @@ function MyCanvas( props ) {
   }
   const [csrfToken, setcsrfToken] = useState(JSON.parse(initialToken));
   const updatecsrfToken = (newValue) => {
-    setCurrentUser(newValue);
+    setcsrfToken(newValue);
     localStorage.setItem('csrfToken', JSON.stringify(newValue));
   };
 
@@ -76,6 +76,7 @@ function MyCanvas( props ) {
   const [selectedKeys, setSelectedKeys] = useState(['KeyA', 'KeyD', 'ArrowLeft', 'ArrowRight']);
   const [isProfilView, setIsProfilView] = useState(false)
  
+
 
 
 
@@ -173,22 +174,15 @@ useEffect(() => {
     })*/
     }
 
-
-    fetch('http://localhost:8080/api/getCSRFToken')
-    .then(response => response.json())
-    .then(data => {
-      updatecsrfToken(data.csrfToken)
-        // Include csrfToken in subsequent requests
-        console.log(data)
-        console.log('token', csrfToken)
-
-        
+    
 
 
-    })
-    .catch(error => {
-        console.error('Error retrieving CSRF token:', error);
-    });
+  const tokenCookie = getCookie('csrftoken')
+  updatecsrfToken(tokenCookie)
+
+
+    
+ 
 
 
     
@@ -447,20 +441,11 @@ useEffect(() => {
           }
         ).then(function(res){
 
-
-
-
           console.log('reussi', res)
-
-
-
 
         }).catch(function(err){
           console.error(err)
         })
-
-
-
 
     }).catch(function(err){
       console.error(err)
@@ -716,7 +701,20 @@ function exitTournament(){
 
 
 
-
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
 
 
@@ -947,6 +945,7 @@ function affDecompte(){
         password: password2
       }
     ).then(function(res){
+      console.log(res)
       updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
@@ -995,7 +994,7 @@ function affDecompte(){
       document.getElementById('badPassword').innerText = t("home.badP")
       return
     }
-    console.log(csrfToken)
+    console.log('post', csrfToken)
 
 
     client.post(
