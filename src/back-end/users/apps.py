@@ -14,7 +14,7 @@ async def ManageGameQueue():
                     break
                 await asyncio.sleep(1)
             player1Id = player1.player_id
-            player1.objects.delete()
+            player1.delete()
 
             while True:
                 player2 = WaitingPlayerModel.objects.first()
@@ -22,14 +22,15 @@ async def ManageGameQueue():
                     break
                 await asyncio.sleep(1)
             player2Id = player2.player_id
-            player2.objects.delete()
+            player2.delete()
 
             # Actualiser le game_server avec player info et change le game_server en full
             game_server.firstPlayerId = player1Id
             game_server.secondPlayerId = player2Id
             game_server.state = 'full'
             game_server.save()
-
+        else:
+            GameServerModel.objects.create()
         game_server = None
         await asyncio.sleep(1)
 
