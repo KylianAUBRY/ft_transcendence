@@ -4,6 +4,7 @@ import asyncio
 import math
 import random
 import time
+import logging
 
 from datetime import date
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -19,16 +20,21 @@ class GameRoom(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.player_id = str(uuid.uuid4())
+        logger = logging.getLogger(__name__)
+        logger.info('accept', self.player_id)
         await self.accept()
         
+        logger.info('group add', self.player_id)
         await self.channel_layer.group_add(
             self.game_group_name, self.channel_name
         )
 
+        logger.info('send', self.player_id)
         await self.send(
             text_data=json.dumps({"type": "playerId", "playerId": self.player_id})
         )
 
+        logger.info('set', self.player_id)
         self.players[self.player_id] = {
             "idMatch": self.player_id,
             "idPlayer": 0,
@@ -44,7 +50,9 @@ class GameRoom(AsyncWebsocketConsumer):
             "nbAce": 0,
         }
         
+        logger.info('set', self.player_id)
         if len(self.players) == 2:
+            logger.info('launch game', self.player_id)
             asyncio.create_task(self.game_loop())
   
     async def disconnect(self, close_code): 
