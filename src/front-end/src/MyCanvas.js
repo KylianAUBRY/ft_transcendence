@@ -201,8 +201,16 @@ useEffect(() => {
   const tokenCookie = getCookie('csrftoken')
   updatecsrfToken(tokenCookie)
 
-
     
+
+
+  client.get("/api/URL42")
+  .then(res => {
+    auth42 = res.URL42
+    console.log(res, auth42)
+}).catch(error => {
+  console.error('There was a problem for 42url:', error);
+})
  
 
 
@@ -394,6 +402,8 @@ useEffect(() => {
   };
   setscore(initialFormDataScore);
     updateSetState(50)
+  }else if (location.pathname === '/register42' && props.isSize){
+    console.log('auth42 reussi')
   }
 }, [location.pathname, props.isSize]);
 
@@ -538,30 +548,33 @@ useEffect(() => {
 
   }
 
-  let newUrl = baseUrl.replace('http://', '');
-  console.log(newUrl);
+  
 
   const [socket, setSocket] = useState(null);
   const [playerId, setPlayerId] = useState(null);
+
+  let newUrl = baseUrl.replace('http://', '');
+  console.log(newUrl);
+    const websocketUrl = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
+   
+    let websocket;
 
 
   async function serverUpdate(gameId){
 
 
-    const websocketUrl = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
-   
-    let websocket;
     
         websocket = new WebSocket(websocketUrl);
     
         websocket.onopen = function() {
             console.log('Connected to WebSocket');
             // Start sending info every 1 second once connected
-            //setInterval(sendInfo, 1000);
+            setInterval(sendInfo, 1000);
         };
     
         websocket.onmessage = function(event) {
             console.log('Received message:', event.data);
+            setPlayerId(event.data.playerId)
             // Handle incoming messages here
         };
     
@@ -577,7 +590,19 @@ useEffect(() => {
     
 
 
-
+    function sendInfo() {
+      // Send your information here
+      
+      const data = {
+        "playerDirection": 'none',
+        "idMatch": playerId,
+        "playerId": userId,
+        "isReady": true,
+        "username": username
+      };
+      console.log('envoi ready', data)
+      websocket.send(JSON.stringify(data));
+  }
 
 
 
@@ -1265,7 +1290,7 @@ let key1
 let key2
 let key3
 let key4
-
+let auth42
 
 
 
