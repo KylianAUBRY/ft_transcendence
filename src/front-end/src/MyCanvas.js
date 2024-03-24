@@ -509,6 +509,15 @@ let gameId = null
       setIsSearch(false)
 
 
+      console.log('webSocket')
+
+
+
+      serverUpdate(gameId)
+
+
+
+
 
 
     }).catch(error => {
@@ -520,6 +529,36 @@ let gameId = null
   })
 
   }
+
+  let newUrl = chaine.replace('http://', '');
+  console.log(newUrl);
+
+  const [socket, setSocket] = useState(null);
+  const [playerId, setPlayerId] = useState(null);
+
+
+  async function serverUpdate(gameId){
+    while (true){
+      useEffect(() => {
+        const newSocket = io('ws://' + newUrl + ':8080/ws/game/' + gameId);
+        newSocket.on('connect', () => {
+          console.log('Socket.IO connection established.');
+        });
+        newSocket.on('playerId', (data) => {
+          setPlayerId(data.playerId);
+        });
+        newSocket.on('state_update', (data) => {
+          console.log('state_update', data)
+        });
+        setSocket(newSocket);
+    
+        return () => {
+          newSocket.disconnect();
+        };
+      }, []);
+    }
+  }
+
 
 
 
