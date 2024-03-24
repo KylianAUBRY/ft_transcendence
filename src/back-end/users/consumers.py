@@ -121,6 +121,11 @@ class GameRoom(AsyncWebsocketConsumer):
                 i += 1
 
         while isStarting==False:
+            ball_dx = random.choice([-1, 1])
+            while True:
+                ball_dy = random.uniform(-0.5, 0.5)
+                if ball_dy != 0:
+                    break
             if len(self.players) == 2:
                 if (self.players[player1_id]["isReady"] == True and self.players[player2_id]["isReady"] == True):
                     isStarting = True
