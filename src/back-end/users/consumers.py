@@ -68,12 +68,19 @@ class GameRoom(AsyncWebsocketConsumer):
   
     async def receive(self, text_data): 
         text_data_json = json.loads(text_data)
+        logger = logging.getLogger(__name__)
+        logger.info('%s', )
 
         idMatch = text_data_json["idMatch"]
         player_id = text_data_json["playerId"]
         orientation = text_data_json["playerDirection"]
         isReady = text_data_json["isReady"]
         username = text_data_json["username"]
+        logger.info('%s', idMatch)
+        logger.info('%s', player_id)
+        logger.info('%s', orientation)
+        logger.info('%s', isReady)
+        logger.info('%s', username)
 
         player = self.players.get(idMatch, None)
         if not player:
@@ -135,6 +142,7 @@ class GameRoom(AsyncWebsocketConsumer):
         while isStarting==False:
             if len(self.players) == 2:
                 logger.info('Two player log')
+                logger.info("%s | %s", self.players[player1_id]["isReady"], self.players[player2_id]["isReady"])
                 if (self.players[player1_id]["isReady"] == True and self.players[player2_id]["isReady"] == True):
                     logger.info('Two player Ready')
                     isStarting = True
@@ -187,7 +195,7 @@ class GameRoom(AsyncWebsocketConsumer):
                     "type": "state_update",
                     "player_1": self.players[player1_id],
                     "player_2": self.players[player2_id],
-                    "ball": {ball_x, ball_y, ball_dx, ball_dy},
+                    "ball": {ball_x, ball_y, ball_dx, ball_dy, ball_speed},
                     "isGoal": isGoal,
                     "countdown": countdown,
                     "isStarting": isStarting,
