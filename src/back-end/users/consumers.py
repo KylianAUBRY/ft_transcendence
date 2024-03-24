@@ -4,6 +4,7 @@ import asyncio
 import math
 import random
 import time
+import logging
 
 from datetime import date
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -17,18 +18,25 @@ class GameRoom(AsyncWebsocketConsumer):
     game_group_name = 'game_group'
     players = {}
 
-    async def connect(self):
+    async def connect(self): 
+        name_serv = self.scope['url_route']['kwargs']['room_name']
+        self.game_group_name = "game_%s" % name_serv
         self.player_id = str(uuid.uuid4())
+        logger = logging.getLogger(__name__)
+        logger.info('accept %s', self.player_id)
         await self.accept()
         
+        logger.info('group add %s', self.player_id)
         await self.channel_layer.group_add(
             self.game_group_name, self.channel_name
         )
 
+        logger.info('send %s', self.player_id)
         await self.send(
             text_data=json.dumps({"type": "playerId", "playerId": self.player_id})
         )
 
+        logger.info('set %s', self.player_id)
         self.players[self.player_id] = {
             "idMatch": self.player_id,
             "idPlayer": 0,
@@ -44,7 +52,9 @@ class GameRoom(AsyncWebsocketConsumer):
             "nbAce": 0,
         }
         
+        logger.info('set %s', self.player_id)
         if len(self.players) == 2:
+            logger.info('launch game')
             asyncio.create_task(self.game_loop())
   
     async def disconnect(self, close_code): 
@@ -56,15 +66,21 @@ class GameRoom(AsyncWebsocketConsumer):
         )
 
   
-    def receive(self, text_data): 
-        text_data_json = json.loads(text_data) 
-        message_type = text_data_json.get("type", "")
+    async def receive(self, text_data): 
+        text_data_json = json.loads(text_data)
+        logger = logging.getLogger(__name__)
+        logger.info('%s', )
 
         idMatch = text_data_json["idMatch"]
         player_id = text_data_json["playerId"]
         orientation = text_data_json["playerDirection"]
         isReady = text_data_json["isReady"]
         username = text_data_json["username"]
+        logger.info('%s', idMatch)
+        logger.info('%s', player_id)
+        logger.info('%s', orientation)
+        logger.info('%s', isReady)
+        logger.info('%s', username)
 
         player = self.players.get(idMatch, None)
         if not player:
@@ -87,6 +103,8 @@ class GameRoom(AsyncWebsocketConsumer):
         )
 
     async def game_loop(self):
+        logger = logging.getLogger(__name__)
+        logger.info('innit info')
         player_speed = 2
         player_size = 3
         ball_x = 15
@@ -110,6 +128,7 @@ class GameRoom(AsyncWebsocketConsumer):
 
         i = 0
         for player in self.players.values():
+            logger.info('Set player info')
             if i == 0:
                 player1_id = player["idMatch"]
                 player["x"] = 1
@@ -121,16 +140,21 @@ class GameRoom(AsyncWebsocketConsumer):
                 i += 1
 
         while isStarting==False:
-            ball_dx = random.choice([-1, 1])
-            while True:
-                ball_dy = random.uniform(-0.5, 0.5)
-                if ball_dy != 0:
-                    break
             if len(self.players) == 2:
+                logger.info('Two player log')
+                logger.info("%s | %s", self.players[player1_id]["isReady"], self.players[player2_id]["isReady"])
                 if (self.players[player1_id]["isReady"] == True and self.players[player2_id]["isReady"] == True):
+                    logger.info('Two player Ready')
                     isStarting = True
+                    ball_dx = random.choice([-1, 1])
+                    while True:
+                        ball_dy = random.uniform(-0.5, 0.5)
+                        if ball_dy != 0:
+                            break
                     timeStartGame = time.time()
+            await asyncio.sleep(1)
 
+        logger.info('First send')
         await self.channel_layer.group_send(
             self.game_group_name,
             {
@@ -148,8 +172,10 @@ class GameRoom(AsyncWebsocketConsumer):
         await asyncio.sleep(timePerFrame)
 
         while gameIsFinished==False:
+            logger.info('Routine start')
             # Update coordinate of all player
             if (isGoal):
+                logger.info('Goal')
                 self.players[player1_id]["x"] = 1
                 self.players[player1_id]["y"] = 10
                 self.players[player1_id]["move"] = "none"
@@ -169,7 +195,7 @@ class GameRoom(AsyncWebsocketConsumer):
                     "type": "state_update",
                     "player_1": self.players[player1_id],
                     "player_2": self.players[player2_id],
-                    "ball": {ball_x, ball_y, ball_dx, ball_dy},
+                    "ball": {ball_x, ball_y, ball_dx, ball_dy, ball_speed},
                     "isGoal": isGoal,
                     "countdown": countdown,
                     "isStarting": isStarting,
@@ -199,6 +225,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 )
 
             elif (isGoal==False):
+                logger.info('Not goal')
                 for player in self.players.values():
                     if player["move"] == "up":
                         player["y"] -= player_speed * timePerFrame
