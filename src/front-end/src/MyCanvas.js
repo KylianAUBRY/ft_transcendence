@@ -42,6 +42,7 @@ function MyCanvas( props ) {
   const [password, setPassword] = useState('')
   const [email2, setEmail2] = useState('')
   const [password2, setPassword2] = useState('')
+  const [isSearch, setIsSearch] = useState(false)
   const [t] = useTranslation("global")
   const navigate = useNavigate();
 
@@ -407,6 +408,7 @@ let gameId = null
 
 
   async function searchOpponent(){
+    setIsSearch(true)
     const buttonS = document.getElementById('btnSearch')
     buttonS.style.display = 'none'
     const buttonE = document.getElementById('btnExitMatchOnline')
@@ -464,8 +466,8 @@ let gameId = null
       console.log('JoinQueue', data);
 
 
-
-      while (gameId === null) {
+      console.log('search: ', isSearch)
+      while (gameId === null && isSearch === true) {
         const data = await checkJoinGame();
         
         if (data.hasOwnProperty('game_id')) {
@@ -476,10 +478,35 @@ let gameId = null
         // Ajouter une pause (attente) avant de renvoyer la requête
         await new Promise(resolve => setTimeout(resolve, 1000)); // Attendez 1 seconde avant de renvoyer la requête
       }
+      if (isSearch === false){
+      console.log('search: ', isSearch)
+        try {
+          const response = await fetch(baseUrl + ':8080/' + 'api/ExitQueue', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: userId
+            }),
+          });
+      
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+      
+          const data = await response.json();
+          console.log('stop search', data);
+          return data;
+        } catch (error) {
+          console.error('There was a problem stop searching:', error);
+          throw error;
+        }
+      }
 
       
       console.log('trouve', gameId)
-
+      setIsSearch(false)
 
 
 
@@ -639,6 +666,7 @@ let gameId = null
 
 
 function exitTournament(){
+    setIsSearch(false)
     setisResultLocal(false)
     setisLocalMatch(false)
     setisResultTournamnt(false)
