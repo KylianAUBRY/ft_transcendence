@@ -146,3 +146,22 @@ class CheckJoinGame(APIView):
             logger.info('CJG -> 3')
             return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
             # send 'in queue'
+
+class ExitQueue(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        data = request.data
+        user_id = data.get("userId")
+        waiting_player = WaitingPlayerModel.objects.filter(player_id=user_id).first()
+        game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id)).first()
+        if waiting_player:
+            waiting_player.delete()
+        if game_server:
+            if game_server.firstPlayerId == user_id:
+                game_server.firstPlayerId = -1
+            elif game_server.secondPlayerId == user_id:
+                game_server.secondPlayerId = -1
+            game_server.state = 'waiting'
+            game_server.save()
+        return Response({"message": 'You left the queue'}, status=status.HTTP_200_OK)

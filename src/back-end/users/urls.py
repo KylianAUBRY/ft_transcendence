@@ -9,5 +9,6 @@ urlpatterns = [
     path('history', views.HistoryView.as_view(), name='history'),
     path('UpdateUser', views.UpdateUserView.as_view(), name='UpdateUser'),
     path('JoinQueue', views.JoinQueue.as_view(), name='JoinQueue'),
-    path('CheckJoinGame', views.CheckJoinGame.as_view(), name='CheckJoinGame')
+    path('CheckJoinGame', views.CheckJoinGame.as_view(), name='CheckJoinGame'),
+    path('ExitQueue', views.ExitQueue.as_view(), name='ExitQueue')
 ]
