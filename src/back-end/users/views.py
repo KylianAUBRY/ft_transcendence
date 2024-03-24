@@ -131,7 +131,7 @@ class CheckJoinGame(APIView):
         ManageGameQueue()
         data = request.data
         user_id = data.get("userId")
-        game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id))
+        game_server = GameServerModel.objects.get(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id))
         if game_server:
             if (game_server.state == 'full'):
                 return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
