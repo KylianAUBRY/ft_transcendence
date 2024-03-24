@@ -5,3 +5,5 @@ from .models import *
 
 admin.site.register(AppUser)
 admin.site.register(HistoryModel)
+admin.site.register(GameServerModel)
+admin.site.register(WaitingPlayerModel)

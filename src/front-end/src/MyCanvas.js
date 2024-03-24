@@ -13,18 +13,28 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import Chart from 'chart.js/auto';
 import Match from './Match'
+import io from 'socket.io-client';
+
 
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 axios.defaults.withCredentials = true
 
 const url = window.location.href
+const url2 = new URL(url);
+const baseUrl = `${url2.protocol}//${url2.hostname}`;
 
-console.log(url)
+let isSearch
+let gameId = null
+//console.log(url)
 
+const path = baseUrl + ':8080'
+console.log(path); 
 const client = axios.create({
-  baseURL: url
+  baseURL: path
 })
+
+
 
 let stopDecompte = false
 
@@ -62,6 +72,8 @@ function MyCanvas( props ) {
     setcsrfToken(newValue);
     localStorage.setItem('csrfToken', JSON.stringify(newValue));
   };
+
+
 
   const [isTableTournament, setisTableTournament] = useState(false)
   const [isSetterTournament, setisSetterTournament] = useState(false)
@@ -398,8 +410,9 @@ useEffect(() => {
 
 
 
-  function searchOpponent(){
-    /*const buttonS = document.getElementById('btnSearch')
+  async function searchOpponent(){
+    
+    const buttonS = document.getElementById('btnSearch')
     buttonS.style.display = 'none'
     const buttonE = document.getElementById('btnExitMatchOnline')
     buttonE.style.margin = '0'
@@ -408,8 +421,10 @@ useEffect(() => {
     const loadDiv = document.getElementById('loader-container')
     loadDiv.style.display = 'block'
 
+    isSearch = true
+    console.log(isSearch)
 
-*/
+
 
     client.get("/api/user")
       .then(res => {
@@ -439,7 +454,7 @@ useEffect(() => {
         console.log(csrfToken)
         console.log('userId', userId)
 
-    fetch(url + 'JoinQueue', {
+    fetch(baseUrl + ':8080/' + 'api/JoinQueue', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -447,27 +462,119 @@ useEffect(() => {
       body: JSON.stringify({
         userId: userId
       }),
-    })
-    .then(response => {
+    }).then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       return response.json();
-    })
-    .then(data => {
-      console.log('Registration successful:', data);
-    })
-    .catch(error => {
-      console.error('There was a problem registering:', error);
+    }).then(async data => {
+      console.log('JoinQueue', data);
+
+
+      console.log('search: ', isSearch)
+      while (gameId === null && isSearch === true) {
+        console.log('test' , gameId)
+        const data = await checkJoinGame();
+        
+        if (data.hasOwnProperty('gameId')) {
+          console.log('La ressource est un game_id:', data.gameId);
+          gameId = data.gameId
+        }
+    
+ 
+
+
+        // Ajouter une pause (attente) avant de renvoyer la requête
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Attendez 1 seconde avant de renvoyer la requête
+      }
+      if (isSearch === false){
+      console.log('search: ', isSearch)
+        try {
+          const response = await fetch(baseUrl + ':8080/' + 'api/ExitQueue', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: userId
+            }),
+          });
+      
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+      
+          const data = await response.json();
+          console.log('stop search', data);
+          return data;
+        } catch (error) {
+          console.error('There was a problem stop searching:', error);
+          throw error;
+        }
+      }
+
+      
+      console.log('trouve', gameId)
+      isSearch = false
+
+
+      console.log('webSocket')
+
+
+      serverUpdate(gameId)
+
+
+
+
+
+
+    }).catch(error => {
+      console.error('There was a problem JoinQueue:', error);
     })
 
 
 
   })
 
+  }
+
+  let newUrl = baseUrl.replace('http://', '');
+  console.log(newUrl);
+
+  const [socket, setSocket] = useState(null);
+  const [playerId, setPlayerId] = useState(null);
 
 
+  async function serverUpdate(gameId){
 
+
+    const websocketUrl = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
+   
+    let websocket;
+    
+        websocket = new WebSocket(websocketUrl);
+    
+        websocket.onopen = function() {
+            console.log('Connected to WebSocket');
+            // Start sending info every 1 second once connected
+            //setInterval(sendInfo, 1000);
+        };
+    
+        websocket.onmessage = function(event) {
+            console.log('Received message:', event.data);
+            // Handle incoming messages here
+        };
+    
+        websocket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+        };
+    
+        websocket.onclose = function() {
+            console.log('WebSocket connection closed');
+            // You may attempt to reconnect here if needed
+        };
+    }
+    
 
 
 
@@ -477,21 +584,62 @@ useEffect(() => {
 
 
     /*
-    do {
-      client.get(
-        "/api/CheckJoinGame",
-        {withCredentials: true}
-      ).then(function(res){
-        console.log(res)
-        serv = res
-      }).catch(function(error){
-       console.log(error)
-      })
-    } while (!serv)
-*/
-  }
+    const { io } = require("socket.io-client");
+    const urlSocket = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
+
+    console.log(urlSocket)
+      const newSocket = io(urlSocket);
 
 
+        
+          newSocket.on('connect', () => {
+            console.log('Socket.IO connection established.');
+          });
+          newSocket.on('playerId', (data) => {
+            setPlayerId(data.playerId);
+          });
+          newSocket.on('state_update', (data) => {
+            console.log('state_update', data)
+          });
+          setSocket(newSocket);
+      
+          return () => {
+            newSocket.disconnect();
+          };
+      
+   */
+
+
+
+  
+
+
+
+
+  const checkJoinGame = async () => {
+    try {
+      const response = await fetch(baseUrl + ':8080/' + 'api/CheckJoinGame', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const data = await response.json();
+      console.log('CheckJoinGame', data);
+      return data;
+    } catch (error) {
+      console.error('There was a problem CheckJoinGame:', error);
+      throw error;
+    }
+  };
 
 
   function goMatchBot(){
@@ -611,6 +759,7 @@ useEffect(() => {
 
 
 function exitTournament(){
+    isSearch = false
     setisResultLocal(false)
     setisLocalMatch(false)
     setisResultTournamnt(false)
@@ -1026,11 +1175,6 @@ function affDecompte(){
           password: password
         }
       ).then(function(res){
-
-
-
-
-        searchOpponent()
         updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
@@ -1262,6 +1406,13 @@ useEffect(() => {
 }, [isProfilView]);
 
 
+function handle42register(){
+  console.log('register 42')
+}
+
+
+
+
     return (
         <div>
            {currentUser && state === 10 ? (
@@ -1305,7 +1456,7 @@ useEffect(() => {
             <div className='bad' id='badEmail2'></div>
           </div>
           <div className='Wgroup'>
-            <input placeholder='password' id='password' name='password' className='Winput' onChange={e => setPassword2(e.target.value)}></input>
+            <input placeholder='password' id='password' name='password' className='Winput' type='password' onChange={e => setPassword2(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password'>{t("home.password")}</label>
             <div className='bad' id='badPassword2' ref={refBadPassword}></div>
           </div>
@@ -1325,7 +1476,7 @@ useEffect(() => {
             <div className='bad' id='badLogin'></div>
           </div>
           <div className='Wgroup'>
-            <input placeholder='password' id='password2' name='password2' className='Winput' onChange={e => setPassword(e.target.value)}></input>
+            <input placeholder='password' id='password2' name='password2' className='Winput' type='password' onChange={e => setPassword(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password2'>{t("home.password")}</label>
             <div className='bad' id='badPassword'></div>
           </div>
@@ -1334,6 +1485,9 @@ useEffect(() => {
           </div>
         </form>
         </div>
+        <div className='btn42'>
+            <button className='btnlogin' onClick={handle42register}>Login with 42</button>      
+          </div>
       </div>
       ) : null}
     { state === 10 ? (

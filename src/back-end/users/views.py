@@ -13,9 +13,6 @@ from django.middleware.csrf import get_token
 import sys
 import json
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
-from django.http import JsonResponse
-
 #from ..GameServer import test
 
 # Create your views here.
@@ -128,26 +125,47 @@ class JoinQueue(APIView):
         return Response({'message': 'You have joined the queue.'}, status=status.HTTP_200_OK)
 
 # Start new game
+import logging
 class CheckJoinGame(APIView):
     permission_classes = (permissions.AllowAny,)
 
-    def get(self, request):
+    def post(self, request):
+        logger = logging.getLogger(__name__)
+        ManageGameQueue()
         data = request.data
         user_id = data.get("userId")
-        game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id))
+        game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id)).first()
         if game_server:
-            return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
+            if (game_server.state == 'full'):
+                logger.info('CJG -> 1')
+                return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
+            else:
+                logger.info('CJG -> 2')
+                return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
             # send server name to client to start the game
         else:
+            logger.info('CJG -> 3')
             return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
             # send 'in queue'
 
-class getCSRFToken(APIView):
+class ExitQueue(APIView):
     permission_classes = [permissions.AllowAny]
 
-    def get(self, request):
-        token = get_token(request)
-        return Response({"type": "csrfToken", "csrfToken": token}, status=status.HTTP_200_OK)
+    def post(self, request):
+        data = request.data
+        user_id = data.get("userId")
+        waiting_player = WaitingPlayerModel.objects.filter(player_id=user_id).first()
+        game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id)).first()
+        if waiting_player:
+            waiting_player.delete()
+        if game_server:
+            if game_server.firstPlayerId == user_id:
+                game_server.firstPlayerId = -1
+            elif game_server.secondPlayerId == user_id:
+                game_server.secondPlayerId = -1
+            game_server.state = 'waiting'
+            game_server.save()
+        return Response({"message": 'You left the queue'}, status=status.HTTP_200_OK)
 
 def register42(request):
     from django.contrib.auth import login as django_login
