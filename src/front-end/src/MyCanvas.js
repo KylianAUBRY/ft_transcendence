@@ -13,6 +13,8 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import Chart from 'chart.js/auto';
 import Match from './Match'
+import io from 'socket.io-client';
+
 
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
@@ -22,8 +24,8 @@ const url = window.location.href
 const url2 = new URL(url);
 const baseUrl = `${url2.protocol}//${url2.hostname}`;
 
-
-
+let isSearch
+let gameId = null
 //console.log(url)
 
 const path = baseUrl + ':8080'
@@ -42,7 +44,6 @@ function MyCanvas( props ) {
   const [password, setPassword] = useState('')
   const [email2, setEmail2] = useState('')
   const [password2, setPassword2] = useState('')
-  const [isSearch, setIsSearch] = useState(false)
   const [t] = useTranslation("global")
   const navigate = useNavigate();
 
@@ -71,6 +72,8 @@ function MyCanvas( props ) {
     setcsrfToken(newValue);
     localStorage.setItem('csrfToken', JSON.stringify(newValue));
   };
+
+
 
   const [isTableTournament, setisTableTournament] = useState(false)
   const [isSetterTournament, setisSetterTournament] = useState(false)
@@ -404,11 +407,11 @@ useEffect(() => {
   });
 
 
-let gameId = null
+
 
 
   async function searchOpponent(){
-    setIsSearch(true)
+    
     const buttonS = document.getElementById('btnSearch')
     buttonS.style.display = 'none'
     const buttonE = document.getElementById('btnExitMatchOnline')
@@ -418,6 +421,8 @@ let gameId = null
     const loadDiv = document.getElementById('loader-container')
     loadDiv.style.display = 'block'
 
+    isSearch = true
+    console.log(isSearch)
 
 
 
@@ -468,13 +473,17 @@ let gameId = null
 
       console.log('search: ', isSearch)
       while (gameId === null && isSearch === true) {
+        console.log('test' , gameId)
         const data = await checkJoinGame();
         
-        if (data.hasOwnProperty('game_id')) {
-          console.log('La ressource est un game_id:', data.game_id);
-          gameId = data.game_id;
+        if (data.hasOwnProperty('gameId')) {
+          console.log('La ressource est un game_id:', data.gameId);
+          gameId = data.gameId
         }
     
+ 
+
+
         // Ajouter une pause (attente) avant de renvoyer la requête
         await new Promise(resolve => setTimeout(resolve, 1000)); // Attendez 1 seconde avant de renvoyer la requête
       }
@@ -506,11 +515,10 @@ let gameId = null
 
       
       console.log('trouve', gameId)
-      setIsSearch(false)
+      isSearch = false
 
 
       console.log('webSocket')
-
 
 
       serverUpdate(gameId)
@@ -530,7 +538,7 @@ let gameId = null
 
   }
 
-  let newUrl = chaine.replace('http://', '');
+  let newUrl = baseUrl.replace('http://', '');
   console.log(newUrl);
 
   const [socket, setSocket] = useState(null);
@@ -538,26 +546,72 @@ let gameId = null
 
 
   async function serverUpdate(gameId){
-    while (true){
-      useEffect(() => {
-        const newSocket = io('ws://' + newUrl + ':8080/ws/game/' + gameId);
-        newSocket.on('connect', () => {
-          console.log('Socket.IO connection established.');
-        });
-        newSocket.on('playerId', (data) => {
-          setPlayerId(data.playerId);
-        });
-        newSocket.on('state_update', (data) => {
-          console.log('state_update', data)
-        });
-        setSocket(newSocket);
+
+
+    const websocketUrl = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
+   
+    let websocket;
     
-        return () => {
-          newSocket.disconnect();
+        websocket = new WebSocket(websocketUrl);
+    
+        websocket.onopen = function() {
+            console.log('Connected to WebSocket');
+            // Start sending info every 1 second once connected
+            //setInterval(sendInfo, 1000);
         };
-      }, []);
+    
+        websocket.onmessage = function(event) {
+            console.log('Received message:', event.data);
+            // Handle incoming messages here
+        };
+    
+        websocket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+        };
+    
+        websocket.onclose = function() {
+            console.log('WebSocket connection closed');
+            // You may attempt to reconnect here if needed
+        };
     }
-  }
+    
+
+
+
+
+
+
+
+
+    /*
+    const { io } = require("socket.io-client");
+    const urlSocket = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
+
+    console.log(urlSocket)
+      const newSocket = io(urlSocket);
+
+
+        
+          newSocket.on('connect', () => {
+            console.log('Socket.IO connection established.');
+          });
+          newSocket.on('playerId', (data) => {
+            setPlayerId(data.playerId);
+          });
+          newSocket.on('state_update', (data) => {
+            console.log('state_update', data)
+          });
+          setSocket(newSocket);
+      
+          return () => {
+            newSocket.disconnect();
+          };
+      
+   */
+
+
+
+  
 
 
 
@@ -705,7 +759,7 @@ let gameId = null
 
 
 function exitTournament(){
-    setIsSearch(false)
+    isSearch = false
     setisResultLocal(false)
     setisLocalMatch(false)
     setisResultTournamnt(false)
