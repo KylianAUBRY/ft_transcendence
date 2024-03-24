@@ -59,7 +59,7 @@ def ManageGameQueue():
                 player2 = WaitingPlayerModel.objects.first()
                 if player2:
                     logger.info('player2 find')
-                    game_server.firstPlayerId = player2.player_id
+                    game_server.secondPlayerId = player2.player_id
                     game_server.save()
                     player2.delete()
 
