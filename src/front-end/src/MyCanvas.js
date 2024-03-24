@@ -26,6 +26,7 @@ let newUrl = baseUrl.replace('http://', '');
 
 let isSearch
 let gameId = null
+let auth42
 
 const path = baseUrl + ':8080'
 console.log(path); 
@@ -210,7 +211,7 @@ useEffect(() => {
 }).catch(error => {
   console.error('There was a problem for 42url:', error);
 })
- 
+ auth42 = 'test'
 
 
     
@@ -1290,7 +1291,6 @@ let key1
 let key2
 let key3
 let key4
-let auth42
 
 
 
@@ -1433,7 +1433,7 @@ useEffect(() => {
 
 function handle42register(){
   if (auth42)
-    window.location.href = auth42;
+    window.location.href = auth42
 }
 
 
