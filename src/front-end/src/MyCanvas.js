@@ -388,8 +388,12 @@ useEffect(() => {
   setscore(initialFormDataScore);
     updateSetState(50)
   } else if (location.pathname === '/register42' && props.isSize){
-    console.log('auth42 reussi')
-    callChildFunction()
+    setTimeout(function() {
+      setisLoginPage(false)
+      if (childRef.current) {
+        childRef.current.childFunction(2)
+    }
+    }, 800);
     updateSetState(10)
   }
 }, [location.pathname, props.isSize]);
@@ -1083,9 +1087,9 @@ function affDecompte(){
 
 
     const childRef = useRef(null);
-    function callChildFunction() {
+    function callChildFunction(val) {
       if (childRef.current) {
-          childRef.current.childFunction(1)
+            childRef.current.childFunction(1)
       }
   }
 

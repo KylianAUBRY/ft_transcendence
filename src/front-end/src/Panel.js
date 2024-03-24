@@ -339,12 +339,13 @@ const timeoutId = setTimeout(addEventListenerFunction, 2000);
     } else if (i === 2){
       handleStart()
     }
-    
 }
 
 
+
+
 React.useImperativeHandle(ref, () => ({
-        childFunction: childFunction
+        childFunction: childFunction,
     }));
 
 
