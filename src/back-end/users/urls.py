@@ -11,6 +11,6 @@ urlpatterns = [
     path('JoinQueue', views.JoinQueue.as_view(), name='JoinQueue'),
     path('CheckJoinGame', views.CheckJoinGame.as_view(), name='CheckJoinGame'),
     path('ExitQueue', views.ExitQueue.as_view(), name='ExitQueue'),
-	path('URL42', views.Url42.as_view(), name='URL42'),
+	path('URL42', views.URL42.as_view(), name='URL42'),
 	path('Register42', views.Register42.as_view(), name='Register42'),
 ]

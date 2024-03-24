@@ -13,6 +13,7 @@ from django.middleware.csrf import get_token
 import sys
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 #from ..GameServer import test
 
 # Create your views here.
@@ -172,7 +173,6 @@ class Register42(APIView):
 
     def get(self, request):
         from django.contrib.auth import login as django_login
-        from django.conf import settings
         # Traitez les informations reçues ici
         # Par exemple, récupérez des données de la requête
         code_value = request.GET.get('code')
@@ -234,10 +234,9 @@ class Register42(APIView):
 
 # register42      user = AppUser.objects.get(pk=email)
 
+class URL42(APIView):
+    permission_classes = [permissions.AllowAny]
 
-
-class Url42(APIView):
-    from django.conf import settings
     def get(self, request):
         lien = settings.API_CONNECT_URL
-        return Response({"42URL": lien}, status=status.HTTP_200_OK)
+        return Response({"URL42": lien}, status=status.HTTP_200_OK)
