@@ -19,7 +19,7 @@ import dotenv
 
 dotenv.load_dotenv()
 
-REQUIRED_ENV_VARIABLES = ['POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'DATABASE_HOST_NAME', 'DATABASE_PORT']
+REQUIRED_ENV_VARIABLES = ['POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'DATABASE_HOST_NAME', 'DATABASE_PORT', 'API_CLIENT_ID', 'API_CLIENT_SECRET', 'API_TOKEN_URL', 'API_INFO_URL']
 
 # Checking for the existence of environment variables.
 for env_variable in REQUIRED_ENV_VARIABLES:
@@ -31,6 +31,10 @@ POSTGRES_USER = os.environ['POSTGRES_USER']
 POSTGRES_PASSWORD = os.environ['POSTGRES_PASSWORD']
 DATABASE_HOST_NAME = os.environ['DATABASE_HOST_NAME']
 DATABASE_PORT = os.environ['DATABASE_PORT']
+API_CLIENT_ID = os.environ['API_CLIENT_ID']
+API_CLIENT_SECRET = os.environ['API_CLIENT_SECRET']
+API_TOKEN_URL = os.environ['API_TOKEN_URL']
+API_INFO_URL = os.environ['API_INFO_URL']
 
 # -------------------------- #
 
@@ -194,3 +198,30 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Niveau de journalisation par défaut
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        # 'console': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.StreamHandler',
+        #     'stream': 'ext://sys.stdout',  # Envoyer les logs vers la sortie standard
+        # },
+        'error_console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'stream': 'ext://sys.stderr',  # Envoyer les logs d'erreur vers la sortie d'erreur
+        },
+    },
+    'loggers': {
+        '': {
+            # 'handlers': ['console', 'error_console'],  # Utiliser les deux handlers
+            'handlers': ['error_console'],
+            'level': 'DEBUG',  # Niveau de log global
+            'propagate': True,
+        },
+    },
+}
