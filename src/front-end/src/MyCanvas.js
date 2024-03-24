@@ -14,7 +14,6 @@ import { useNavigate } from 'react-router-dom'
 import Chart from 'chart.js/auto';
 import Match from './Match'
 
-
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 axios.defaults.withCredentials = true
@@ -206,26 +205,12 @@ useEffect(() => {
 
   client.get("/api/URL42")
   .then(res => {
-    auth42 = res.URL42
+    auth42 = res.data.URL42
     console.log(res, auth42)
 }).catch(error => {
   console.error('There was a problem for 42url:', error);
 })
- auth42 = 'test'
 
-
-    
-    const initialFormData8 = {
-      player1: '',
-      player2: '',
-      player3: '',
-      player4: '',
-      player5: '',
-      player6: '',
-      player7: '',
-      player8: '',
-  };
-  setFormData8(initialFormData8);
   const initialFormData4 = {
     player1: '',
     player2: '',
