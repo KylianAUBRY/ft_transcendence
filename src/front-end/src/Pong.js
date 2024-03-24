@@ -1,5 +1,5 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
 import { gsap } from 'gsap/gsap-core';
 import { useLocation } from 'react-router-dom';
@@ -20,7 +20,7 @@ let stop = false
 
 
 
-const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client }) => {
+const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client, findOnlineGame, newUrl, username, userId, gameId }) => {
   const location = useLocation()
   if (racket1 && racket2){
     racket1.material = new THREE.MeshBasicMaterial({ color: racketColor })
@@ -377,11 +377,8 @@ function endGame(winner)
   };
 
 
-  let serv
-  let userId
-  let gameId
-  const [socket, setSocket] = useState(null);
-  const [playerId, setPlayerId] = useState(null);
+
+
 
   if (stateGame === 21 || stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51) {
     if (newRound === true){
@@ -504,6 +501,71 @@ function endGame(winner)
 // WEBSOCKET //
 
 
+  const isFirstRender = useRef(true);
+  const [playerId, setPlayerId] = useState(null);
+
+
+    const websocketUrl = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
+   
+    let websocket;
+
+
+    function sendInfo() {
+      // Send your information here
+      
+      const data = {
+        "playerDirection": 'none',
+        "idMatch": playerId,
+        "playerId": userId,
+        "isReady": true,
+        "username": username
+      };
+      console.log('envoi ready', data)
+      websocket.send(JSON.stringify(data));
+  }
+
+
+
+useEffect(() => {
+
+
+  if (!isFirstRender.current) {
+
+    websocket = new WebSocket(websocketUrl);
+    
+    websocket.onopen = function() {
+        console.log('Connected to WebSocket');
+        // Start sending info every 1 second once connected
+        setInterval(sendInfo, 1000);
+    };
+
+    websocket.onmessage = function(event) {
+        console.log('Received message:', event.data);
+        setPlayerId(event.data.playerId)
+        // Handle incoming messages here
+    };
+
+    websocket.onerror = function(error) {
+        console.error('WebSocket error:', error);
+    };
+
+    websocket.onclose = function() {
+        console.log('WebSocket connection closed');
+        // You may attempt to reconnect here if needed
+    };
+
+
+
+
+    console.log('pong: findOnlineGame');
+    isFirstRender.current = false;
+  } else {
+    isFirstRender.current = false;
+  }
+
+
+
+}, [findOnlineGame]);
 
 
 

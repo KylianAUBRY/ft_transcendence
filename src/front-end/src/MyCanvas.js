@@ -13,7 +13,6 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import Chart from 'chart.js/auto';
 import Match from './Match'
-import io from 'socket.io-client';
 
 
 axios.defaults.xsrfCookieName = 'csrftoken'
@@ -23,6 +22,7 @@ axios.defaults.withCredentials = true
 const url = window.location.href
 const url2 = new URL(url);
 const baseUrl = `${url2.protocol}//${url2.hostname}`;
+let newUrl = baseUrl.replace('http://', '');
 
 let isSearch
 let gameId = null
@@ -418,10 +418,12 @@ useEffect(() => {
 
 
 
-
+const[findOnlineGame, setFindOnlineGame] = useState(false)
 
   async function searchOpponent(){
-    
+
+
+
     const buttonS = document.getElementById('btnSearch')
     buttonS.style.display = 'none'
     const buttonE = document.getElementById('btnExitMatchOnline')
@@ -531,11 +533,10 @@ useEffect(() => {
       console.log('webSocket')
 
 
-      serverUpdate(gameId)
+      //serverUpdate(gameId)
 
 
-
-
+      setFindOnlineGame(true)
 
 
     }).catch(error => {
@@ -549,7 +550,7 @@ useEffect(() => {
   }
 
   
-
+/*
   const [socket, setSocket] = useState(null);
   const [playerId, setPlayerId] = useState(null);
 
@@ -588,21 +589,21 @@ useEffect(() => {
         };
     }
     
+*/
 
-
-    function sendInfo() {
-      // Send your information here
+  //   function sendInfo() {
+  //     // Send your information here
       
-      const data = {
-        "playerDirection": 'none',
-        "idMatch": playerId,
-        "playerId": userId,
-        "isReady": true,
-        "username": username
-      };
-      console.log('envoi ready', data)
-      websocket.send(JSON.stringify(data));
-  }
+  //     const data = {
+  //       "playerDirection": 'none',
+  //       "idMatch": playerId,
+  //       "playerId": userId,
+  //       "isReady": true,
+  //       "username": username
+  //     };
+  //     console.log('envoi ready', data)
+  //     websocket.send(JSON.stringify(data));
+  // }
 
 
 
@@ -1667,7 +1668,7 @@ function handle42register(){
   
           <Environment files="fond.hdr" background blur={0.5}/>
           <Suspense fallback={null}>
-            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys}/>
+            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} newUrl={newUrl} username={username} userId={userId} gameId={gameId}/>
             <Stade/>
           </Suspense>
           <Stars
