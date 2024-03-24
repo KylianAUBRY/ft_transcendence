@@ -124,20 +124,25 @@ class JoinQueue(APIView):
         return Response({'message': 'You have joined the queue.'}, status=status.HTTP_200_OK)
 
 # Start new game
+import logging
 class CheckJoinGame(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
+        logger = logging.getLogger(__name__)
         ManageGameQueue()
         data = request.data
         user_id = data.get("userId")
         game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id)).first()
         if game_server:
             if (game_server.state == 'full'):
+                logger.info('CJG -> 1')
                 return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
             else:
+                logger.info('CJG -> 2')
                 return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
             # send server name to client to start the game
         else:
+            logger.info('CJG -> 3')
             return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
             # send 'in queue'
