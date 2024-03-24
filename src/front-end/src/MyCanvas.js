@@ -387,8 +387,10 @@ useEffect(() => {
   };
   setscore(initialFormDataScore);
     updateSetState(50)
-  }else if (location.pathname === '/register42' && props.isSize){
+  } else if (location.pathname === '/register42' && props.isSize){
     console.log('auth42 reussi')
+    callChildFunction()
+    updateSetState(10)
   }
 }, [location.pathname, props.isSize]);
 
@@ -1078,6 +1080,8 @@ function affDecompte(){
       setisSetterTournament(false)
       setisMatchTournament(true)
     };
+
+
     const childRef = useRef(null);
     function callChildFunction() {
       if (childRef.current) {
