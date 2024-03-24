@@ -131,8 +131,11 @@ class CheckJoinGame(APIView):
         data = request.data
         user_id = data.get("userId")
         game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id))
-        if (game_server.state == 'full'):
-            return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
+        if game_server:
+            if (game_server.state == 'full'):
+                return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
             # send server name to client to start the game
         else:
             return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
