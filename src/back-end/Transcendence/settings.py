@@ -19,13 +19,14 @@ import dotenv
 
 dotenv.load_dotenv()
 
-REQUIRED_ENV_VARIABLES = ['POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'DATABASE_HOST_NAME', 'DATABASE_PORT', 'API_CLIENT_ID', 'API_CLIENT_SECRET', 'API_TOKEN_URL', 'API_INFO_URL']
+REQUIRED_ENV_VARIABLES = ['DJANGO_PROTOCOL', 'POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'DATABASE_HOST_NAME', 'DATABASE_PORT', 'API_CLIENT_ID', 'API_CLIENT_SECRET', 'API_CONNECT_URL', 'API_TOKEN_URL', 'API_INFO_URL']
 
 # Checking for the existence of environment variables.
 for env_variable in REQUIRED_ENV_VARIABLES:
     if env_variable not in os.environ:
         raise Exception(f"The environment variable {env_variable} is missing. Make sure to define it in your .env file.")
 
+DJANGO_PROTOCOL = os.environ['DJANGO_PROTOCOL']
 POSTGRES_DB = os.environ['POSTGRES_DB']
 POSTGRES_USER = os.environ['POSTGRES_USER']
 POSTGRES_PASSWORD = os.environ['POSTGRES_PASSWORD']
@@ -33,6 +34,7 @@ DATABASE_HOST_NAME = os.environ['DATABASE_HOST_NAME']
 DATABASE_PORT = os.environ['DATABASE_PORT']
 API_CLIENT_ID = os.environ['API_CLIENT_ID']
 API_CLIENT_SECRET = os.environ['API_CLIENT_SECRET']
+API_CONNECT_URL = os.environ['API_CONNECT_URL']
 API_TOKEN_URL = os.environ['API_TOKEN_URL']
 API_INFO_URL = os.environ['API_INFO_URL']
 

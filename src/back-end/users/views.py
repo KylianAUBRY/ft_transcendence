@@ -167,60 +167,77 @@ class ExitQueue(APIView):
             game_server.save()
         return Response({"message": 'You left the queue'}, status=status.HTTP_200_OK)
 
-def register42(request):
-    from django.contrib.auth import login as django_login
-    from django.conf import settings
-    # Traitez les informations reçues ici
-    # Par exemple, récupérez des données de la requête
-    code_value = request.GET.get('code')
-    print(request.GET,file=sys.stderr)
+class Register42(APIView):
+    permission_classes = [permissions.AllowAny]
 
-    server_url = request.build_absolute_uri('/register42')
-    
-    # Faire ce que vous voulez avec l'URL du serveur
-    print("URL du serveur :", server_url,file=sys.stderr)
+    def get(self, request):
+        from django.contrib.auth import login as django_login
+        from django.conf import settings
+        # Traitez les informations reçues ici
+        # Par exemple, récupérez des données de la requête
+        code_value = request.GET.get('code')
+        print(request.GET,file=sys.stderr)
 
-    # response_data = {'message': 'Inscription réussie.'}
-    # return JsonResponse(response_data)
-    
-    import requests
-    from . models import AppUser
-    files = {
-        'grant_type': 'authorization_code',
-        'client_id': settings.API_CLIENT_ID,
-        'client_secret': settings.API_CLIENT_SECRET,
-        'code': code_value,
-        'redirect_uri': server_url,
-    }
+        # server_url = request.build_absolute_uri('/register42')
+        host_without_port = request.get_host().split(':')[0]
+        
+        # Génération de l'URL avec le port 8000
+        if (settings.DJANGO_PROTOCOL == 'http'):
+            server_url = request.scheme + '://' + host_without_port + ':8000/register42'
+        elif (settings.DJANGO_PROTOCOL == 'https'):
+            server_url = request.scheme + '://' + host_without_port + ':443/register42'
+        else :
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={'error': 'Invalid Django protocol'})
+        
+        # Faire ce que vous voulez avec l'URL du serveur
+        print("\n\n\nURL du serveur :", server_url,file=sys.stderr)
+        
+        import requests
+        from . models import AppUser
+        files = {
+            'grant_type': 'authorization_code',
+            'client_id': settings.API_CLIENT_ID,
+            'client_secret': settings.API_CLIENT_SECRET,
+            'code': code_value,
+            'redirect_uri': server_url,
+        }
 
-    print("\n\n", files, file=sys.stderr)
-    print("\n \n")
-    response = requests.post(settings.API_TOKEN_URL, data=files)
-    if (response.status_code != status.HTTP_200_OK):
-        return Response(status=status.HTTP_400_BAD_REQUEST, data=response.json())
-    access_token = response.json().get('access_token')
-    if (access_token is not None):
-        inf = requests.get(settings.API_INFO_URL, params={'access_token': access_token})
-        if (inf.status_code == status.HTTP_200_OK):
-            login = inf.json().get('login')
-            email = inf.json().get('email')
-            print("\n\n login ", login, " email ", email, file=sys.stderr)
+        print("\n\n", files, file=sys.stderr)
+        print("\n \n")
+        response = requests.post(settings.API_TOKEN_URL, data=files)
+        if (response.status_code != status.HTTP_200_OK):
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=response.json())
+        access_token = response.json().get('access_token')
+        if (access_token is not None):
+            inf = requests.get(settings.API_INFO_URL, params={'access_token': access_token})
+            if (inf.status_code == status.HTTP_200_OK):
+                login = inf.json().get('login')
+                email = inf.json().get('email')
+                print("\n\n login ", login, " email ", email, file=sys.stderr)
 
-            user_exists = AppUser.objects.filter(email=email).exists()
-            if not user_exists:
-                # Créer un nouvel utilisateur
-                user = AppUser.objects.create(username=login, email=email, password=code_value)
-                django_login(request, user)
-                return Response(status=status.HTTP_201_CREATED)
+                user_exists = AppUser.objects.filter(email=email).exists()
+                if not user_exists:
+                    # Créer un nouvel utilisateur
+                    user = AppUser.objects.create(username=login, email=email, password=code_value)
+                    login(request, user)
+                    return Response(status=status.HTTP_201_CREATED)
+                else:
+                    # Récupérer l'utilisateur existant
+                    
+                    user = AppUser.objects.get(email=email)
+                    serializer = UserLoginSerializer(user)
+
+                    login(request, user)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
             else:
-                # Récupérer l'utilisateur existant
-                
-                user = AppUser.objects.get(email=email)
-                serializer = UserLoginSerializer(user)
-
-                django_login(request, user)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=inf.json())
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=inf.json())
 
 # register42      user = AppUser.objects.get(pk=email)
+
+
+
+class Url42(APIView):
+    from django.conf import settings
+    def get(self, request):
+        lien = settings.API_CONNECT_URL
+        return Response({"42URL": lien}, status=status.HTTP_200_OK)
