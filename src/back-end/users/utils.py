@@ -39,6 +39,7 @@ import logging
 from django.conf import settings
 def ManageGameQueue():
     logger = logging.getLogger(__name__)
+    logger.info('ManageQueueGame : ' + settings.IS_SEARCHING)
     if (settings.IS_SEARCHING == False):
         settings.IS_SEARCHING = True
         from . models import GameServerModel, WaitingPlayerModel
