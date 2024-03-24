@@ -93,6 +93,7 @@ React.useEffect((rotaY) => {
 function handleStart(){
   props.updateSetState(10)
   stateG = 1
+  navigate('/lobby');
   gsap.to(camera.position, {
     duration:3,
     x: 17,
@@ -100,9 +101,6 @@ function handleStart(){
     z: 0,
     onComplete: () => {
       setIsPanel(true)
-      gsap.delayedCall(1, () => {
-        navigate('/lobby');
-      });
     }
   })
   gsap.to(camera.rotation, {
