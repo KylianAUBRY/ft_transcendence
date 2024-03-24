@@ -128,6 +128,7 @@ class CheckJoinGame(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
+        ManageGameQueue()
         data = request.data
         user_id = data.get("userId")
         game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id))
