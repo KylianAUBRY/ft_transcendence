@@ -73,7 +73,7 @@ class GameServerModel(models.Model):
 	serverId = models.AutoField(primary_key=True)
 	firstPlayerId = models.IntegerField(default=-1)
 	secondPlayerId = models.IntegerField(default=-1)
-	state = models.CharField(max_length=7, default="")
+	state = models.CharField(max_length=10, default="waiting")
 	def __str__(self):
 		return f"{self.serverId} : {self.serverAddr}"
 
