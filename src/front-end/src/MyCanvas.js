@@ -26,7 +26,6 @@ let newUrl = baseUrl.replace('http://', '');
 
 let isSearch
 let gameId = null
-//console.log(url)
 
 const path = baseUrl + ':8080'
 console.log(path); 
@@ -185,14 +184,14 @@ useEffect(() => {
 
   if (location.pathname === '/' && props.isSize){
     if (currentUser === true){
-   /* client.get(
+    client.get(
       "/api/logout",
       {withCredentials: true}
     ).then(function(res){
       updateUser(false)
     }).catch(function(error){
      console.log(error)
-    })*/
+    })
     }
 
     
@@ -1433,7 +1432,8 @@ useEffect(() => {
 
 
 function handle42register(){
-  console.log('register 42')
+  if (auth42)
+    window.location.href = auth42;
 }
 
 
