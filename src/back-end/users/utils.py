@@ -74,3 +74,4 @@ def ManageGameQueue():
         settings.IS_SEARCHING = False
     else:
         logger.info('ManageQueueGame : True')
+        settings.IS_SEARCHING = False
