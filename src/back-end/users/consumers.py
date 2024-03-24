@@ -21,20 +21,20 @@ class GameRoom(AsyncWebsocketConsumer):
     async def connect(self):
         self.player_id = str(uuid.uuid4())
         logger = logging.getLogger(__name__)
-        logger.info('accept', self.player_id)
+        logger.info('accept')
         await self.accept()
         
-        logger.info('group add', self.player_id)
+        logger.info('group add')
         await self.channel_layer.group_add(
             self.game_group_name, self.channel_name
         )
 
-        logger.info('send', self.player_id)
+        logger.info('send')
         await self.send(
             text_data=json.dumps({"type": "playerId", "playerId": self.player_id})
         )
 
-        logger.info('set', self.player_id)
+        logger.info('set')
         self.players[self.player_id] = {
             "idMatch": self.player_id,
             "idPlayer": 0,
@@ -50,9 +50,9 @@ class GameRoom(AsyncWebsocketConsumer):
             "nbAce": 0,
         }
         
-        logger.info('set', self.player_id)
+        logger.info('set')
         if len(self.players) == 2:
-            logger.info('launch game', self.player_id)
+            logger.info('launch game')
             asyncio.create_task(self.game_loop())
   
     async def disconnect(self, close_code): 
