@@ -46,11 +46,11 @@ def ManageGameQueue():
         game_server = GameServerModel.objects.filter(state='waiting').first()
         if game_server:
 
-            logger.info('Game server find: ' + game_server.serverId)
+            logger.info('Game server find')
             if game_server.firstPlayerId == -1:
                 player1 = WaitingPlayerModel.objects.first()
                 if player1:
-                    logger.info('player1 find : ' + player1.player_id)
+                    logger.info('player1 find')
                     game_server.firstPlayerId = player1.player_id
                     game_server.save()
                     player1.delete()
@@ -58,7 +58,7 @@ def ManageGameQueue():
             if game_server.secondPlayerId == -1:
                 player2 = WaitingPlayerModel.objects.first()
                 if player2:
-                    logger.info('player2 find : ' + player2.player_id)
+                    logger.info('player2 find')
                     game_server.firstPlayerId = player2.player_id
                     game_server.save()
                     player2.delete()
