@@ -56,7 +56,7 @@ class GameRoom(AsyncWebsocketConsumer):
         )
 
   
-    def receive(self, text_data): 
+    async def receive(self, text_data): 
         text_data_json = json.loads(text_data) 
         message_type = text_data_json.get("type", "")
 
