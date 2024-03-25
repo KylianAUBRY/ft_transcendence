@@ -142,7 +142,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 player["x"] = 22
                 player["y"] = field_high / 2
                 logger.info('%s', player2_id)
-                i += 1
+            i += 1
 
         while isStarting==False:
             logger.info('Player ?')
