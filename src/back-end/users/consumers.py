@@ -107,9 +107,9 @@ class GameRoom(AsyncWebsocketConsumer):
         # For example, you might send the updated state to the client:
         await self.send(text_data=json.dumps({
             'type': 'state_update',
-            'player_1': player_1,
-            'player_2': player_2,
-            'ball': ball,
+            'player_1': list(player_1),
+            'player_2': list(player_2),
+            'ball': list(ball),
             'isGoal': is_goal,
             'countdown': countdown,
             'isStarting': is_starting,
