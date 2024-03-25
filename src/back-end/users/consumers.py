@@ -57,6 +57,8 @@ class GameRoom(AsyncWebsocketConsumer):
             asyncio.create_task(self.game_loop())
   
     async def disconnect(self, close_code): 
+        logger = logging.getLogger(__name__)
+        logger.info('Player disconnect %s', self.players[self.player_id]["idPlayer"])
         if self.player_id in self.players:
             del self.players[self.player_id]
 
@@ -68,7 +70,6 @@ class GameRoom(AsyncWebsocketConsumer):
     async def receive(self, text_data): 
         text_data_json = json.loads(text_data)
         logger = logging.getLogger(__name__)
-        logger.info('%s', )
 
         try:
             idMatch = text_data_json["idMatch"]
