@@ -109,8 +109,9 @@ class UpdateUserOption(APIView):
 class HistoryView(APIView):
     permission_classes = [permissions.AllowAny]
     
-    def get(self, request):
-        user_id = request.user.userId
+    def post(self, request):
+        data = request.data
+        user_id = data.get["userId"]
         history_object = HistoryModel.objects.filter(userId=user_id)
         serializer = HistorySerializer(history_object, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

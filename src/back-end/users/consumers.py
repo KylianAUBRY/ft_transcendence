@@ -163,15 +163,19 @@ class GameRoom(AsyncWebsocketConsumer):
                 player["x"] = 0 - field_length / 2
                 player["y"] = 0
                 logger.info('%s', player1_id)
+                logger.info('%s', player["username"])
             elif i == 1:
                 player2_id = player["idMatch"]
                 player["x"] = 0 + field_length / 2
                 player["y"] = 0
                 logger.info('%s', player2_id)
+                logger.info('%s', player["username"])
             i += 1
 
         while isStarting==False:
-            logger.info('Player ?')
+            logger.info('Player len = %s', self.players[serv])
+            logger.info('Player 1 = %s ', self.players[serv][player1_id]["username"])
+            logger.info('Player 2 = %s', self.players[serv][player2_id]["username"])
             if len(self.players[serv]) == 2:
                 logger.info('Two player log')
                 logger.info('Player 1 : %s', self.players[serv][player1_id]["username"])
