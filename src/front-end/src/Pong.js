@@ -162,6 +162,43 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
   
 
 
+  function stopBall(){ 
+    ball.stopped = true;
+  }
+  
+  
+  function startRender(){
+    running = true;
+    startVal = 0
+    render();  
+  }
+  
+  function stopRender() {
+    running = false;
+  }
+  
+  function render() {
+    if(running) {
+      setTimeout(render, 1000 / 60); // Appel à render() toutes les (1 / desiredFPS) secondes
+      processBallMovement();
+      handleKeys()
+      if (stateGame > 50 && stateGame < 60) {
+        processBotPaddle();
+      }
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -238,35 +275,6 @@ function endGame(winner)
   
 
 
-
-
-  
-  function stopBall(){ 
-    ball.stopped = true;
-  }
-  
-
-  
-  function startRender(){
-    running = true;
-    startVal = 0
-    render();  
-  }
-  
-  function stopRender() {
-    running = false;
-  }
-  
-  function render() {
-    if(running) {
-      setTimeout(render, 1000 / 60); // Appel à render() toutes les (1 / desiredFPS) secondes
-      processBallMovement();
-      handleKeys()
-      if (stateGame > 50 && stateGame < 60) {
-        processBotPaddle();
-      }
-    }
-  }
   
 
   function processBotPaddle() {
@@ -276,13 +284,6 @@ function endGame(winner)
       racket2.position.z  += Math.min(ball.position.z - racket2.position.z, 0.05);
     }
   }
-
-
-
-
-
-
-
 
 
 
@@ -355,25 +356,31 @@ function endGame(winner)
   };
   
   const handleKeys = function () {
+    //console.log(selectedKeys, keysPressed)
     if (!keyListenerActive) return
     if (loaderGltf && loaderGltf.scene) {
-      if (stateGame < 50 && stateGame > 52){
+      console.log(stateGame)
+      if (stateGame < 50 || stateGame > 52){
         if (keysPressed[selectedKeys[3]]) {
+          console.log('test1')
           if (racket2.position.z < 6.55)
-            racket2.position.z += 0.05
+            racket2.position.z += 0.166 * 1
         }
         if (keysPressed[selectedKeys[2]]) {
+          console.log('test2')
           if (racket2.position.z > -6.55)
-            racket2.position.z -= 0.05
+            racket2.position.z -= 0.166 * 1
         }
     }
       if (keysPressed[selectedKeys[0]]) {
+        console.log('test3')
         if (racket1.position.z < 6.55)
-          racket1.position.z += 0.05  
+          racket1.position.z += 0.166 * 1
       }
       if (keysPressed[selectedKeys[1]]) {
+        console.log('test4')
         if (racket1.position.z > -6.55)
-          racket1.position.z -= 0.05
+          racket1.position.z -= 0.166 * 1
       }
     }
   };
@@ -423,84 +430,7 @@ function endGame(winner)
 
 
 
-/*
 
-  async function serverUpdate(gameId){
-    while (match){
-      useEffect(() => {
-        const newSocket = io('ws://localhost:8080/ws/game/' + gameId);
-        newSocket.on('connect', () => {
-          console.log('Socket.IO connection established.');
-        });
-        newSocket.on('playerId', (data) => {
-          setPlayerId(data.playerId);
-        });
-        newSocket.on('state_update', (data) => {
-          console.log('state_update', data)
-        });
-        setSocket(newSocket);
-    
-        return () => {
-          newSocket.disconnect();
-        };
-      }, []);
-    }
-  }*/
-
-/*
-  async function serverGame() {
-    if (socket) {
-      socket.emit('playerAction', {
-        move: up down or none,
-        idMatch: gameId,
-        idPlayer: player_id,
-        isReady: False or True (si tout charge de ton côté),
-        username: username 
-      });
-    }
-  }
-*/
-
-
-// WEBSOCKET //
-/*
-  const [playerId, setPlayerId] = useState(null);
-  const [players, setPlayers] = useState({});
-  const [ballPosition, setBallPosition] = useState({ x: 0, y: 0 });
-  const [socket, setSocket] = useState(null);
-
-  useEffect(() => {
-    const newSocket = io('ws://localhost:8000');
-    newSocket.on('connect', () => {
-      console.log('Socket.IO connection established.');
-    });
-    newSocket.on('playerId', (data) => {
-      setPlayerId(data.playerId);
-    });
-    newSocket.on('stateUpdate', (data) => {
-      const { objects } = data;
-      setPlayers(objects.players);
-      setBallPosition(objects.ball);
-    });
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.disconnect();
-    };
-  }, []);
-
-  const handlePlayerMovement = (direction) => {
-    if (socket) {
-      socket.emit('playerAction', {
-        type: 'playerAction',
-        playerId: playerId,
-        action: `move_${direction}`
-      });
-    }
-  };
-
-*/
-// WEBSOCKET //
 
 
   const isFirstRender = useRef(true);
