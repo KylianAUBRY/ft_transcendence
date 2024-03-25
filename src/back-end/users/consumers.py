@@ -182,7 +182,7 @@ class GameRoom(AsyncWebsocketConsumer):
 
         while isStarting==False:
             logger.info('Player ?')
-            if len(self.players) == 2:
+            if len(self.players[serv]) == 2:
                 logger.info('Two player log')
                 if self.players[serv][player1_id]["isReady"] == True:
                     logger.info("Player 1 ready")
@@ -357,3 +357,4 @@ class GameRoom(AsyncWebsocketConsumer):
         from . models import HistoryModel
         HistoryModel.objects.create(userId=player1["idPlayer"], userUsername=player1["username"], opponentId=player2["idPlayer"], opponentUsername=player2["username"], userScore=player1["score"], opponentScore=player2["score"], isWin=player1["isWin"], gameDate=date.today(), gameTime=timeGame)
         HistoryModel.objects.create(userId=player2["idPlayer"], userUsername=player2["username"], opponentId=player1["idPlayer"], opponentUsername=player1["username"], userScore=player2["score"], opponentScore=player1["score"], isWin=player2["isWin"], gameDate=date.today(), gameTime=timeGame)
+        # Delete GameServerModel
