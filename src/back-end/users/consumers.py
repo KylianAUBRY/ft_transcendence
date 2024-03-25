@@ -70,17 +70,19 @@ class GameRoom(AsyncWebsocketConsumer):
         logger = logging.getLogger(__name__)
         logger.info('%s', )
 
-        idMatch = text_data_json["idMatch"]
-        player_id = text_data_json["playerId"]
-        orientation = text_data_json["playerDirection"]
-        isReady = text_data_json["isReady"]
-        username = text_data_json["username"]
-        logger.info('%s', idMatch)
-        logger.info('%s', player_id)
-        logger.info('%s', orientation)
-        logger.info('%s', isReady)
-        logger.info('%s', username)
-
+        try:
+            idMatch = text_data_json["idMatch"]
+            player_id = text_data_json["playerId"]
+            orientation = text_data_json["playerDirection"]
+            isReady = text_data_json["isReady"]
+            username = text_data_json["username"]
+            logger.info('%s', idMatch)
+            logger.info('%s', player_id)
+            logger.info('%s', orientation)
+            logger.info('%s', isReady)
+            logger.info('%s', username)
+        except:
+            logger.info("Problem in text_data_json")
         player = self.players.get(idMatch, None)
         if not player:
             return
