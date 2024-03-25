@@ -259,9 +259,12 @@ function endGame(winner)
   
   function render() {
     if(running) {
-      requestAnimationFrame(render);
+      setTimeout(render, 1000 / 60); // Appel à render() toutes les (1 / desiredFPS) secondes
       processBallMovement();
-      processBotPaddle()
+      handleKeys()
+      if (stateGame > 50 && stateGame < 60) {
+        processBotPaddle();
+      }
     }
   }
   
@@ -373,7 +376,6 @@ function endGame(winner)
           racket1.position.z -= 0.05
       }
     }
-    requestAnimationFrame(handleKeys);
   };
 
 
@@ -529,7 +531,7 @@ function endGame(winner)
 useEffect(() => {
 
 
-  if (!isFirstRender.current) {
+  if (findOnlineGame === true) {
 
     websocket = new WebSocket(websocketUrl);
     
@@ -559,9 +561,7 @@ useEffect(() => {
 
     console.log('pong: findOnlineGame');
     isFirstRender.current = false;
-  } else {
-    isFirstRender.current = false;
-  }
+  } 
 
 
 
