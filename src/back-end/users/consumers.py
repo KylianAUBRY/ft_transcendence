@@ -28,17 +28,23 @@ class GameRoom(AsyncWebsocketConsumer):
             self.game_group_name, self.channel_name
         )
 
+        side = "left"
+        if not serv in self.players:
+            self.players[serv] = {}
+            side = "left"
+        else:
+            side = "right"
+
         logger.info('send %s', self.player_id)
         await self.send(
-            text_data=json.dumps({"type": "playerId", "playerId": self.player_id, "name_serv": serv})
+            text_data=json.dumps({"type": "playerId", "playerId": self.player_id, "name_serv": serv, "side": side})
         )
 
         logger.info('set %s', self.player_id)
-        if not serv in self.players:
-            self.players[serv] = {}
         self.players[serv][self.player_id] = {
             "idMatch": self.player_id,
             "idPlayer": 0,
+            "side": side,
             "isReady": False,
             "move" : "none",
             "username": "",
@@ -164,23 +170,21 @@ class GameRoom(AsyncWebsocketConsumer):
 
         timePerFrame = 0.0166
 
-        i = 0
         logger.info('Will set player info')
         for player in self.players[serv].values():
             logger.info('Set player info')
-            if i == 0:
+            if player["side"] == "left":
                 player1_id = player["idMatch"]
                 player["x"] = 0 - field_length / 2
                 player["y"] = 0
                 logger.info('%s', player1_id)
                 logger.info('%s', player["username"])
-            elif i == 1:
+            if player["side"] == "right":
                 player2_id = player["idMatch"]
                 player["x"] = 0 + field_length / 2
                 player["y"] = 0
                 logger.info('%s', player2_id)
                 logger.info('%s', player["username"])
-            i += 1
 
         while isStarting==False:
             if len(self.players[serv]) == 2:
@@ -298,12 +302,12 @@ class GameRoom(AsyncWebsocketConsumer):
                     ball_y *= -1
 
                 # Ball collision with left/right wall (Goal)
-                if ((ball_x - ball_size) <= (-field_length/2) - 0.1): # collision with left wall detected, player_2 score a goal
+                if ((ball_x - ball_size) <= (-field_length/2)): # collision with left wall detected, player_2 score a goal
                     self.players[serv][player2_id]["score"] += 1
                     self.players[serv][player2_id]["isReady"] = False
                     self.players[serv][player1_id]["isReady"] = False
                     isGoal = True
-                if ((ball_x + ball_size) >= (field_length/2) + 0.1): # collision with right wall detected, player_1 score a goal
+                if ((ball_x + ball_size) >= (field_length/2)): # collision with right wall detected, player_1 score a goal
                     self.players[serv][player1_id]["score"] += 1
                     self.players[serv][player2_id]["isReady"] = False
                     self.players[serv][player1_id]["isReady"] = False
