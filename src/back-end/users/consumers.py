@@ -364,5 +364,14 @@ class GameRoom(AsyncWebsocketConsumer):
         HistoryModel.objects.create(userId=player1["idPlayer"], userUsername=player1["username"], opponentId=player2["idPlayer"], opponentUsername=player2["username"], userScore=player1["score"], opponentScore=player2["score"], isWin=player1["isWin"], gameDate=date.today(), gameTime=timeGame)
         HistoryModel.objects.create(userId=player2["idPlayer"], userUsername=player2["username"], opponentId=player1["idPlayer"], opponentUsername=player1["username"], userScore=player2["score"], opponentScore=player1["score"], isWin=player2["isWin"], gameDate=date.today(), gameTime=timeGame)
         
-        game_server = GameServerModel.objects.filter(pk=int(serv)).first()
-        game_server.delete()
+        try:
+            game_server = GameServerModel.objects.filter(pk=int(serv)).first()
+            logger.info("---------------------------------------------------")
+            logger.info("%s", game_server.serverId)
+            logger.info("%s", game_server.firstPlayerId)
+            logger.info("%s", game_server.secondPlayerId)
+            logger.info("%s", game_server.state)
+            logger.info("---------------------------------------------------")
+            game_server.delete()
+        except Exception as error:
+            logger.info("Error in GameServerModel---------------", error)
