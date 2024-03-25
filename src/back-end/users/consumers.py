@@ -152,7 +152,7 @@ class GameRoom(AsyncWebsocketConsumer):
         countForInfo = 0
         nbInfoPerSecond = 4
 
-        timePerFrame = 0.166
+        timePerFrame = 0.0166
 
         i = 0
         logger.info('Will set player info')
@@ -289,12 +289,12 @@ class GameRoom(AsyncWebsocketConsumer):
                     ball_y *= -1
 
                 # Ball collision with left/right wall (Goal)
-                if ((ball_x - ball_size) < -0.2): # collision with left wall detected, player_2 score a goal
+                if ((ball_x - ball_size) <= -0.1): # collision with left wall detected, player_2 score a goal
                     self.players[player2_id]["score"] += 1
                     self.players[player2_id]["isReady"] = False
                     self.players[player1_id]["isReady"] = False
                     isGoal = True
-                if ((ball_x + ball_size) < -0.2): # collision with right wall detected, player_1 score a goal
+                if ((ball_x + ball_size) >= field_length + 0.1): # collision with right wall detected, player_1 score a goal
                     self.players[player1_id]["score"] += 1
                     self.players[player2_id]["isReady"] = False
                     self.players[player1_id]["isReady"] = False
