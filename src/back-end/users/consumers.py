@@ -12,11 +12,10 @@ from asgiref.sync import async_to_sync
 from . utils import updateUserStatistic
   
 class GameRoom(AsyncWebsocketConsumer):
-    players = {}
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.players = {}
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.players = {}
 
     async def connect(self): 
         name_serv = self.scope['url_route']['kwargs']['room_name']
@@ -147,6 +146,9 @@ class GameRoom(AsyncWebsocketConsumer):
         player2_id = 0
         timeStartGame = 0
         timeEndGame = 0
+
+        countForInfo = 0
+        nbInfoPerSecond = 4
 
         timePerFrame = 0.1
 
@@ -317,19 +319,22 @@ class GameRoom(AsyncWebsocketConsumer):
                     self.players[player2_id]["isWin"] = True
 
             # Send info to all player
-            await self.channel_layer.group_send(
-                self.game_group_name,
-                {
-                    "type": "state_update",
-                    "player_1": self.players[player1_id],
-                    "player_2": self.players[player2_id],
-                    "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
-                    "isGoal": isGoal,
-                    "countdown": countdown,
-                    "isStarting": isStarting,
-                    "gameIsFinished": gameIsFinished,
-                },
-            )
+            countForInfo += 1
+            if countForInfo == 60 / nbInfoPerSecond:
+                await self.channel_layer.group_send(
+                    self.game_group_name,
+                    {
+                        "type": "state_update",
+                        "player_1": self.players[player1_id],
+                        "player_2": self.players[player2_id],
+                        "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
+                        "isGoal": isGoal,
+                        "countdown": countdown,
+                        "isStarting": isStarting,
+                        "gameIsFinished": gameIsFinished,
+                    },
+                )
+                countForInfo = 0
 
             await asyncio.sleep(timePerFrame)
 
