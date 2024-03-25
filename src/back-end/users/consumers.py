@@ -12,11 +12,10 @@ from asgiref.sync import async_to_sync
 from . utils import updateUserStatistic
   
 class GameRoom(AsyncWebsocketConsumer):
-    players = {}
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.players = {}
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.players = {}
 
     async def connect(self): 
         name_serv = self.scope['url_route']['kwargs']['room_name']
@@ -138,6 +137,7 @@ class GameRoom(AsyncWebsocketConsumer):
         ball_dx = 0
         ball_dy = 0
         ball_speed = 2
+        ball_speed_gain_per_hit = 0.2
         ball_size = 0.207
         countdown = 3
         isGoal = False
@@ -148,7 +148,10 @@ class GameRoom(AsyncWebsocketConsumer):
         timeStartGame = 0
         timeEndGame = 0
 
-        timePerFrame = 0.1
+        countForInfo = 0
+        nbInfoPerSecond = 4
+
+        timePerFrame = 0.166
 
         i = 0
         logger.info('Will set player info')
@@ -301,12 +304,12 @@ class GameRoom(AsyncWebsocketConsumer):
                     if (abs((ball_x + ball_size) - self.players[player2_id]["x"]) < 0.1 and abs(ball_y - self.players[player2_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
                         ball_dy = (ball_y - self.players[player2_id]["y"]) % player_size
-                        ball_speed += 0.2
+                        ball_speed += ball_speed_gain_per_hit
                 if (ball_dx < 0): # Check collision with player_1
                     if (abs((ball_x - ball_size) - self.players[player1_id]["x"]) < 0.1 and abs(ball_y - self.players[player1_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
                         ball_dy = (ball_y - self.players[player1_id]["y"]) % player_size
-                        ball_speed += 0.2
+                        ball_speed += ball_speed_gain_per_hit
             
             # Send signal when game is finished
             if (self.players[player1_id]["score"] == 5 or self.players[player2_id]["score"] == 5):
@@ -317,19 +320,22 @@ class GameRoom(AsyncWebsocketConsumer):
                     self.players[player2_id]["isWin"] = True
 
             # Send info to all player
-            await self.channel_layer.group_send(
-                self.game_group_name,
-                {
-                    "type": "state_update",
-                    "player_1": self.players[player1_id],
-                    "player_2": self.players[player2_id],
-                    "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
-                    "isGoal": isGoal,
-                    "countdown": countdown,
-                    "isStarting": isStarting,
-                    "gameIsFinished": gameIsFinished,
-                },
-            )
+            countForInfo += 1
+            if countForInfo == 60 / nbInfoPerSecond:
+                await self.channel_layer.group_send(
+                    self.game_group_name,
+                    {
+                        "type": "state_update",
+                        "player_1": self.players[player1_id],
+                        "player_2": self.players[player2_id],
+                        "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
+                        "isGoal": isGoal,
+                        "countdown": countdown,
+                        "isStarting": isStarting,
+                        "gameIsFinished": gameIsFinished,
+                    },
+                )
+                countForInfo = 0
 
             await asyncio.sleep(timePerFrame)
 
