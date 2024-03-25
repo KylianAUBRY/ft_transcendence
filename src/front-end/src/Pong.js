@@ -17,7 +17,9 @@ let newRound = true
 let keysPressed = {}
 let stop = false
 let playerId
-
+let leftKey = false
+let rightKey = false
+let isPlayerReady = true
 
 
 const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client, findOnlineGame, newUrl, username, userId, gameId }) => {
@@ -442,11 +444,17 @@ console.log('aaaaaaaaaaaaaaa', userId, username)
 
     function sendInfo() {
       // Send your information here
-      
+      let dir = 'none'
+      if (leftKey === true){
+        dir = 'up'
+      } else if (rightKey === true){
+        dir = 'down'
+      }
+
       const data = {
         "idMatch": playerId,
-        "isReady": true,
-        "playerDirection": 'none',
+        "isReady": isPlayerReady,
+        "playerDirection": dir,
         "playerId": userId,
         "username": username
       };
@@ -472,9 +480,33 @@ console.log('tesssssssssssssssssssssssssssssssst')
     websocket.onmessage = function(event) {
         console.log('Received message:', event.data);
         const messageObj = JSON.parse(event.data); 
-  
-        playerId = messageObj.playerId
-        console.log(messageObj.playerId, playerId)
+        const type = messageObj.type;
+        if (type === 'playerId'){
+          const messageObj = JSON.parse(event.data)
+          playerId = messageObj.playerId
+          console.log(messageObj.playerId, playerId)
+        }
+        if (type === 'state_update'){
+
+          ball.position.x = messageObj.ball_x
+          ball.position.z = messageObj.ball_y
+          console.log('ball : ', ball.position.x, ball.position.z)
+
+
+          if (messageObj.isGoal === true){
+            console.log('GOAL GOAL GOALLLLL')
+            isPlayerReady = false
+            sendInfo()
+            setTimeout(function() {
+              isPlayerReady = true;
+              sendInfo()
+          }, 3000);
+
+          }
+            
+
+        }
+        
         // Handle incoming messages here
     };
 
@@ -484,13 +516,36 @@ console.log('tesssssssssssssssssssssssssssssssst')
 
     websocket.onclose = function() {
         console.log('WebSocket connection closed');
+        return
         // You may attempt to reconnect here if needed
     };
 
 
 
 
-    console.log('pong: findOnlineGame');
+    window.addEventListener('keydown', (e) => {
+      if (e.key == 'd') {
+        rightKey = true
+        racket1.position.z -= 0.166 * 1
+      } else if (e.key == 'a') {
+        leftKey = true
+        racket1.position.z += 0.166 * 1
+      }
+      sendInfo()
+    })
+
+    window.addEventListener('keyup', (e) => {
+      if (e.key == 'd') {
+        rightKey = false
+      } else if (e.key == 'a') {
+        leftKey = false
+      }
+      sendInfo()
+    })	
+
+
+
+
   } 
 
 

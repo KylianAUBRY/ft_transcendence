@@ -59,6 +59,21 @@ const client = axios.create({
 let stopDecompte = false
 
 function MyCanvas( props ) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -119,6 +134,7 @@ function MyCanvas( props ) {
   const updateSetState = (newValue) => {
    setState(newValue);
    if (newValue === 20){
+    setFindOnlineGame(true)
         setisOnlineLoad(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.onlineLoad');
@@ -549,7 +565,21 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
 
 
       setFindOnlineGame(true)
-
+      var localMatch = document.querySelector('.onlineLoad');
+      localMatch.classList.remove('visible');
+      localMatch.classList.add('hidden');
+     /* if (state === 30){
+        updateSetScore('name1', 'Player 1')
+        updateSetScore('name2', 'Player 2')
+      }
+      setTimeout(function() {
+          setisLocalMatch(false)
+          setisDecompte(true)
+      }, 500); 
+     */
+      setisInMatchTournament(true)
+    
+  
 
     }).catch(error => {
       console.error('There was a problem JoinQueue:', error);
@@ -562,91 +592,6 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
   }
 
   
-/*
-  const [socket, setSocket] = useState(null);
-  const [playerId, setPlayerId] = useState(null);
-
-  let newUrl = baseUrl.replace('http://', '');
-  console.log(newUrl);
-    const websocketUrl = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
-   
-    let websocket;
-
-
-  async function serverUpdate(gameId){
-
-
-    
-        websocket = new WebSocket(websocketUrl);
-    
-        websocket.onopen = function() {
-            console.log('Connected to WebSocket');
-            // Start sending info every 1 second once connected
-            setInterval(sendInfo, 1000);
-        };
-    
-        websocket.onmessage = function(event) {
-            console.log('Received message:', event.data);
-            setPlayerId(event.data.playerId)
-            // Handle incoming messages here
-        };
-    
-        websocket.onerror = function(error) {
-            console.error('WebSocket error:', error);
-        };
-    
-        websocket.onclose = function() {
-            console.log('WebSocket connection closed');
-            // You may attempt to reconnect here if needed
-        };
-    }
-    
-*/
-
-  //   function sendInfo() {
-  //     // Send your information here
-      
-  //     const data = {
-  //       "playerDirection": 'none',
-  //       "idMatch": playerId,
-  //       "playerId": userId,
-  //       "isReady": true,
-  //       "username": username
-  //     };
-  //     console.log('envoi ready', data)
-  //     websocket.send(JSON.stringify(data));
-  // }
-
-
-
-
-
-    /*
-    const { io } = require("socket.io-client");
-    const urlSocket = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
-
-    console.log(urlSocket)
-      const newSocket = io(urlSocket);
-
-
-        
-          newSocket.on('connect', () => {
-            console.log('Socket.IO connection established.');
-          });
-          newSocket.on('playerId', (data) => {
-            setPlayerId(data.playerId);
-          });
-          newSocket.on('state_update', (data) => {
-            console.log('state_update', data)
-          });
-          setSocket(newSocket);
-      
-          return () => {
-            newSocket.disconnect();
-          };
-      
-   */
-
 
 
   
