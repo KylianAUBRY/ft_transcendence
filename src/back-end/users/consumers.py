@@ -137,6 +137,7 @@ class GameRoom(AsyncWebsocketConsumer):
         ball_dx = 0
         ball_dy = 0
         ball_speed = 2
+        ball_speed_gain_per_hit = 0.2
         ball_size = 0.207
         countdown = 3
         isGoal = False
@@ -150,7 +151,7 @@ class GameRoom(AsyncWebsocketConsumer):
         countForInfo = 0
         nbInfoPerSecond = 4
 
-        timePerFrame = 0.1
+        timePerFrame = 0.166
 
         i = 0
         logger.info('Will set player info')
@@ -303,12 +304,12 @@ class GameRoom(AsyncWebsocketConsumer):
                     if (abs((ball_x + ball_size) - self.players[player2_id]["x"]) < 0.1 and abs(ball_y - self.players[player2_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
                         ball_dy = (ball_y - self.players[player2_id]["y"]) % player_size
-                        ball_speed += 0.2
+                        ball_speed += ball_speed_gain_per_hit
                 if (ball_dx < 0): # Check collision with player_1
                     if (abs((ball_x - ball_size) - self.players[player1_id]["x"]) < 0.1 and abs(ball_y - self.players[player1_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
                         ball_dy = (ball_y - self.players[player1_id]["y"]) % player_size
-                        ball_speed += 0.2
+                        ball_speed += ball_speed_gain_per_hit
             
             # Send signal when game is finished
             if (self.players[player1_id]["score"] == 5 or self.players[player2_id]["score"] == 5):
