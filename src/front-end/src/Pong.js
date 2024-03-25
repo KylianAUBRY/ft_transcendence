@@ -16,7 +16,7 @@ let keyListenerActive = false
 let newRound = true
 let keysPressed = {}
 let stop = false
-
+let playerId
 
 
 
@@ -431,10 +431,8 @@ function endGame(winner)
 
 
 
+console.log('aaaaaaaaaaaaaaa', userId, username)
 
-
-  const isFirstRender = useRef(true);
-  const [playerId, setPlayerId] = useState(null);
 
 
     const websocketUrl = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
@@ -446,10 +444,10 @@ function endGame(winner)
       // Send your information here
       
       const data = {
-        "playerDirection": 'none',
         "idMatch": playerId,
-        "playerId": userId,
         "isReady": true,
+        "playerDirection": 'none',
+        "playerId": userId,
         "username": username
       };
       console.log('envoi ready', data)
@@ -462,7 +460,7 @@ useEffect(() => {
 
 
   if (findOnlineGame === true) {
-
+console.log('tesssssssssssssssssssssssssssssssst')
     websocket = new WebSocket(websocketUrl);
     
     websocket.onopen = function() {
@@ -473,7 +471,10 @@ useEffect(() => {
 
     websocket.onmessage = function(event) {
         console.log('Received message:', event.data);
-        setPlayerId(event.data.playerId)
+        const messageObj = JSON.parse(event.data); 
+  
+        playerId = messageObj.playerId
+        console.log(messageObj.playerId, playerId)
         // Handle incoming messages here
     };
 
@@ -490,7 +491,6 @@ useEffect(() => {
 
 
     console.log('pong: findOnlineGame');
-    isFirstRender.current = false;
   } 
 
 

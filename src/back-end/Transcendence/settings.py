@@ -232,27 +232,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Niveau de journalisation par défaut
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        # 'console': {
-        #     'level': 'DEBUG',
-        #     'class': 'logging.StreamHandler',
-        #     'stream': 'ext://sys.stdout',  # Envoyer les logs vers la sortie standard
-        # },
-        'error_console': {
-            'level': 'ERROR',
-            'class': 'logging.StreamHandler',
-            'stream': 'ext://sys.stderr',  # Envoyer les logs d'erreur vers la sortie d'erreur
-        },
-    },
-    'loggers': {
-        '': {
-            # 'handlers': ['console', 'error_console'],  # Utiliser les deux handlers
-            'handlers': ['error_console'],
-            'level': 'DEBUG',  # Niveau de log global
-            'propagate': True,
-        },
-    },
-}
+

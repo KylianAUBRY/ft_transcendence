@@ -25,6 +25,27 @@ let newUrl = baseUrl.replace('http://', '');
 
 let isSearch
 let gameId = null
+
+let user 
+let LongestExchange
+let aceRate
+let nbAce
+let nbGameLose
+let nbGamePlayed
+let nbGameWin 
+let nbPointLose
+let nbPointMarked
+let nbTouchedBall
+let name
+let winRate
+let userId
+let language
+let color
+let music
+let key1
+let key2
+let key3
+let key4
 let auth42
 
 const path = baseUrl + ':8080'
@@ -473,7 +494,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
     }).then(async data => {
       console.log('JoinQueue', data);
 
-
+//gameId = 2
       console.log('search: ', isSearch)
       while (gameId === null && isSearch === true) {
         console.log('test' , gameId)
@@ -517,7 +538,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
       }
 
       
-      console.log('trouve', gameId)
+      console.log('trouve', gameId, userId)
       isSearch = false
 
 
@@ -1264,26 +1285,7 @@ function passwordVerif(motDePasse) {
 var profil = document.getElementById('profil')
 
 
-let user 
-let LongestExchange
-let aceRate
-let nbAce
-let nbGameLose
-let nbGamePlayed
-let nbGameWin 
-let nbPointLose
-let nbPointMarked
-let nbTouchedBall
-let name
-let winRate
-let userId
-let language
-let color
-let music
-let key1
-let key2
-let key3
-let key4
+
 
 
 
@@ -1661,7 +1663,7 @@ function handle42register(){
   
           <Environment files="fond.hdr" background blur={0.5}/>
           <Suspense fallback={null}>
-            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} newUrl={newUrl} username={username} userId={userId} gameId={gameId}/>
+            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId}/>
             <Stade/>
           </Suspense>
           <Stars
