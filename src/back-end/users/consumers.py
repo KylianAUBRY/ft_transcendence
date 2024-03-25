@@ -52,7 +52,8 @@ class GameRoom(AsyncWebsocketConsumer):
             "nbAce": 0,
         }
         
-        logger.info('set %s', self.player_id)
+        logger.info('Set : %s', self.player_id)
+        logger.info('Length : %s', len(self.players))
         if len(self.players) == 2:
             logger.info('launch game')
             asyncio.create_task(self.game_loop())
@@ -133,8 +134,8 @@ class GameRoom(AsyncWebsocketConsumer):
         field_length = 22
         player_speed = 2
         player_size = 1
-        ball_x = field_length / 2
-        ball_y = field_high / 2
+        ball_x = 0
+        ball_y = 0
         ball_dx = 0
         ball_dy = 0
         ball_speed = 2
@@ -160,12 +161,12 @@ class GameRoom(AsyncWebsocketConsumer):
             logger.info('Set player info')
             if i == 0:
                 player1_id = player["idMatch"]
-                player["x"] = 0
+                player["x"] = 0 - field_length / 2
                 player["y"] = field_high / 2
                 logger.info('%s', player1_id)
             elif i == 1:
                 player2_id = player["idMatch"]
-                player["x"] = 22
+                player["x"] = 0 + field_length / 2
                 player["y"] = field_high / 2
                 logger.info('%s', player2_id)
             i += 1
@@ -211,17 +212,17 @@ class GameRoom(AsyncWebsocketConsumer):
             # Update coordinate of all player
             if (isGoal):
                 logger.info('Goal')
-                self.players[player1_id]["x"] = 0
+                self.players[player1_id]["x"] = 0 - field_length / 2
                 self.players[player1_id]["y"] = field_high / 2
                 self.players[player1_id]["move"] = "none"
-                self.players[player2_id]["x"] = 22
+                self.players[player2_id]["x"] = 0 + field_length / 2
                 self.players[player2_id]["y"] = field_high / 2
                 self.players[player2_id]["move"] = "none"
-                ball_x = field_length / 2
-                ball_y = field_high / 2
+                ball_x = 0
+                ball_y = 0
                 ball_dx = 0
                 ball_dy = 0
-                ball_speed = 2
+                ball_speed = 5
                 isGoal = False
 
                 await self.channel_layer.group_send(
@@ -276,8 +277,6 @@ class GameRoom(AsyncWebsocketConsumer):
                         player["y"] = player_size
                     if player["y"] >= field_high - player_size:
                         player["y"] = field_high - player_size
-                    if i < 2:
-                        i += 1
                 
                 # Update coordinate of the ball
                 ball_x += ball_speed * ball_dx * timePerFrame
@@ -285,16 +284,16 @@ class GameRoom(AsyncWebsocketConsumer):
                 # Check collision
 
                 # Ball collision with upper wall or down wall
-                if ((ball_y - ball_size) <= 0 or (ball_y + ball_size) >= field_high): 
+                if ((ball_y - ball_size) <= -field_high/2 or (ball_y + ball_size) >= +field_high/2): 
                     ball_y *= -1
 
                 # Ball collision with left/right wall (Goal)
-                if ((ball_x - ball_size) <= -0.1): # collision with left wall detected, player_2 score a goal
+                if ((ball_x - ball_size) <= (-field_length/2) - 0.1): # collision with left wall detected, player_2 score a goal
                     self.players[player2_id]["score"] += 1
                     self.players[player2_id]["isReady"] = False
                     self.players[player1_id]["isReady"] = False
                     isGoal = True
-                if ((ball_x + ball_size) >= field_length + 0.1): # collision with right wall detected, player_1 score a goal
+                if ((ball_x + ball_size) >= (field_length/2) + 0.1): # collision with right wall detected, player_1 score a goal
                     self.players[player1_id]["score"] += 1
                     self.players[player2_id]["isReady"] = False
                     self.players[player1_id]["isReady"] = False
@@ -322,7 +321,7 @@ class GameRoom(AsyncWebsocketConsumer):
 
             # Send info to all player
             countForInfo += 1
-            if countForInfo == 60 / nbInfoPerSecond:
+            if countForInfo == 60 / nbInfoPerSecond or gameIsFinished:
                 await self.channel_layer.group_send(
                     self.game_group_name,
                     {
