@@ -12,11 +12,10 @@ from asgiref.sync import async_to_sync
 from . utils import updateUserStatistic
   
 class GameRoom(AsyncWebsocketConsumer):
-    player_speed = 2
-    player_size = 5
 
-    game_group_name = 'game_group'
-    players = {}
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.players = {}
 
     async def connect(self): 
         name_serv = self.scope['url_route']['kwargs']['room_name']
@@ -71,17 +70,19 @@ class GameRoom(AsyncWebsocketConsumer):
         logger = logging.getLogger(__name__)
         logger.info('%s', )
 
-        idMatch = text_data_json["idMatch"]
-        player_id = text_data_json["playerId"]
-        orientation = text_data_json["playerDirection"]
-        isReady = text_data_json["isReady"]
-        username = text_data_json["username"]
-        logger.info('%s', idMatch)
-        logger.info('%s', player_id)
-        logger.info('%s', orientation)
-        logger.info('%s', isReady)
-        logger.info('%s', username)
-
+        try:
+            idMatch = text_data_json["idMatch"]
+            player_id = text_data_json["playerId"]
+            orientation = text_data_json["playerDirection"]
+            isReady = text_data_json["isReady"]
+            username = text_data_json["username"]
+            logger.info('%s', idMatch)
+            logger.info('%s', player_id)
+            logger.info('%s', orientation)
+            logger.info('%s', isReady)
+            logger.info('%s', username)
+        except:
+            logger.info("Problem in text_data_json")
         player = self.players.get(idMatch, None)
         if not player:
             return
@@ -142,7 +143,10 @@ class GameRoom(AsyncWebsocketConsumer):
         while isStarting==False:
             if len(self.players) == 2:
                 logger.info('Two player log')
-                logger.info("%s | %s", self.players[player1_id]["isReady"], self.players[player2_id]["isReady"])
+                if self.players[player1_id]["isReady"] == True:
+                    logger.info("Player 1 ready")
+                if self.players[player2_id]["isReady"] == True:
+                    logger.info("Player 2 ready")
                 if (self.players[player1_id]["isReady"] == True and self.players[player2_id]["isReady"] == True):
                     logger.info('Two player Ready')
                     isStarting = True
