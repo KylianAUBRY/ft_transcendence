@@ -18,7 +18,8 @@
         "nbAce": "Ace: ",
         "nbPointMarked": "Point marked: ",
         "nbPointLose": "Point Lose: ",
-        "WPass": "Wrong password"
+        "WPass": "Wrong password",
+        "imposible": "Unable to register"
     },
     "game":{
         "online": "Play online",

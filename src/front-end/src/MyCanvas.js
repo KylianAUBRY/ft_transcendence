@@ -134,7 +134,6 @@ function MyCanvas( props ) {
   const updateSetState = (newValue) => {
    setState(newValue);
    if (newValue === 20){
-    setFindOnlineGame(true)
         setisOnlineLoad(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.onlineLoad');
@@ -1094,9 +1093,10 @@ function affDecompte(){
         loginPage.classList.add('hidden');
         setTimeout(function() {
           setisLoginPage(false)
-          if (childRef.current) {
+         // if (childRef.current) {
+          console.log('test')
             childRef.current.childFunction(2)
-        }
+       // }
         }, 800);
         setEmail2('')
         setPassword2('')
@@ -1173,32 +1173,15 @@ function affDecompte(){
         setEmail('')
         setUsername('')
         setPassword('')
-      })
+      }).catch(function(error) {
+        console.error("Erreur lors de la requête de connexion :", error);
+        refBadPassword2.current.innerText = t("home.imposible")
+      }); 
     }
-    ) /*
-    fetch('http://localhost:8080/api/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email,
-        username: username,
-        password: password
-      }),
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Registration successful:', data);
-    })
-    .catch(error => {
-      console.error('There was a problem registering:', error);
-    });*/
+    ).catch(function(error) {
+      console.error("Erreur lors de la requête d'inscription :", error);
+      refBadPassword2.current.innerText = t("home.imposible")
+    }); 
 
   }
 
@@ -1251,6 +1234,7 @@ const ref6 = useRef(null)
 const ref7 = useRef(null)
 const ref8 = useRef(null)
 const refBadPassword = useRef(null)
+const refBadPassword2 = useRef(null)
 
 function getChart() {
   if (currentUser === true){
@@ -1444,7 +1428,7 @@ function handle42register(){
           <div className='Wgroup'>
             <input placeholder='password' id='password2' name='password2' className='Winput' type='password' onChange={e => setPassword(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password2'>{t("home.password")}</label>
-            <div className='bad' id='badPassword'></div>
+            <div className='bad' id='badPassword' ref={refBadPassword2}></div>
           </div>
           <div className='btn'>
             <button type='submit' className='btnlogin'>{t("home.signup")}</button>

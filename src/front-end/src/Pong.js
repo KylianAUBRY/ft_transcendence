@@ -17,6 +17,7 @@ let newRound = true
 let keysPressed = {}
 let stop = false
 let playerId
+let nameServer
 let leftKey = false
 let rightKey = false
 let isPlayerReady = true
@@ -444,22 +445,27 @@ console.log('aaaaaaaaaaaaaaa', userId, username)
 
     function sendInfo() {
       // Send your information here
-      let dir = 'none'
-      if (leftKey === true){
-        dir = 'up'
-      } else if (rightKey === true){
-        dir = 'down'
-      }
+      if (websocket.readyState === WebSocket.OPEN){
+        let dir = 'none'
+        if (leftKey === true){
+          dir = 'up'
+        } else if (rightKey === true){
+          dir = 'down'
+        }
 
-      const data = {
-        "idMatch": playerId,
-        "isReady": isPlayerReady,
-        "playerDirection": dir,
-        "playerId": userId,
-        "username": username
-      };
-      console.log('envoi ready', data)
-      websocket.send(JSON.stringify(data));
+        const data = {
+          "name_serv": nameServer,
+          "idMatch": playerId,
+          "isReady": isPlayerReady,
+          "playerDirection": dir,
+          "playerId": userId,
+          "username": username
+        };
+        console.log('envoi ready', data)
+        websocket.send(JSON.stringify(data));
+        } else{
+          console.error('La connexion WebSocket est fermée. Impossible d\'envoyer des données.');
+        }
   }
 
 
@@ -484,12 +490,15 @@ console.log('tesssssssssssssssssssssssssssssssst')
         if (type === 'playerId'){
           const messageObj = JSON.parse(event.data)
           playerId = messageObj.playerId
+          nameServer = messageObj.name_serv
           console.log(messageObj.playerId, playerId)
         }
         if (type === 'state_update'){
 
           ball.position.x = messageObj.ball_x
           ball.position.z = messageObj.ball_y
+          racket1.position.z = messageObj.player_1_y
+          racket2.position.z = messageObj.player_2_y
           console.log('ball : ', ball.position.x, ball.position.z)
 
 

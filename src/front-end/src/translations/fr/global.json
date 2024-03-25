@@ -18,7 +18,8 @@
         "nbAce": "Service gagnant",
         "nbPointMarked": "Points marqués",
         "nbPointLose": "Points perdus",
-        "WPass: ": "Mauvais mot de passe"
+        "WPass: ": "Mauvais mot de passe",
+        "imposible": "Inscription impossible"
     },
     "game":{
         "online": "Jouer en ligne",

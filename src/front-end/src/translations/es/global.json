@@ -18,7 +18,8 @@
         "nbAce": "As",
         "nbPointMarked": "Puntos marcados",
         "nbPointLose": "Puntos perdidos",
-        "WPass: ": "Contraseña incorrecta"
+        "WPass: ": "Contraseña incorrecta",
+        "imposible": "registro imposible"
     },
     "game":{
         "online": "Jugar en línea",
