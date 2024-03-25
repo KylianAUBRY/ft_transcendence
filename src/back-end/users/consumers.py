@@ -34,7 +34,8 @@ class GameRoom(AsyncWebsocketConsumer):
         )
 
         logger.info('set %s', self.player_id)
-        self.players[serv] = {}
+        if not serv in self.players:
+            self.players[serv] = {}
         self.players[serv][self.player_id] = {
             "idMatch": self.player_id,
             "idPlayer": 0,
@@ -276,13 +277,13 @@ class GameRoom(AsyncWebsocketConsumer):
 
             elif (isGoal==False):
                 logger.info('Not goal')
-                for player in self.players.values():
+                for player in self.players[serv].values():
                     if player["move"] == "up":
                         player["y"] -= player_speed * timePerFrame
                     if player["move"] == "down":
                         player["y"] += player_speed * timePerFrame
-                    if player["y"] <= -field_high/2 - player_size:
-                        player["y"] = -field_high/2 - player_size
+                    if player["y"] <= -field_high/2 + player_size:
+                        player["y"] = -field_high/2 + player_size
                     if player["y"] >= field_high/2 - player_size:
                         player["y"] = field_high/2 - player_size
                 
