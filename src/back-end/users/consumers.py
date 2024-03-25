@@ -226,7 +226,7 @@ class GameRoom(AsyncWebsocketConsumer):
                     "type": "state_update",
                     "player_1": self.players[player1_id],
                     "player_2": self.players[player2_id],
-                    "ball": {ball_x, ball_y, ball_dx, ball_dy, ball_speed},
+                    "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
                     "isGoal": isGoal,
                     "countdown": countdown,
                     "isStarting": isStarting,
@@ -241,13 +241,19 @@ class GameRoom(AsyncWebsocketConsumer):
                     if ball_dy != 0:
                         break
                 isGoal = False
+
+                while True:
+                    if (self.players[player1_id]["isReady"] == True and self.players[player2_id]["isReady"] == True):
+                        break
+                    await asyncio.sleep(1)
+                
                 await self.channel_layer.group_send(
                 self.game_group_name,
                 {
                     "type": "state_update",
                     "player_1": self.players[player1_id],
                     "player_2": self.players[player2_id],
-                    "ball": {ball_x, ball_y, ball_dx, ball_dy, ball_speed},
+                    "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
                     "isGoal": isGoal,
                     "countdown": countdown,
                     "isStarting": isStarting,
@@ -317,7 +323,7 @@ class GameRoom(AsyncWebsocketConsumer):
                     "type": "state_update",
                     "player_1": self.players[player1_id],
                     "player_2": self.players[player2_id],
-                    "ball": {ball_x, ball_y, ball_dx, ball_dy, ball_speed},
+                    "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
                     "isGoal": isGoal,
                     "countdown": countdown,
                     "isStarting": isStarting,
