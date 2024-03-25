@@ -14,13 +14,10 @@ from . utils import updateUserStatistic
 class GameRoom(AsyncWebsocketConsumer):
     players = {}
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.players = {}
-
     async def connect(self): 
-        name_serv = self.scope['url_route']['kwargs']['room_name']
-        self.game_group_name = "game_%s" % name_serv
+        self.name_serv = self.scope['url_route']['kwargs']['room_name']
+        serv = self.name_serv
+        self.game_group_name = "game_%s" % serv
         self.player_id = str(uuid.uuid4())
         logger = logging.getLogger(__name__)
         logger.info('accept %s', self.player_id)
@@ -33,11 +30,12 @@ class GameRoom(AsyncWebsocketConsumer):
 
         logger.info('send %s', self.player_id)
         await self.send(
-            text_data=json.dumps({"type": "playerId", "playerId": self.player_id})
+            text_data=json.dumps({"type": "playerId", "playerId": self.player_id, "name_serv": serv})
         )
 
         logger.info('set %s', self.player_id)
-        self.players[self.player_id] = {
+        self.players[serv] = {}
+        self.players[serv][self.player_id] = {
             "idMatch": self.player_id,
             "idPlayer": 0,
             "isReady": False,
@@ -53,14 +51,14 @@ class GameRoom(AsyncWebsocketConsumer):
         }
         
         logger.info('Set : %s', self.player_id)
-        logger.info('Length : %s', len(self.players))
-        if len(self.players) == 2:
+        logger.info('Length : %s', len(self.players[serv]))
+        if len(self.players[serv]) == 2:
             logger.info('launch game')
-            asyncio.create_task(self.game_loop())
+            asyncio.create_task(self.game_loop(serv))
   
     async def disconnect(self, close_code): 
         logger = logging.getLogger(__name__)
-        logger.info('Player disconnect %s', self.players[self.player_id]["idPlayer"])
+        logger.info('Player disconnect %s', self.players[self.name_serv][self.player_id]["idPlayer"])
 
         await self.channel_layer.group_discard(
             self.game_group_name, self.channel_name
@@ -71,27 +69,37 @@ class GameRoom(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         logger = logging.getLogger(__name__)
 
+        name_serv = text_data_json["name_serv"]
         idMatch = text_data_json["idMatch"]
+
+        serv = self.players.get(name_serv, None)
+        if not serv:
+            logger.info("Server not find : %s", name_serv)
+            return
+        player = serv.get(idMatch, None)
+        if not serv:
+            logger.info("player not find : %s", idMatch)
+            return
+
         player_id = text_data_json["playerId"]
         orientation = text_data_json["playerDirection"]
         isReady = text_data_json["isReady"]
         username = text_data_json["username"]
+        logger.info('%s', name_serv)
         logger.info('%s', idMatch)
         logger.info('%s', player_id)
         logger.info('%s', orientation)
         logger.info('%s', isReady)
         logger.info('%s', username)
     
-        player = self.players.get(idMatch, None)
-        if not player:
-            return
-        logger.info('id Match -----------------> %s', player["idMatch"])
         
-        player["move"] = orientation
-        player["idMatch"] = idMatch
-        player["idPlayer"] = player_id
-        player["isReady"] = isReady
-        player["username"] = username
+        logger.info('id Match -----------------> %s', idMatch)
+        
+        self.players[name_serv]["move"] = orientation
+        self.players[name_serv]["idMatch"] = idMatch
+        self.players[name_serv]["idPlayer"] = player_id
+        self.players[name_serv]["isReady"] = isReady
+        self.players[name_serv]["username"] = username
 
     async def state_update(self, event):
         # Handler for state_update messages
@@ -127,7 +135,7 @@ class GameRoom(AsyncWebsocketConsumer):
             'gameIsFinished': game_is_finished
         }))
 
-    async def game_loop(self):
+    async def game_loop(self, serv):
         logger = logging.getLogger(__name__)
         logger.info('innit info')
         field_high = 15.4
@@ -157,17 +165,17 @@ class GameRoom(AsyncWebsocketConsumer):
 
         i = 0
         logger.info('Will set player info')
-        for player in self.players.values():
+        for player in self.players[serv].values():
             logger.info('Set player info')
             if i == 0:
                 player1_id = player["idMatch"]
                 player["x"] = 0 - field_length / 2
-                player["y"] = field_high / 2
+                player["y"] = 0
                 logger.info('%s', player1_id)
             elif i == 1:
                 player2_id = player["idMatch"]
                 player["x"] = 0 + field_length / 2
-                player["y"] = field_high / 2
+                player["y"] = 0
                 logger.info('%s', player2_id)
             i += 1
 
@@ -175,11 +183,11 @@ class GameRoom(AsyncWebsocketConsumer):
             logger.info('Player ?')
             if len(self.players) == 2:
                 logger.info('Two player log')
-                if self.players[player1_id]["isReady"] == True:
+                if self.players[serv][player1_id]["isReady"] == True:
                     logger.info("Player 1 ready")
-                if self.players[player2_id]["isReady"] == True:
+                if self.players[serv][player2_id]["isReady"] == True:
                     logger.info("Player 2 ready")
-                if (self.players[player1_id]["isReady"] == True and self.players[player2_id]["isReady"] == True):
+                if (self.players[serv][player1_id]["isReady"] == True and self.players[serv][player2_id]["isReady"] == True):
                     logger.info('Two player Ready')
                     isStarting = True
                     ball_dx = random.choice([-1, 1])
@@ -195,8 +203,8 @@ class GameRoom(AsyncWebsocketConsumer):
             self.game_group_name,
             {
                 "type": "state_update",
-                "player_1": self.players[player1_id],
-                "player_2": self.players[player2_id],
+                "player_1": self.players[serv][player1_id],
+                "player_2": self.players[serv][player2_id],
                 "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
                 "isGoal": isGoal,
                 "countdown": countdown,
@@ -212,12 +220,12 @@ class GameRoom(AsyncWebsocketConsumer):
             # Update coordinate of all player
             if (isGoal):
                 logger.info('Goal')
-                self.players[player1_id]["x"] = 0 - field_length / 2
-                self.players[player1_id]["y"] = field_high / 2
-                self.players[player1_id]["move"] = "none"
-                self.players[player2_id]["x"] = 0 + field_length / 2
-                self.players[player2_id]["y"] = field_high / 2
-                self.players[player2_id]["move"] = "none"
+                self.players[serv][player1_id]["x"] = 0 - field_length / 2
+                self.players[serv][player1_id]["y"] = 0
+                self.players[serv][player1_id]["move"] = "none"
+                self.players[serv][player2_id]["x"] = 0 + field_length / 2
+                self.players[serv][player2_id]["y"] = 0
+                self.players[serv][player2_id]["move"] = "none"
                 ball_x = 0
                 ball_y = 0
                 ball_dx = 0
@@ -229,8 +237,8 @@ class GameRoom(AsyncWebsocketConsumer):
                 self.game_group_name,
                 {
                     "type": "state_update",
-                    "player_1": self.players[player1_id],
-                    "player_2": self.players[player2_id],
+                    "player_1": self.players[serv][player1_id],
+                    "player_2": self.players[serv][player2_id],
                     "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
                     "isGoal": isGoal,
                     "countdown": countdown,
@@ -248,7 +256,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 isGoal = False
 
                 while True:
-                    if (self.players[player1_id]["isReady"] == True and self.players[player2_id]["isReady"] == True):
+                    if (self.players[serv][player1_id]["isReady"] == True and self.players[serv][player2_id]["isReady"] == True):
                         break
                     await asyncio.sleep(1)
                 
@@ -256,8 +264,8 @@ class GameRoom(AsyncWebsocketConsumer):
                 self.game_group_name,
                 {
                     "type": "state_update",
-                    "player_1": self.players[player1_id],
-                    "player_2": self.players[player2_id],
+                    "player_1": self.players[serv][player1_id],
+                    "player_2": self.players[serv][player2_id],
                     "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
                     "isGoal": isGoal,
                     "countdown": countdown,
@@ -273,10 +281,10 @@ class GameRoom(AsyncWebsocketConsumer):
                         player["y"] -= player_speed * timePerFrame
                     if player["move"] == "down":
                         player["y"] += player_speed * timePerFrame
-                    if player["y"] <= player_size:
-                        player["y"] = player_size
-                    if player["y"] >= field_high - player_size:
-                        player["y"] = field_high - player_size
+                    if player["y"] <= -field_high/2 - player_size:
+                        player["y"] = -field_high/2 - player_size
+                    if player["y"] >= field_high/2 - player_size:
+                        player["y"] = field_high/2 - player_size
                 
                 # Update coordinate of the ball
                 ball_x += ball_speed * ball_dx * timePerFrame
@@ -289,35 +297,35 @@ class GameRoom(AsyncWebsocketConsumer):
 
                 # Ball collision with left/right wall (Goal)
                 if ((ball_x - ball_size) <= (-field_length/2) - 0.1): # collision with left wall detected, player_2 score a goal
-                    self.players[player2_id]["score"] += 1
-                    self.players[player2_id]["isReady"] = False
-                    self.players[player1_id]["isReady"] = False
+                    self.players[serv][player2_id]["score"] += 1
+                    self.players[serv][player2_id]["isReady"] = False
+                    self.players[serv][player1_id]["isReady"] = False
                     isGoal = True
                 if ((ball_x + ball_size) >= (field_length/2) + 0.1): # collision with right wall detected, player_1 score a goal
-                    self.players[player1_id]["score"] += 1
-                    self.players[player2_id]["isReady"] = False
-                    self.players[player1_id]["isReady"] = False
+                    self.players[serv][player1_id]["score"] += 1
+                    self.players[serv][player2_id]["isReady"] = False
+                    self.players[serv][player1_id]["isReady"] = False
                     isGoal = True
 
                 # Ball collision with player
                 if (ball_dx > 0): # Check collision with player_2
-                    if (abs((ball_x + ball_size) - self.players[player2_id]["x"]) < 0.1 and abs(ball_y - self.players[player2_id]["y"]) < player_size): # Collision detected
+                    if (abs((ball_x + ball_size) - self.players[serv][player2_id]["x"]) < 0.1 and abs(ball_y - self.players[serv][player2_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
-                        ball_dy = (ball_y - self.players[player2_id]["y"]) / player_size
+                        ball_dy = (ball_y - self.players[serv][player2_id]["y"]) / player_size
                         ball_speed += ball_speed_gain_per_hit
                 if (ball_dx < 0): # Check collision with player_1
-                    if (abs((ball_x - ball_size) - self.players[player1_id]["x"]) < 0.1 and abs(ball_y - self.players[player1_id]["y"]) < player_size): # Collision detected
+                    if (abs((ball_x - ball_size) - self.players[serv][player1_id]["x"]) < 0.1 and abs(ball_y - self.players[serv][player1_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
-                        ball_dy = (ball_y - self.players[player1_id]["y"]) / player_size
+                        ball_dy = (ball_y - self.players[serv][player1_id]["y"]) / player_size
                         ball_speed += ball_speed_gain_per_hit
             
             # Send signal when game is finished
-            if (self.players[player1_id]["score"] == 5 or self.players[player2_id]["score"] == 5):
+            if (self.players[serv][player1_id]["score"] == 5 or self.players[serv][player2_id]["score"] == 5):
                 gameIsFinished = True
-                if (self.players[player1_id]["score"] == 5):
-                    self.players[player1_id]["isWin"] = True
-                if (self.players[player2_id]["score"] == 5):
-                    self.players[player2_id]["isWin"] = True
+                if (self.players[serv][player1_id]["score"] == 5):
+                    self.players[serv][player1_id]["isWin"] = True
+                if (self.players[serv][player2_id]["score"] == 5):
+                    self.players[serv][player2_id]["isWin"] = True
 
             # Send info to all player
             countForInfo += 1
@@ -326,8 +334,8 @@ class GameRoom(AsyncWebsocketConsumer):
                     self.game_group_name,
                     {
                         "type": "state_update",
-                        "player_1": self.players[player1_id],
-                        "player_2": self.players[player2_id],
+                        "player_1": self.players[serv][player1_id],
+                        "player_2": self.players[serv][player2_id],
                         "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
                         "isGoal": isGoal,
                         "countdown": countdown,
@@ -341,8 +349,8 @@ class GameRoom(AsyncWebsocketConsumer):
 
         timeEndGame = time.time()
         timeGame = timeEndGame - timeStartGame
-        player1 = self.players[player1_id]["idPlayer"]
-        player2 = self.players[player2_id]["idPlayer"]
+        player1 = self.players[serv][player1_id]["idPlayer"]
+        player2 = self.players[serv][player2_id]["idPlayer"]
         updateUserStatistic(player1["idPlayer"], player1["isWin"], player1["nbTouchBall"], player1["nbAce"], player1["nbLongestExchange"], player1["score"], player2["score"])
         updateUserStatistic(player2["idPlayer"], player2["isWin"], player2["nbTouchBall"], player2["nbAce"], player2["nbLongestExchange"], player2["score"], player1["score"])
         from . models import HistoryModel
