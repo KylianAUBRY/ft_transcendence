@@ -40,13 +40,13 @@ class GameRoom(AsyncWebsocketConsumer):
         self.players[self.player_id] = {
             "idMatch": self.player_id,
             "idPlayer": 0,
+            "isReady": False,
+            "move" : "none",
             "username": "",
             "x" : 0,
             "y" : 0,
-            "move" : "none",
             "score": 0,
             "isWin": False,
-            "isReady": False,
             "nbTouchPerRound": 0,
             "nbTouchBall": 0,
             "nbAce": 0,
@@ -72,29 +72,27 @@ class GameRoom(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         logger = logging.getLogger(__name__)
 
-        try:
-            idMatch = text_data_json["idMatch"]
-            player_id = text_data_json["playerId"]
-            orientation = text_data_json["playerDirection"]
-            isReady = text_data_json["isReady"]
-            username = text_data_json["username"]
-            logger.info('%s', idMatch)
-            logger.info('%s', player_id)
-            logger.info('%s', orientation)
-            logger.info('%s', isReady)
-            logger.info('%s', username)
+        idMatch = text_data_json["idMatch"]
+        player_id = text_data_json["playerId"]
+        orientation = text_data_json["playerDirection"]
+        isReady = text_data_json["isReady"]
+        username = text_data_json["username"]
+        logger.info('%s', idMatch)
+        logger.info('%s', player_id)
+        logger.info('%s', orientation)
+        logger.info('%s', isReady)
+        logger.info('%s', username)
+    
+        player = self.players.get(idMatch, None)
+        if not player:
+            return
+        logger.info('id Match -----------------> %s', player["idMatch"])
         
-            player = self.players.get(idMatch, None)
-            if not player:
-                return
-            
-            player["move"] = orientation
-            player["idMatch"] = idMatch
-            player["idPlayer"] = player_id
-            player["isReady"] = isReady
-            player["username"] = username
-        except:
-            logger.info("Problem in text_data_json")
+        player["move"] = orientation
+        player["idMatch"] = idMatch
+        player["idPlayer"] = player_id
+        player["isReady"] = isReady
+        player["username"] = username
     
     async def state_update(self, event):
         await self.send(
@@ -138,10 +136,12 @@ class GameRoom(AsyncWebsocketConsumer):
                 player1_id = player["idMatch"]
                 player["x"] = 0
                 player["y"] = field_high / 2
+                logger.info('%s', player1_id)
             elif i == 1:
                 player2_id = player["idMatch"]
                 player["x"] = 22
                 player["y"] = field_high / 2
+                logger.info('%s', player2_id)
                 i += 1
 
         while isStarting==False:
