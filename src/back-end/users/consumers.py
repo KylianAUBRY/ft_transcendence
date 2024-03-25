@@ -12,10 +12,11 @@ from asgiref.sync import async_to_sync
 from . utils import updateUserStatistic
   
 class GameRoom(AsyncWebsocketConsumer):
+    players = {}
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.players = {}
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.players = {}
 
     async def connect(self): 
         name_serv = self.scope['url_route']['kwargs']['room_name']
@@ -82,17 +83,18 @@ class GameRoom(AsyncWebsocketConsumer):
             logger.info('%s', orientation)
             logger.info('%s', isReady)
             logger.info('%s', username)
+        
+            player = self.players.get(idMatch, None)
+            if not player:
+                return
+            
+            player["move"] = orientation
+            player["idMatch"] = idMatch
+            player["idPlayer"] = player_id
+            player["isReady"] = isReady
+            player["username"] = username
         except:
             logger.info("Problem in text_data_json")
-        player = self.players.get(idMatch, None)
-        if not player:
-            return
-        
-        player["move"] = orientation
-        player["idMatch"] = idMatch
-        player["idPlayer"] = player_id
-        player["isReady"] = isReady
-        player["username"] = username
     
     async def state_update(self, event):
         await self.send(
@@ -107,16 +109,16 @@ class GameRoom(AsyncWebsocketConsumer):
     async def game_loop(self):
         logger = logging.getLogger(__name__)
         logger.info('innit info')
+        field_high = 15.4
+        field_length = 22
         player_speed = 2
-        player_size = 3
-        ball_x = 15
-        ball_y = 10
+        player_size = 1
+        ball_x = field_length / 2
+        ball_y = field_high / 2
         ball_dx = 0
         ball_dy = 0
         ball_speed = 2
-        ball_size = 1
-        field_high = 20
-        field_length = 30
+        ball_size = 0.207
         countdown = 3
         isGoal = False
         gameIsFinished = False
@@ -129,19 +131,21 @@ class GameRoom(AsyncWebsocketConsumer):
         timePerFrame = 0.1
 
         i = 0
+        logger.info('Will set player info')
         for player in self.players.values():
             logger.info('Set player info')
             if i == 0:
                 player1_id = player["idMatch"]
-                player["x"] = 1
-                player["y"] = 10
+                player["x"] = 0
+                player["y"] = field_high / 2
             elif i == 1:
                 player2_id = player["idMatch"]
-                player["x"] = 29
-                player["y"] = 10
+                player["x"] = 22
+                player["y"] = field_high / 2
                 i += 1
 
         while isStarting==False:
+            logger.info('Player ?')
             if len(self.players) == 2:
                 logger.info('Two player log')
                 if self.players[player1_id]["isReady"] == True:
@@ -166,7 +170,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 "type": "state_update",
                 "player_1": self.players[player1_id],
                 "player_2": self.players[player2_id],
-                "ball": {ball_x, ball_y, ball_dx, ball_dy},
+                "ball": {ball_x, ball_y, ball_dx, ball_dy, ball_speed},
                 "isGoal": isGoal,
                 "countdown": countdown,
                 "isStarting": isStarting,
@@ -181,14 +185,14 @@ class GameRoom(AsyncWebsocketConsumer):
             # Update coordinate of all player
             if (isGoal):
                 logger.info('Goal')
-                self.players[player1_id]["x"] = 1
-                self.players[player1_id]["y"] = 10
+                self.players[player1_id]["x"] = 0
+                self.players[player1_id]["y"] = field_high / 2
                 self.players[player1_id]["move"] = "none"
-                self.players[player2_id]["x"] = 29
-                self.players[player2_id]["y"] = 10
+                self.players[player2_id]["x"] = 22
+                self.players[player2_id]["y"] = field_high / 2
                 self.players[player2_id]["move"] = "none"
-                ball_x = 15
-                ball_y = 10
+                ball_x = field_length / 2
+                ball_y = field_high / 2
                 ball_dx = 0
                 ball_dy = 0
                 ball_speed = 2
@@ -221,7 +225,7 @@ class GameRoom(AsyncWebsocketConsumer):
                     "type": "state_update",
                     "player_1": self.players[player1_id],
                     "player_2": self.players[player2_id],
-                    "ball": {ball_x, ball_y, ball_dx, ball_dy},
+                    "ball": {ball_x, ball_y, ball_dx, ball_dy, ball_speed},
                     "isGoal": isGoal,
                     "countdown": countdown,
                     "isStarting": isStarting,
@@ -249,16 +253,16 @@ class GameRoom(AsyncWebsocketConsumer):
                 # Check collision
 
                 # Ball collision with upper wall or down wall
-                if ((ball_y - ball_size) <= timePerFrame or (ball_y + ball_size) >= field_high - timePerFrame): 
+                if ((ball_y - ball_size) <= 0 or (ball_y + ball_size) >= field_high): 
                     ball_y *= -1
 
                 # Ball collision with left/right wall (Goal)
-                if ((ball_x - ball_size) < 0.2): # collision with left wall detected, player_2 score a goal
+                if ((ball_x - ball_size) < -0.2): # collision with left wall detected, player_2 score a goal
                     self.players[player2_id]["score"] += 1
                     self.players[player2_id]["isReady"] = False
                     self.players[player1_id]["isReady"] = False
                     isGoal = True
-                if ((ball_x + ball_size) < 0.2): # collision with right wall detected, player_1 score a goal
+                if ((ball_x + ball_size) < -0.2): # collision with right wall detected, player_1 score a goal
                     self.players[player1_id]["score"] += 1
                     self.players[player2_id]["isReady"] = False
                     self.players[player1_id]["isReady"] = False
@@ -266,12 +270,12 @@ class GameRoom(AsyncWebsocketConsumer):
 
                 # Ball collision with player
                 if (ball_dx > 0): # Check collision with player_2
-                    if (abs((ball_x + ball_size) - self.players[player2_id]["x"]) < 0.5 and abs(ball_y - self.players[player2_id]["y"]) < player_size): # Collision detected
+                    if (abs((ball_x + ball_size) - self.players[player2_id]["x"]) < 0.1 and abs(ball_y - self.players[player2_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
                         ball_dy = (ball_y - self.players[player2_id]["y"]) % player_size
                         ball_speed += 0.2
                 if (ball_dx < 0): # Check collision with player_1
-                    if (abs((ball_x - ball_size) - self.players[player1_id]["x"]) < 0.5 and abs(ball_y - self.players[player1_id]["y"]) < player_size): # Collision detected
+                    if (abs((ball_x - ball_size) - self.players[player1_id]["x"]) < 0.1 and abs(ball_y - self.players[player1_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
                         ball_dy = (ball_y - self.players[player1_id]["y"]) % player_size
                         ball_speed += 0.2
@@ -291,7 +295,7 @@ class GameRoom(AsyncWebsocketConsumer):
                     "type": "state_update",
                     "player_1": self.players[player1_id],
                     "player_2": self.players[player2_id],
-                    "ball": {ball_x, ball_y, ball_dx, ball_dy},
+                    "ball": {ball_x, ball_y, ball_dx, ball_dy, ball_speed},
                     "isGoal": isGoal,
                     "countdown": countdown,
                     "isStarting": isStarting,
