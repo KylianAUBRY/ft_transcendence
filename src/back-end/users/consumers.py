@@ -60,8 +60,6 @@ class GameRoom(AsyncWebsocketConsumer):
     async def disconnect(self, close_code): 
         logger = logging.getLogger(__name__)
         logger.info('Player disconnect %s', self.players[self.player_id]["idPlayer"])
-        if self.player_id in self.players:
-            del self.players[self.player_id]
 
         await self.channel_layer.group_discard(
             self.game_group_name, self.channel_name
@@ -93,16 +91,30 @@ class GameRoom(AsyncWebsocketConsumer):
         player["idPlayer"] = player_id
         player["isReady"] = isReady
         player["username"] = username
-    
+
     async def state_update(self, event):
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "stateUpdate",
-                    "objects": event["objects"],
-                }
-            )
-        )
+        # Handler for state_update messages
+        player_1 = event["player_1"]
+        player_2 = event["player_2"]
+        ball = event["ball"]
+        is_goal = event["isGoal"]
+        countdown = event["countdown"]
+        is_starting = event["isStarting"]
+        game_is_finished = event["gameIsFinished"]
+
+        # Handle the state update message as needed
+        # You can update the state of your WebSocket connection, send messages to clients, etc.
+        # For example, you might send the updated state to the client:
+        await self.send(text_data=json.dumps({
+            'type': 'state_update',
+            'player_1': player_1,
+            'player_2': player_2,
+            'ball': ball,
+            'isGoal': is_goal,
+            'countdown': countdown,
+            'isStarting': is_starting,
+            'gameIsFinished': game_is_finished
+        }))
 
     async def game_loop(self):
         logger = logging.getLogger(__name__)
@@ -170,7 +182,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 "type": "state_update",
                 "player_1": self.players[player1_id],
                 "player_2": self.players[player2_id],
-                "ball": {ball_x, ball_y, ball_dx, ball_dy, ball_speed},
+                "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
                 "isGoal": isGoal,
                 "countdown": countdown,
                 "isStarting": isStarting,
