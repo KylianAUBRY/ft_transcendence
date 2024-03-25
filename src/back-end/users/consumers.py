@@ -72,16 +72,6 @@ class GameRoom(AsyncWebsocketConsumer):
 
         name_serv = text_data_json["name_serv"]
         idMatch = text_data_json["idMatch"]
-
-        serv = self.players.get(name_serv, None)
-        if not serv:
-            logger.info("Server not find : %s", name_serv)
-            return
-        player = serv.get(idMatch, None)
-        if not serv:
-            logger.info("player not find : %s", idMatch)
-            return
-
         player_id = text_data_json["playerId"]
         orientation = text_data_json["playerDirection"]
         isReady = text_data_json["isReady"]
@@ -184,6 +174,8 @@ class GameRoom(AsyncWebsocketConsumer):
             logger.info('Player ?')
             if len(self.players[serv]) == 2:
                 logger.info('Two player log')
+                logger.info('Player 1 : %s', self.players[serv][player1_id]["username"])
+                logger.info('Player 2 : %s', self.players[serv][player2_id]["username"])
                 if self.players[serv][player1_id]["isReady"] == True:
                     logger.info("Player 1 ready")
                 if self.players[serv][player2_id]["isReady"] == True:
@@ -354,7 +346,10 @@ class GameRoom(AsyncWebsocketConsumer):
         player2 = self.players[serv][player2_id]["idPlayer"]
         updateUserStatistic(player1["idPlayer"], player1["isWin"], player1["nbTouchBall"], player1["nbAce"], player1["nbLongestExchange"], player1["score"], player2["score"])
         updateUserStatistic(player2["idPlayer"], player2["isWin"], player2["nbTouchBall"], player2["nbAce"], player2["nbLongestExchange"], player2["score"], player1["score"])
-        from . models import HistoryModel
+        
+        from . models import HistoryModel, GameServerModel
         HistoryModel.objects.create(userId=player1["idPlayer"], userUsername=player1["username"], opponentId=player2["idPlayer"], opponentUsername=player2["username"], userScore=player1["score"], opponentScore=player2["score"], isWin=player1["isWin"], gameDate=date.today(), gameTime=timeGame)
         HistoryModel.objects.create(userId=player2["idPlayer"], userUsername=player2["username"], opponentId=player1["idPlayer"], opponentUsername=player1["username"], userScore=player2["score"], opponentScore=player1["score"], isWin=player2["isWin"], gameDate=date.today(), gameTime=timeGame)
-        # Delete GameServerModel
+        
+        game_server = GameServerModel.objects.filter(pk=int(serv))
+        game_server.delete()
