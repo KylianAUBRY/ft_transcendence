@@ -12,10 +12,11 @@ from asgiref.sync import async_to_sync
 from . utils import updateUserStatistic
   
 class GameRoom(AsyncWebsocketConsumer):
+    players = {}
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.players = {}
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.players = {}
 
     async def connect(self): 
         name_serv = self.scope['url_route']['kwargs']['room_name']
@@ -303,12 +304,12 @@ class GameRoom(AsyncWebsocketConsumer):
                 if (ball_dx > 0): # Check collision with player_2
                     if (abs((ball_x + ball_size) - self.players[player2_id]["x"]) < 0.1 and abs(ball_y - self.players[player2_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
-                        ball_dy = (ball_y - self.players[player2_id]["y"]) % player_size
+                        ball_dy = (ball_y - self.players[player2_id]["y"]) / player_size
                         ball_speed += ball_speed_gain_per_hit
                 if (ball_dx < 0): # Check collision with player_1
                     if (abs((ball_x - ball_size) - self.players[player1_id]["x"]) < 0.1 and abs(ball_y - self.players[player1_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
-                        ball_dy = (ball_y - self.players[player1_id]["y"]) % player_size
+                        ball_dy = (ball_y - self.players[player1_id]["y"]) / player_size
                         ball_speed += ball_speed_gain_per_hit
             
             # Send signal when game is finished
