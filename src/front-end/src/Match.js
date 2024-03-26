@@ -1,14 +1,34 @@
-import React from 'react'
+import React, {useState} from 'react'
 import './Match.css'
 
-const Match = () => {
-    var match = document.getElementById('match')
-    if (match)
-        match.style.background = 'green'
-  
+
+
+
+const Match = (matchObject) => {
+    console.log('MATCH ', matchObject)
+    const id = matchObject.matchObject.gameId
+    var match = document.getElementById(`match${id}`)
+
+
+
+    if (matchObject.matchObject.isWin){
+        try{
+            match.style.background = 'green'
+        } catch{}
+    }
+        
+    console.log(id)
+
+    const opponentUsername = matchObject.matchObject.opponentUsername
+    const score = matchObject.matchObject.userScore + ' - ' + matchObject.matchObject.opponentScore
+    const date = matchObject.matchObject.gameDate
+    const time = matchObject.matchObject.gameTime
     return (
-        <div className='match' id='match'><p className='username'>VS ?username</p><p className='score'>score</p><p className='date'>date - time</p>
+        <>
+        <div className='match' id={`match${id}`}>
+            <p className='username'>VS {opponentUsername}</p><p className='score'>{score}</p><p className='date'>{date} - {time} sec</p>
         </div>
+        </>
         );
   };
   

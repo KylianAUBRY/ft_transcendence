@@ -1224,7 +1224,7 @@ var profil = document.getElementById('profil')
 
 
 
-const matchArray = Array.from({ length: 42 });
+const [matchArray, setMatchArray] = useState([]);
 
 const chartRef = useRef(null)
 const chartRef2 = useRef(null)
@@ -1256,7 +1256,7 @@ function getChart() {
         nbTouchedBall = user.nbTouchedBall
         name = user.username
         winRate = user.winRate
-        userId = user.userId
+        userId = user.user_id
         language = user.language
         color = user.color
         music = user.music
@@ -1327,6 +1327,39 @@ function getChart() {
         }).catch(function(err){
           console.error(err)
         })
+
+        fetch(baseUrl + ':8080/' + 'api/history', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: userId
+          }),
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        }).then(function(data){
+          console.log(data)
+          try {
+            // Pas besoin d'analyser les données JSON car elles sont déjà au format JSON
+            const objets = data; // Les données sont déjà un tableau d'objets
+            // Mettre à jour l'état avec les données récupérées
+            setMatchArray(objets);
+            console.log("Données traitées avec succès :", objets);
+        } catch (error) {
+            console.error("Erreur lors du traitement des données :", error);
+        }
+
+
+
+        });
+        
+
+
+
       }
 
 }
@@ -1390,10 +1423,12 @@ function handle42register(){
                     <p ref={ref8} id='nbPointLose'></p>
                   </div>
                   <div className='history'>
-                    {matchArray.map((_, index) => (
-                      <Match key={index} />
+                  {matchArray.map((matchObject, index) => (
+                        <Match key={index} matchObject={matchObject} />
                     ))}
+    
                   </div>
+                  
                 </div>
                 </div>  
             ) : null}
