@@ -148,12 +148,12 @@ class GameRoom(AsyncWebsocketConsumer):
         field_high = 15.4
         field_length = 22
         player_speed = 2
-        player_size = 1
+        player_size = 5
         ball_x = 0
         ball_y = 0
         ball_dx = 0
         ball_dy = 0
-        ball_speed = 2
+        ball_speed = 5
         ball_speed_gain_per_hit = 0.2
         ball_size = 0.207
         countdown = 3
@@ -366,6 +366,8 @@ class GameRoom(AsyncWebsocketConsumer):
         
         try:
             game_server = GameServerModel.objects.filter(pk=int(serv)).first()
+            if not game_server:
+                logger.info('GameServerModel Not Found : %s', error)
             logger.info("---------------------------------------------------")
             logger.info("%s", game_server.serverId)
             logger.info("%s", game_server.firstPlayerId)
@@ -374,4 +376,4 @@ class GameRoom(AsyncWebsocketConsumer):
             logger.info("---------------------------------------------------")
             game_server.delete()
         except Exception as error:
-            logger.info("Error in GameServerModel---------------", error)
+            logger.info("Error in GameServerModel--------------- : %s", error)
