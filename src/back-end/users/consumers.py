@@ -8,7 +8,7 @@ import logging
 
 from datetime import date
 from channels.generic.websocket import AsyncWebsocketConsumer
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 from . utils import updateUserStatistic
   
 class GameRoom(AsyncWebsocketConsumer):
@@ -310,27 +310,27 @@ class GameRoom(AsyncWebsocketConsumer):
                     self.players[serv][player2_id]["isReady"] = False
                     self.players[serv][player1_id]["isReady"] = False
                     isGoal = True
-                    logger.info('%s %s ------ %s %s', ball_x, ball_y, self.players[serv][player1_id]["x"], self.players[serv][player1_id]["y"])
+                    logger.info('GOAL FOR PLAYER 2 :\n\n%s %s ------ %s %s\n\n', ball_x, ball_y, self.players[serv][player1_id]["x"], self.players[serv][player1_id]["y"])
                 if ((ball_x + ball_size) >= (field_length/2) + 1): # collision with right wall detected, player_1 score a goal
                     self.players[serv][player1_id]["score"] += 1
                     self.players[serv][player2_id]["isReady"] = False
                     self.players[serv][player1_id]["isReady"] = False
                     isGoal = True
-                    logger.info('%s %s ------ %s %s', ball_x, ball_y, self.players[serv][player2_id]["x"], self.players[serv][player2_id]["y"])
+                    logger.info('GOAL FOR PLAYER 1 :\n\n%s %s ------ %s %s\n\n', ball_x, ball_y, self.players[serv][player2_id]["x"], self.players[serv][player2_id]["y"])
 
                 # Ball collision with player
                 if (ball_dx > 0): # Check collision with player_2
-                    if (abs((ball_x + ball_size) - self.players[serv][player2_id]["x"]) < 0.1 and abs(ball_y - self.players[serv][player2_id]["y"]) < player_size): # Collision detected
+                    if (abs((ball_x + ball_size) - self.players[serv][player2_id]["x"]) < 0.2 and abs(ball_y - self.players[serv][player2_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
                         ball_dy = (ball_y - self.players[serv][player2_id]["y"]) / player_size
                         ball_speed += ball_speed_gain_per_hit
-                        logger.info('%s %s ------ %s %s', ball_x, ball_y, self.players[serv][player2_id]["x"], self.players[serv][player2_id]["y"])
+                        logger.info('COLLISION WITH PLAYER 2 :\n\n%s %s ------ %s %s\n\n', ball_x, ball_y, self.players[serv][player2_id]["x"], self.players[serv][player2_id]["y"])
                 if (ball_dx < 0): # Check collision with player_1
-                    if (abs((ball_x - ball_size) - self.players[serv][player1_id]["x"]) < 0.1 and abs(ball_y - self.players[serv][player1_id]["y"]) < player_size): # Collision detected
+                    if (abs((ball_x - ball_size) - self.players[serv][player1_id]["x"]) < 0.2 and abs(ball_y - self.players[serv][player1_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
                         ball_dy = (ball_y - self.players[serv][player1_id]["y"]) / player_size
                         ball_speed += ball_speed_gain_per_hit
-                        logger.info('%s %s ------ %s %s', ball_x, ball_y, self.players[serv][player1_id]["x"], self.players[serv][player1_id]["y"])
+                        logger.info('COLLISION WITH PLAYER 1 :\n\n%s %s ------ %s %s\n\n', ball_x, ball_y, self.players[serv][player1_id]["x"], self.players[serv][player1_id]["y"])
             
             # Send signal when game is finished
             if (self.players[serv][player1_id]["score"] == 5 or self.players[serv][player2_id]["score"] == 5):
@@ -364,8 +364,8 @@ class GameRoom(AsyncWebsocketConsumer):
         timeGame = timeEndGame - timeStartGame
         player1 = self.players[serv][player1_id]
         player2 = self.players[serv][player2_id]
-        updateUserStatistic(player1["idPlayer"], player1["isWin"], player1["nbTouchBall"], player1["nbAce"], player1["nbLongestExchange"], player1["score"], player2["score"])
-        updateUserStatistic(player2["idPlayer"], player2["isWin"], player2["nbTouchBall"], player2["nbAce"], player2["nbLongestExchange"], player2["score"], player1["score"])
+        sync_to_async(updateUserStatistic(player1["idPlayer"], player1["isWin"], player1["nbTouchBall"], player1["nbAce"], player1["nbLongestExchange"], player1["score"], player2["score"]))
+        sync_to_async(updateUserStatistic(player2["idPlayer"], player2["isWin"], player2["nbTouchBall"], player2["nbAce"], player2["nbLongestExchange"], player2["score"], player1["score"]))
         
         from . models import HistoryModel, GameServerModel
         HistoryModel.objects.create(userId=player1["idPlayer"], userUsername=player1["username"], opponentId=player2["idPlayer"], opponentUsername=player2["username"], userScore=player1["score"], opponentScore=player2["score"], isWin=player1["isWin"], gameDate=date.today(), gameTime=timeGame)
