@@ -227,7 +227,12 @@ class GameRoom(AsyncWebsocketConsumer):
             logger.info('Routine start')
             # Update coordinate of all player
             if (isGoal):
-                logger.info('Goal')
+
+                while True:
+                    if (self.players[serv][player1_id]["isReady"] == True and self.players[serv][player2_id]["isReady"] == True):
+                        break
+                    await asyncio.sleep(1)
+
                 self.players[serv][player1_id]["x"] = 0 - field_length / 2
                 self.players[serv][player1_id]["y"] = 0
                 self.players[serv][player1_id]["move"] = "none"
@@ -262,11 +267,6 @@ class GameRoom(AsyncWebsocketConsumer):
                     if ball_dy != 0:
                         break
                 isGoal = False
-
-                while True:
-                    if (self.players[serv][player1_id]["isReady"] == True and self.players[serv][player2_id]["isReady"] == True):
-                        break
-                    await asyncio.sleep(1)
                 
                 await self.channel_layer.group_send(
                 self.game_group_name,
@@ -286,9 +286,9 @@ class GameRoom(AsyncWebsocketConsumer):
                 logger.info('Not goal')
                 for player in self.players[serv].values():
                     if player["move"] == "up":
-                        player["y"] -= player_speed * timePerFrame
-                    if player["move"] == "down":
                         player["y"] += player_speed * timePerFrame
+                    if player["move"] == "down":
+                        player["y"] -= player_speed * timePerFrame
                     if player["y"] <= -field_high/2 + player_size:
                         player["y"] = -field_high/2 + player_size
                     if player["y"] >= field_high/2 - player_size:
@@ -337,7 +337,7 @@ class GameRoom(AsyncWebsocketConsumer):
 
             # Send info to all player
             countForInfo += 1
-            if countForInfo == 60 / nbInfoPerSecond or gameIsFinished:
+            if countForInfo == 60 / nbInfoPerSecond or gameIsFinished or isGoal:
                 await self.channel_layer.group_send(
                     self.game_group_name,
                     {
