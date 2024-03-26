@@ -364,15 +364,14 @@ class GameRoom(AsyncWebsocketConsumer):
         timeGame = timeEndGame - timeStartGame
         player1 = self.players[serv][player1_id]
         player2 = self.players[serv][player2_id]
-        sync_to_async(updateUserStatistic(player1["idPlayer"], player1["isWin"], player1["nbTouchBall"], player1["nbAce"], player1["nbLongestExchange"], player1["score"], player2["score"]))
-        sync_to_async(updateUserStatistic(player2["idPlayer"], player2["isWin"], player2["nbTouchBall"], player2["nbAce"], player2["nbLongestExchange"], player2["score"], player1["score"]))
+        await sync_to_async(updateUserStatistic(player1["idPlayer"], player1["isWin"], player1["nbTouchBall"], player1["nbAce"], player1["nbLongestExchange"], player1["score"], player2["score"]))
+        await sync_to_async(updateUserStatistic(player2["idPlayer"], player2["isWin"], player2["nbTouchBall"], player2["nbAce"], player2["nbLongestExchange"], player2["score"], player1["score"]))
         
         from . models import HistoryModel, GameServerModel
-        HistoryModel.objects.create(userId=player1["idPlayer"], userUsername=player1["username"], opponentId=player2["idPlayer"], opponentUsername=player2["username"], userScore=player1["score"], opponentScore=player2["score"], isWin=player1["isWin"], gameDate=date.today(), gameTime=timeGame)
-        HistoryModel.objects.create(userId=player2["idPlayer"], userUsername=player2["username"], opponentId=player1["idPlayer"], opponentUsername=player1["username"], userScore=player2["score"], opponentScore=player1["score"], isWin=player2["isWin"], gameDate=date.today(), gameTime=timeGame)
-        
+        await sync_to_async(HistoryModel.objects.create(userId=player1["idPlayer"], userUsername=player1["username"], opponentId=player2["idPlayer"], opponentUsername=player2["username"], userScore=player1["score"], opponentScore=player2["score"], isWin=player1["isWin"], gameDate=date.today(), gameTime=timeGame))
+        await sync_to_async(HistoryModel.objects.create(userId=player2["idPlayer"], userUsername=player2["username"], opponentId=player1["idPlayer"], opponentUsername=player1["username"], userScore=player2["score"], opponentScore=player1["score"], isWin=player2["isWin"], gameDate=date.today(), gameTime=timeGame))        
         try:
-            game_server = GameServerModel.objects.filter(pk=int(serv)).first()
+            game_server = await sync_to_async(GameServerModel.objects.filter(pk=int(serv)).first())
             if not game_server:
                 logger.info('GameServerModel Not Found : %s', error)
             logger.info("---------------------------------------------------")
@@ -381,6 +380,6 @@ class GameRoom(AsyncWebsocketConsumer):
             logger.info("%s", game_server.secondPlayerId)
             logger.info("%s", game_server.state)
             logger.info("---------------------------------------------------")
-            game_server.delete()
+            await sync_to_async(game_server.delete())
         except Exception as error:
             logger.info("Error in GameServerModel--------------- : %s", error)
