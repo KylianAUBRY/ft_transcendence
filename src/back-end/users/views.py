@@ -95,8 +95,8 @@ class UpateUserInfo(APIView):
             if (password != ""):
                 user_obj.password = password
             user_obj.save()
-            Response({"message": "Info updated successfuly"}, status=status.HTTP_200_OK)
-        Response({"message": "Info update failed"}, status=status.HTTP_200_OK)
+            return Response({"message": "Info updated successfuly"}, status=status.HTTP_200_OK)
+        return Response({"message": "Info update failed"}, status=status.HTTP_200_OK)
 
 class UpdateUserOption(APIView):
     permission_classes = [permissions.AllowAny]
