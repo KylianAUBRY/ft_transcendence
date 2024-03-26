@@ -385,7 +385,6 @@ class GameRoom(AsyncWebsocketConsumer):
 
         timeEndGame = timezone.now()
         timeGame = (timeEndGame - timeStartGame).total_seconds()
-        timeGame = str(timeGame)
         player1 = self.players[serv][player1_id]
         player2 = self.players[serv][player2_id]
         updateUserStatistic(player1["idPlayer"], player1["isWin"], player1["nbTouchBall"], player1["nbAce"], player1["nbLongestExchange"], player1["score"], player2["score"])
