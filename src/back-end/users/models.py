@@ -68,7 +68,7 @@ class HistoryModel(models.Model):
 	opponentScore = models.IntegerField(default=-1)
 	isWin = models.BooleanField(default=False)
 	gameDate = models.DateField(default="0000-00-00")
-	gameTime = models.FloatField(default="0")
+	gameTime = models.FloatField(default=0)
 	def __str__(self):
 		return f"{self.gameId} | {self.userId} | {self.opponentId}"
 
