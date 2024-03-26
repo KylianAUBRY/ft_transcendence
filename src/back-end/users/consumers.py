@@ -148,12 +148,12 @@ class GameRoom(AsyncWebsocketConsumer):
         field_high = 15.4
         field_length = 22
         player_speed = 2
-        player_size = 1
+        player_size = 5
         ball_x = 0
         ball_y = 0
         ball_dx = 0
         ball_dy = 0
-        ball_speed = 2
+        ball_speed = 5
         ball_speed_gain_per_hit = 0.2
         ball_size = 0.207
         countdown = 3
@@ -364,5 +364,12 @@ class GameRoom(AsyncWebsocketConsumer):
         HistoryModel.objects.create(userId=player1["idPlayer"], userUsername=player1["username"], opponentId=player2["idPlayer"], opponentUsername=player2["username"], userScore=player1["score"], opponentScore=player2["score"], isWin=player1["isWin"], gameDate=date.today(), gameTime=timeGame)
         HistoryModel.objects.create(userId=player2["idPlayer"], userUsername=player2["username"], opponentId=player1["idPlayer"], opponentUsername=player1["username"], userScore=player2["score"], opponentScore=player1["score"], isWin=player2["isWin"], gameDate=date.today(), gameTime=timeGame)
         
-        game_server = GameServerModel.objects.filter(pk=int(serv)).first()
-        game_server.delete()
+        try:
+            game_server = GameServerModel.objects.filter(pk=int(serv)).first()
+            logger.info('%s', game_server.serverId)
+            logger.info('%s', game_server.firstPlayerId)
+            logger.info('%s', game_server.secondPlayerId)
+            logger.info('%s', game_server.state)
+            game_server.delete()
+        except Exception as error:
+            logger.info('GameServerModel Not Found : %s', error)
