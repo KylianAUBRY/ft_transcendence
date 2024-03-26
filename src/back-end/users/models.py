@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 import datetime
@@ -49,6 +50,8 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 	key3 = models.CharField(max_length=50, default="ArrowLeft")
 	key4 = models.CharField(max_length=50, default="ArrowRight")
 	is_staff = models.BooleanField(default=False)
+	isOnline = models.BooleanField(default=False)
+	friends_list = ArrayField(models.IntegerField())
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
 	objects = AppUserManager()
@@ -65,7 +68,7 @@ class HistoryModel(models.Model):
 	opponentScore = models.IntegerField(default=-1)
 	isWin = models.BooleanField(default=False)
 	gameDate = models.DateField(default="0000-00-00")
-	gameTime = models.TimeField(default="00:00")
+	gameTime = models.FloatField(default="00:00")
 	def __str__(self):
 		return f"{self.gameId} | {self.userId} | {self.opponentId}"
 
