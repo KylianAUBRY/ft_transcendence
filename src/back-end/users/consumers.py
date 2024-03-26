@@ -125,10 +125,12 @@ class GameRoom(AsyncWebsocketConsumer):
             'type': 'state_update',
             'player_1_idMatch': player_1['idMatch'],
             'player_1_id': player_1['idPlayer'],
+            'player_1_score': player_1['score'],
             'player_1_username': player_1['username'],
             'player_1_y': player_1['y'],
             'player_2_idMatch': player_2['idMatch'],
             'player_2_id': player_2['idPlayer'],
+            'player_2_score': player_2['score'],
             'player_2_username': player_2['username'],
             'player_2_y': player_2['y'],
             'ball_x': ball['ball_x'],
@@ -147,8 +149,8 @@ class GameRoom(AsyncWebsocketConsumer):
         logger.info('innit info')
         field_high = 15.4
         field_length = 22
-        player_speed = 2
-        player_size = 5
+        player_speed = 4
+        player_size = 1
         ball_x = 0
         ball_y = 0
         ball_dx = 0
@@ -166,7 +168,7 @@ class GameRoom(AsyncWebsocketConsumer):
         timeEndGame = 0
 
         countForInfo = 0
-        nbInfoPerSecond = 60
+        nbInfoPerSecond = 30
 
         timePerFrame = 0.0166
 
@@ -299,7 +301,7 @@ class GameRoom(AsyncWebsocketConsumer):
 
                 # Ball collision with upper wall or down wall
                 if ((ball_y - ball_size) <= -field_high/2 or (ball_y + ball_size) >= +field_high/2): 
-                    ball_y *= -1
+                    ball_dy *= -1
 
                 # Ball collision with left/right wall (Goal)
                 if ((ball_x - ball_size) <= (-field_length/2)): # collision with left wall detected, player_2 score a goal
