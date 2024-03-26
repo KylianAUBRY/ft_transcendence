@@ -51,7 +51,7 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 	key4 = models.CharField(max_length=50, default="ArrowRight")
 	is_staff = models.BooleanField(default=False)
 	isOnline = models.BooleanField(default=False)
-	friends_list = ArrayField(models.IntegerField())
+	friends_list = ArrayField(models.IntegerField(default=0))
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
 	objects = AppUserManager()
@@ -68,7 +68,7 @@ class HistoryModel(models.Model):
 	opponentScore = models.IntegerField(default=-1)
 	isWin = models.BooleanField(default=False)
 	gameDate = models.DateField(default="0000-00-00")
-	gameTime = models.FloatField(default="00:00")
+	gameTime = models.FloatField(default="0")
 	def __str__(self):
 		return f"{self.gameId} | {self.userId} | {self.opponentId}"
 
