@@ -20,7 +20,6 @@ let prevScreen = 0
 let stateG = 1
 let test = 0
 let rotaPanel = 0
-let anim = false
 
 
 
@@ -93,8 +92,7 @@ React.useEffect((rotaY) => {
 
 function handleStart(){
   props.updateSetState(10)
-  stateG = 1
-  anim = true     
+  stateG = 1    
    console.log('test2')
      navigate('/lobby')
   gsap.to(camera.position, {
@@ -104,8 +102,6 @@ function handleStart(){
     z: 0,
     onComplete: () => {
       setIsPanel(true)
-
-      anim = false
     }
   })
   gsap.to(camera.rotation, {
@@ -119,7 +115,6 @@ function handleStart(){
 function handleBtnExit(){
   props.updateSetState(10)
   stateG = 1
-  anim = true
   if (camera.position.x !== 17){
     gsap.to(camera.position, {
       duration:1,
@@ -146,9 +141,7 @@ function handleBtnExit(){
 }
 
 document.addEventListener('keydown', function(event) {
-  // Vérifie si la touche pressée est la touche "Entrée" (code 13)
   if (event.keyCode === 13) {
-    // Appel de la fonction Click()
     Click(loaderGltf.scene.rotation.y);
   }
 });
@@ -156,7 +149,7 @@ document.addEventListener('keydown', function(event) {
 
 
   useEffect(() => {
-    if (click === -10 || anim === true)
+    if (click === -10)
       return
     const rota = click
     if (rota === 0 || (rota < -6.27 && rota > -6.31) || (rota < 6.31 && rota > 6.27)) {

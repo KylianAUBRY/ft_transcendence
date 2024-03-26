@@ -120,13 +120,21 @@ function MyCanvas( props ) {
   const updateSetState = (newValue) => {
    setState(newValue);
    if (newValue === 20){
+        gameId = null
         setisOnlineLoad(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.onlineLoad');
         if (localMatch)
           localMatch.classList.add('visible');
     }, 100); 
-   }else if (newValue === 30){
+   }else  if(newValue === 22) {
+    setisResultLocal(true)
+    setTimeout(function() {
+      var localMatch = document.querySelector('.localMatch');
+      if (localMatch)
+        localMatch.classList.add('visible');
+    }, 100); 
+  }else if (newValue === 30){
       setisLocalMatch(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.localMatch');
@@ -551,10 +559,10 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
     var localMatch = document.querySelector('.onlineLoad');
     localMatch.classList.remove('visible');
     localMatch.classList.add('hidden');
-   /* if (state === 20){
-      updateSetScore('name1', 'Player 1')
-      updateSetScore('name2', 'Player 2')
-    }*/
+    // if (state === 20){
+    //   updateSetScore('name1', 'Player 1')
+    //   updateSetScore('name2', 'Player 2')
+    // }
     setTimeout(function() {
         setisOnlineLoad(false)
         setisDecompte(true)
@@ -866,7 +874,10 @@ function exitTournament(){
 function affResult(){
   const winner = document.getElementById('winner')
   const textWinner = document.getElementById('textWinner')
-  if (state === 32){
+  if (state === 22){
+    const winnerLocal = document.getElementById('winnerLocal')
+    winnerLocal.textContent = winnerTournament.player
+  } else if (state === 32){
     const winnerLocal = document.getElementById('winnerLocal')
     winnerLocal.textContent = winnerTournament.player
   } else if (state === 42){

@@ -29,11 +29,14 @@ let rightKey = false
 let isPlayerReady = false
 let side
 let multiplePlayer = false
+let onlineScore1 = 0
+let onlineScore2 = 0
+let isUsername = false
 
 let deltaTime = 0.0166
 
-let speedPaddle = 7.5;
-let speedBall = 10;
+let speedPaddle = 5;
+let speedBall = 5;
 let playeurSize = 2;
 let rayonBall = 0.207;
 
@@ -159,6 +162,8 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     }, []);
     
 	function startBallMovement() {
+  isPlayerReady = true
+	sendInfo()
 	let ball_z;
 	let ball_x =  Math.random() < 0.5 ? -1 : 1;
 	while (1) {
@@ -218,8 +223,8 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
   function updateBallPosition() {
     var ballPos = ball.position;
     
-    ballPos.x += ball.vector.x * deltaTime * ball.speed;
-    ballPos.z += ball.vector.z * deltaTime * ball.speed;
+    ballPos.x += ball.vector.x * deltaTime * ball.speed
+    ballPos.z += ball.vector.z * deltaTime * ball.speed
   }
   
   function isSideCollision() {
@@ -643,11 +648,20 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 	// Send your information here
 	if (websocket.readyState === WebSocket.OPEN){
 	  let dir = 'none'
-	  if (leftKey === true){
-		dir = 'up'
-	  } else if (rightKey === true){
-		dir = 'down'
-	  }
+    if (side === 'right'){
+      if (leftKey === true){
+        dir = 'up'
+      } else if (rightKey === true){
+        dir = 'down'
+      }
+    } else if (side === 'left'){
+      if (leftKey === true){
+        dir = 'down'
+      } else if (rightKey === true){
+        dir = 'up'
+      }
+    }
+	  
 
 	  const data = {
 		"name_serv": nameServer,
@@ -683,60 +697,104 @@ console.log('tesssssssssssssssssssssssssssssssst')
 	  const messageObj = JSON.parse(event.data); 
 	  const type = messageObj.type;
 	  if (type === 'playerId'){
-		const messageObj = JSON.parse(event.data)
-		playerId = messageObj.playerId
-		nameServer = messageObj.name_serv
-		side = messageObj.side
-		console.log(messageObj.playerId, playerId, side)
+      const messageObj = JSON.parse(event.data)
+      playerId = messageObj.playerId
+      nameServer = messageObj.name_serv
+      side = messageObj.side
+      console.log(messageObj.playerId, playerId, side)
 	  }
 	  if (type === 'state_update'){
-		if (side === 'right'){
-   /*      console.log(ball.position.x, messageObj.ball_x)
-      console.log(ball.position.z, messageObj.ball_y)
-      console.log(racket1.position.z, messageObj.player_1_y)
-      console.log(racket2.position.z, messageObj.player_2_y)
-      console.log(ball.vector.x, messageObj.player_2_y)
-      if (ball.position.x !== messageObj.ball_x * -1)
-		    ball.position.x = messageObj.ball_x * -1
-      if (ball.position.z !== messageObj.ball_y * -1)
-		    ball.position.z = messageObj.ball_y * -1
-      if (racket1.position.z !== messageObj.player_1_y * -1)
-		    racket1.position.z = messageObj.player_1_y * -1
-      if (racket2.position.z = messageObj.player_2_y * -1)
-		    racket2.position.z = messageObj.player_2_y * -1*/
- 
-		} else if (side === 'left'){
+    if (isUsername === false){
+      updateSetScore('name1', messageObj.player_1_username)
+      updateSetScore('name2', messageObj.player_2_username)
+      isUsername = true
+    }
+		if (side === 'left'){
       console.log(ball.position.x, messageObj.ball_x)
       console.log(ball.position.z, messageObj.ball_y)
       console.log(racket1.position.z, messageObj.player_1_y)
       console.log(racket2.position.z, messageObj.player_2_y)
-      if (ball.position.x !== messageObj.ball_x)
-		    ball.position.x = messageObj.ball_x
-      if (ball.position.z !== messageObj.ball_y)
-		    ball.position.z = messageObj.ball_y
-      if (racket1.position.z !== messageObj.player_1_y)
-		    racket1.position.z = messageObj.player_1_y
-      if (racket2.position.z !== messageObj.player_2_y)
-		    racket2.position.z = messageObj.player_2_y
-
+      console.log(ball.vector.x, messageObj.player_2_y)
+		  ball.position.x = messageObj.ball_x * -1
+		  ball.position.z = messageObj.ball_y * -1
+      ball.vector.x = messageObj.ball_dx * -1
+      ball.vector.y = messageObj.ball_dy * -1
+		  racket1.position.z = messageObj.player_1_y
+		  racket2.position.z = messageObj.player_2_y
+      ball.speed = messageObj.ball_speed
+ 
+		} else if (side === 'right'){
+      console.log('ball posX', ball.position.x, messageObj.ball_x)
+      console.log('ball posY', ball.position.z, messageObj.ball_y)
+      console.log('paddle1', racket1.position.z, messageObj.player_1_y)
+      console.log('paddle2', racket2.position.z, messageObj.player_2_y)
+      console.log('ball vectX', ball.vector.x, messageObj.ball_dx)
+      console.log('ball vectY', ball.vector.y, messageObj.ball_dy)
+      ball.position.x = messageObj.ball_x
+      ball.position.z = messageObj.ball_y
+      racket1.position.z = messageObj.player_2_y
+      racket2.position.z = messageObj.player_1_y
+      ball.vector.x = messageObj.ball_dx
+      ball.vector.y = messageObj.ball_dy
+      ball.speed = messageObj.ball_speed
 		}
 		
     if (messageObj.isStarting === true){
-      newRound = false
-      startRender()
+      /*newRound = false
+      startRender()*/
     }
 
 		if (messageObj.isGoal === true){
 		  console.log('GOAL GOAL GOALLLLL')
+
+      if (onlineScore1 < messageObj.player_1_score){
+        onlineScore1++
+        updateSetScore('player1', onlineScore1)
+      } else if (onlineScore2 < messageObj.player_2_score){
+        onlineScore2++
+        updateSetScore('playe2', onlineScore2)
+      }
+
+
 		  isPlayerReady = false
 		  sendInfo()
+      ball.material = new THREE.MeshBasicMaterial({ color: 0xff1500 });
+      racket1.position.z = 0
+      racket2.position.z = 0
+      ball.vector.x = 0
+      ball.vector.z = 0
+      ball.speed = 0
+      gsap.to(ball.position, {
+        duration:2,
+        z: 0,
+        x: 0,
+        onComplete: () => {
+          ball.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+          isPlayerReady = true
+		      sendInfo()
+        }
+      })
 		  /*setTimeout(function() {
 			isPlayerReady = true;
 			sendInfo()
 		}, 3000);*/
 
 		}
-		  
+
+
+    if (messageObj.gameIsFinished === true){
+		  console.log('Game finish')
+		  isPlayerReady = false
+		  sendInfo()
+      if (messageObj.player_1_score === 5){
+        winnerTournament.player = messageObj.player_1_username
+      } else if (messageObj.player_2_score === 5){
+        winnerTournament.player = messageObj.player_2_username
+      }
+      updateSetState(22)
+      playerId = -1
+
+		}
 
 	  }
 	  
@@ -759,18 +817,16 @@ console.log('tesssssssssssssssssssssssssssssssst')
   window.addEventListener('keydown', (e) => {
 	if (e.key == 'd') {
 	  rightKey = true
-	  if (side === 'left')
-		  racket1.position.z -= 0.166 * 1
-	 /* else if (side === 'right')
-		  racket2.position.z -= 0.166 * -1*/
+	  /*if (side === 'left')
+		  racket1.position.z -= deltaTime * speedPaddle
+	  else if (side === 'right')
+		  racket1.position.z -= deltaTime * speedPaddle*/
 	} else if (e.key == 'a') {
 	  leftKey = true
-	  if (side === 'left')
-		  racket1.position.z += 0.166 * 1
-	/*  else if (side === 'right')
-		  racket2.position.z += 0.166 * -1*/
-	}else if (e.key == 't') {
-	  isPlayerReady = true
+	  /*if (side === 'left')
+		  racket1.position.z += deltaTime * speedPaddle
+	  else if (side === 'right')
+		  racket1.position.z += deltaTime * speedPaddle*/
 	}
 	sendInfo()
   })
