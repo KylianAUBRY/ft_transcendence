@@ -54,13 +54,13 @@ let lastDir = 0;
 let tmpBall = null
 
 
-const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client, findOnlineGame, newUrl, username, userId, gameId, position, rotation, multiple }) => {
+const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client, findOnlineGame, newUrl, username, userId, gameId, position, rotation, multiple, socketUrl }) => {
 	const location = useLocation()
   if (racket1 && racket2){
     racket1.material = new THREE.MeshBasicMaterial({ color: racketColor })
     racket2.material = new THREE.MeshBasicMaterial({ color: racketColor })
   }
-
+console.log(newUrl)
     // Chargement du model 3d
     const [gltf, setGltf] = React.useState(null);
     const [gltf2, setGltf2] = React.useState(null);
@@ -690,7 +690,7 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 
 
 
-  const websocketUrl = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
+  const websocketUrl = socketUrl + '://' + newUrl + ':8080/ws/game/' + gameId + '/'
    
   let websocket;
 

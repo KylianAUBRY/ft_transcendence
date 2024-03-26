@@ -20,8 +20,14 @@ axios.defaults.withCredentials = true
 
 const url = window.location.href
 const url2 = new URL(url)
-const baseUrl = `${url2.protocol}//${url2.hostname}`
+let baseUrl = `${url2.protocol}//${url2.hostname}`
 let newUrl = baseUrl.replace('http://', '')
+let socketUrl = 'ws'
+
+if (baseUrl.startsWith('https://')) {
+  baseUrl = baseUrl.replace('https://', 'http://');
+  socketUrl = 'wss'
+}
 
 let isSearch
 let gameId = null
@@ -1660,7 +1666,7 @@ function handle42register(){
   
           <Environment files="fond.hdr" background blur={0.5}/>
           <Suspense fallback={null}>
-            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId} position={props.position} rotation={props.rotation} multiple={multiple}/>
+            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId} position={props.position} rotation={props.rotation} multiple={multiple} socketUrl={socketUrl}/>
             <Stade/>
           </Suspense>
           <Stars
