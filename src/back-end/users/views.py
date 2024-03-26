@@ -44,11 +44,11 @@ class UserLogin(APIView):
         if serializer.is_valid(raise_exception=True):
             user = serializer.check_user(data)
 
-            # from . models import AppUser
-            # user_obj = AppUser.objects.get(pk=data.get("email"))
-            # if user_obj:
-            #     user_obj.isOnline = True
-            #     user_obj.save()
+            from . models import AppUser
+            user_obj = AppUser.objects.get(email=data.get("email"))
+            if user_obj:
+                user_obj.isOnline = True
+                user_obj.save()
 
             login(request, user)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -60,11 +60,11 @@ class UserLogout(APIView):
     def get(self, request):
         logout(request)
 
-        # from . models import AppUser
-        # user_obj = AppUser.objects.get(pk=request.user.email)
-        # if user_obj:
-        #     user_obj.isOnline = False
-        #     user_obj.save()
+        from . models import AppUser
+        user_obj = AppUser.objects.get(email=request.user.email)
+        if user_obj:
+            user_obj.isOnline = False
+            user_obj.save()
 
         return Response(status=status.HTTP_200_OK)
 
