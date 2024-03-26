@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model, login, logout
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializer import UserRegisterSerializer, UserLoginSerializer, UserSerializer, HistorySerializer, ServerSerializer
+from .serializer import UserRegisterSerializer, UserLoginSerializer, UserSerializer, HistorySerializer, ServerSerializer, FriendListSerializer
 from rest_framework import permissions, status
 from .validations import custom_validation, validate_email, validate_password
 from . models import HistoryModel, GameServerModel, WaitingPlayerModel
@@ -58,10 +58,11 @@ class UserLogout(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
+        email = getattr(request.user, "email", None)
         logout(request)
 
         from . models import AppUser
-        user_obj = AppUser.objects.get(email=request.user.email)
+        user_obj = AppUser.objects.get(email=email)
         if user_obj:
             user_obj.isOnline = False
             user_obj.save()
@@ -75,6 +76,27 @@ class UserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+    
+class UpateUserInfo(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        from . models import AppUser
+
+        data = request.data
+        user_id = data.get("userId")
+        username = data.get("username")
+        password = data.get("password")
+        image = request.FILES['image'].read()
+        user_obj = AppUser.objects.get(pk=user_id)
+        if user_obj:
+            user_obj.username = username
+            user_obj.image = image
+            if (password != ""):
+                user_obj.password = password
+            user_obj.save()
+            Response({"message": "Info updated successfuly"}, status=status.HTTP_200_OK)
+        Response({"message": "Info update failed"}, status=status.HTTP_200_OK)
 
 class UpdateUserOption(APIView):
     permission_classes = [permissions.AllowAny]
@@ -95,7 +117,7 @@ class UpdateUserOption(APIView):
             updateUserOption(user_id, language, color, music, key1, key2, key3, key4)
             return Response({'message': 'User statistics updated successfully'})
         except Exception as e:
-            return Response({'message': 'User update failed', 'error': str(e)}, status=500)
+            return Response({'message': 'User update failed', 'error': str(e)})
 
 # Get all match history from a user
 class HistoryView(APIView):
@@ -233,3 +255,56 @@ class URL42(APIView):
     def get(self, request):
         lien = settings.API_CONNECT_URL
         return Response({"URL42": lien}, status=status.HTTP_200_OK)
+    
+class AddFriend(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        from . models import AppUser
+
+        data = request.data
+        friend_id = data.get("friendId")
+        friend_obj = AppUser.objects.get(pk=friend_id)
+        if not friend_obj:
+            Response({"message": "User doesn't exist"}, status=status.HTTP_200_OK)
+        if friend_obj:
+            user_id = data.get("userId")
+            user_obj = AppUser.objects.get(pk=user_id)
+            if user_obj:
+                user_obj.friends_list.append(friend_id)
+            Response({"message": "'" + friend_obj.username + "' added to friend list"}, status=status.HTTP_200_OK)
+
+class RemoveFriend(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        from . models import AppUser
+
+        data = request.data
+        user_id = data.get("userId")
+        friend_id = data.get("friendId")
+        user_obj = AppUser.objects.get(pk=user_id)
+        if user_obj:
+            user_obj.friends_list.remove(friend_id)
+            Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
+        else:
+            Response({"error": "Can't find user in database"}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class GetFriendList(APIView):
+
+    def post(self, request):
+        from . models import AppUser
+
+        data = request.data
+        user_id = data.get("userId")
+        user_obj = AppUser.objects.get(pk=user_id)
+        friend_data = []
+        if user_obj:
+            for friend_id in user_obj.friends_list:
+                friend = AppUser.objects.get(pk=friend_id)
+                if friend :
+                    friend_data.append(FriendListSerializer(user_obj).data)
+            Response({"friend_list": friend_data}, status=status.HTTP_200_OK)
+        else:
+            Response({"error": "Can't find user in database"})

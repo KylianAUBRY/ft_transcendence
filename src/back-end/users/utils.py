@@ -4,7 +4,7 @@ def updateUserOption(user_id, language, color, music, key1, key2, key3, key4):
 
     user.language = language
     user.color = color
-    user.music = music
+    user.music = int(music)
     user.key1 = key1
     user.key2 = key2
     user.key3 = key3
