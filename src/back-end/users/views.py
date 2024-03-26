@@ -101,7 +101,7 @@ class UpateUserInfo(APIView):
 class UpdateUserOption(APIView):
     permission_classes = [permissions.AllowAny]
 
-    def get(self, request):
+    def post(self, request):
         data = request.data
 
         user_id = data.get('userId')
