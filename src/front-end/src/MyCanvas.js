@@ -59,21 +59,6 @@ const client = axios.create({
 let stopDecompte = false
 
 function MyCanvas( props ) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -562,23 +547,21 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
 
       //serverUpdate(gameId)
 
-
+    var localMatch = document.querySelector('.onlineLoad');
+    localMatch.classList.remove('visible');
+    localMatch.classList.add('hidden');
+   /* if (state === 20){
+      updateSetScore('name1', 'Player 1')
+      updateSetScore('name2', 'Player 2')
+    }*/
+    setTimeout(function() {
+        setisOnlineLoad(false)
+        setisDecompte(true)
+    }, 500); 
+   
+    setisInMatchTournament(true)
       setFindOnlineGame(true)
-      var localMatch = document.querySelector('.onlineLoad');
-      localMatch.classList.remove('visible');
-      localMatch.classList.add('hidden');
-     /* if (state === 30){
-        updateSetScore('name1', 'Player 1')
-        updateSetScore('name2', 'Player 2')
-      }
-      setTimeout(function() {
-          setisLocalMatch(false)
-          setisDecompte(true)
-      }, 500); 
-     */
-      setisInMatchTournament(true)
-    
-  
+
 
     }).catch(error => {
       console.error('There was a problem JoinQueue:', error);
@@ -590,10 +573,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
 
   }
 
-  
 
-
-  
 
 
 
@@ -1091,12 +1071,11 @@ function affDecompte(){
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
         loginPage.classList.add('hidden');
-        setTimeout(function() {
+          setTimeout(function() {
           setisLoginPage(false)
-         // if (childRef.current) {
-          console.log('test')
+          if (childRef.current) {
             childRef.current.childFunction(2)
-       // }
+        }
         }, 800);
         setEmail2('')
         setPassword2('')
@@ -1164,7 +1143,7 @@ function affDecompte(){
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
         loginPage.classList.add('hidden');
-        setTimeout(function() {
+          setTimeout(function() {
           setisLoginPage(false)
           if (childRef.current) {
             childRef.current.childFunction(2)
@@ -1173,16 +1152,9 @@ function affDecompte(){
         setEmail('')
         setUsername('')
         setPassword('')
-      }).catch(function(error) {
-        console.error("Erreur lors de la requête de connexion :", error);
-        refBadPassword2.current.innerText = t("home.imposible")
-      }); 
+      })
     }
-    ).catch(function(error) {
-      console.error("Erreur lors de la requête d'inscription :", error);
-      refBadPassword2.current.innerText = t("home.imposible")
-    }); 
-
+    )
   }
 
 
@@ -1234,7 +1206,6 @@ const ref6 = useRef(null)
 const ref7 = useRef(null)
 const ref8 = useRef(null)
 const refBadPassword = useRef(null)
-const refBadPassword2 = useRef(null)
 
 function getChart() {
   if (currentUser === true){
@@ -1428,7 +1399,7 @@ function handle42register(){
           <div className='Wgroup'>
             <input placeholder='password' id='password2' name='password2' className='Winput' type='password' onChange={e => setPassword(e.target.value)}></input>
             <label className='Wlabel' htmlFor='password2'>{t("home.password")}</label>
-            <div className='bad' id='badPassword' ref={refBadPassword2}></div>
+            <div className='bad' id='badPassword'></div>
           </div>
           <div className='btn'>
             <button type='submit' className='btnlogin'>{t("home.signup")}</button>
@@ -1592,7 +1563,7 @@ function handle42register(){
   
           <Environment files="fond.hdr" background blur={0.5}/>
           <Suspense fallback={null}>
-            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId}/>
+            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId} position={props.position} rotation={props.rotation}/>
             <Stade/>
           </Suspense>
           <Stars

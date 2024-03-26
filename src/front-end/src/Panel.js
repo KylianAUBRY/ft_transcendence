@@ -20,6 +20,7 @@ let prevScreen = 0
 let stateG = 1
 let test = 0
 let rotaPanel = 0
+let anim = false
 
 
 
@@ -93,32 +94,32 @@ React.useEffect((rotaY) => {
 function handleStart(){
   props.updateSetState(10)
   stateG = 1
-  
+  anim = true     
+   console.log('test2')
+     navigate('/lobby')
   gsap.to(camera.position, {
     duration:3,
     x: 17,
     y: 4,
     z: 0,
+    onComplete: () => {
+      setIsPanel(true)
 
+      anim = false
+    }
   })
   gsap.to(camera.rotation, {
     duration:2,
     x: 0,
     y: Math.PI / 2,
     z: 0,    
-    onComplete: () => {
-      setIsPanel(true)
-      console.log('test2')
-      setTimeout(() => {
-        navigate('/lobby');
-      }, 500);
-    }
   })
 }
 
 function handleBtnExit(){
   props.updateSetState(10)
   stateG = 1
+  anim = true
   if (camera.position.x !== 17){
     gsap.to(camera.position, {
       duration:1,
@@ -155,7 +156,7 @@ document.addEventListener('keydown', function(event) {
 
 
   useEffect(() => {
-    if (click === -10)
+    if (click === -10 || anim === true)
       return
     const rota = click
     if (rota === 0 || (rota < -6.27 && rota > -6.31) || (rota < 6.31 && rota > 6.27)) {
@@ -413,7 +414,7 @@ function Click (rota) {
             <Screen model={child5} Gltf={gltf.scene} text={t("game.tournament")} meshTextPos={[-4.3, 7.5, 0]} meshTextRot={[0, -Math.PI / 2, 0]} textPos={[0, 0, 0]} textRot={[0.4, 0, 0]} />
           </mesh>
         ) : null}
-        <Pong stateGame={props.state} updateSetState={props.updateSetState} formData8={props.formData8} formData4={props.formData4} formData2={props.formData2} winnerTournament={props.winnerTournament} score={props.score} updateSetScore={props.updateSetScore} racketColor={props.racketColor} selectedKeys={props.selectedKeys} findOnlineGame={props.findOnlineGame} newUrl={props.newUrl} username={props.username} userId={props.userId} gameId={props.gameId}/>
+        <Pong stateGame={props.state} updateSetState={props.updateSetState} formData8={props.formData8} formData4={props.formData4} formData2={props.formData2} winnerTournament={props.winnerTournament} score={props.score} updateSetScore={props.updateSetScore} racketColor={props.racketColor} selectedKeys={props.selectedKeys} findOnlineGame={props.findOnlineGame} newUrl={props.newUrl} username={props.username} userId={props.userId} gameId={props.gameId} position={props.position} rotation={props.rotation}/>
       </>
       ) 
     } else {

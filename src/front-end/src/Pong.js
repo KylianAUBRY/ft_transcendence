@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import { gsap } from 'gsap/gsap-core';
 import { useLocation } from 'react-router-dom';
 
+
+
 const loader = new GLTFLoader();
 let loaderGltf
 let racket1 = null
@@ -20,11 +22,30 @@ let playerId
 let nameServer
 let leftKey = false
 let rightKey = false
-let isPlayerReady = true
+let isPlayerReady = false
+let side
 
+let deltaTime = 0.0166
 
-const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client, findOnlineGame, newUrl, username, userId, gameId }) => {
-  const location = useLocation()
+let speedPaddle = 7.5;
+let speedBall = 10;
+let playeurSize = 2;
+let rayonBall = 0.207;
+
+let largSize = 15.4;
+let longSize = 22;
+
+let clockActiv = false
+let infoIsReady = false
+
+let countMoov = 0
+let lastDir = 0;
+
+let tmpBall = null
+
+const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client, findOnlineGame, newUrl, username, userId, gameId, position, rotation }) => {
+	console.log(ball);
+	const location = useLocation()
   if (racket1 && racket2){
     racket1.material = new THREE.MeshBasicMaterial({ color: racketColor })
     racket2.material = new THREE.MeshBasicMaterial({ color: racketColor })
@@ -33,16 +54,40 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     // Chargement du model 3d
     const [gltf, setGltf] = React.useState(null);
     React.useEffect(() => {
-      loader.load('./pong.glb', (loadedGltf) => {
+		if (clockActiv === false)
+		{
+			if (tmpBall === null) {
+				tmpBall = {}; // Créez un nouvel objet tmpBall s'il est null
+			}
+			if (typeof tmpBall.vector === 'undefined'){
+				tmpBall.vector = {
+					x: 0,
+					z: 0
+				}
+			}
+			if (typeof tmpBall.position === 'undefined'){
+				tmpBall.position = {
+					z: 0,
+					x: 11,
+					y: 0.5
+				}
+			}
+			if (typeof tmpBall.speed === 'undefined'){
+				tmpBall.speed = speedBall
+			}
+			clockActiv = true
+    		setInterval(getPositionOfBall, 1000);
+  		}
+    	loader.load('./pong.glb', (loadedGltf) => {
         setGltf(loadedGltf);
         loaderGltf = loadedGltf
         loadedGltf.scene.traverse((child) => {
           child.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
         if (child.name === 'Player1'){
-          racket1 = child
-          racket1.position.z = 0
-          racket1.position.x = 11
-          racket1.position.y = 0.5
+          racket1 = child			// vitesse des paddle = 2 
+          racket1.position.z = 0    // 7,7max et -7,7 min donc la largeur fait 15,4     2 tant la taille du paddle
+          racket1.position.x = 11   // rayon de la balle 0,207
+          racket1.position.y = 0.5  // d'un bute a l'autre c'est 22 (donc 11 a partir du milieu)
         }else if (child.name === 'Player2'){
           racket2 = child
           racket2.position.z = 0
@@ -53,7 +98,21 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
           ball.position.x = 0
           ball.position.y = 0.5
           ball.position.z = 0
-          if (typeof ball.velocity === 'undefined') {
+          if (typeof ball.vector === 'undefined')
+          {
+            ball.vector = {
+              x: 0,
+              z: 0
+            };
+          }
+          if (typeof ball.speed === 'undefined')
+          {
+            ball.speed = speedBall;
+          }
+
+
+
+          if (typeof ball.velocity === 'undefined') {   //vas etre bientot supprimer
             ball.velocity = {
               x: 0,
               z: 0
@@ -67,22 +126,23 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
       }, undefined, (error) => {
         console.error('Erreur lors du chargement du fichier GLTF', error);
       });
+	  
     }, []);
     
- function startBallMovement() {
-   var direction = Math.random() > 0.5 ? -1 : 1;
-   ball.velocity = {
-     z: 0,
-     x: direction * 0.1
-    };
-    ball.stopped = false;
+	function startBallMovement() {
+	let ball_z;
+	let ball_x =  Math.random() < 0.5 ? -1 : 1;
+	while (1) {
+		ball_z = Math.random() * (0.5 - (-0.5)) + (-0.5);
+		if (ball_z !== 0){
+			break;
+		}
+	}
+	ball.vector = {
+		x: ball_x,
+		z: ball_z
+	}
   }
-
-
-
-
-  
-
   
   function processBallMovement() {
     
@@ -92,12 +152,11 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     }
     if(ball.$stopped) {
       return;
-      
     }
     updateBallPosition();
     
     if(isSideCollision()) {
-      ball.velocity.z *= -1; 
+		ball.vector.z *= -1;
     }
     
     if(isPaddle1Collision()) {
@@ -130,28 +189,29 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
   function updateBallPosition() {
     var ballPos = ball.position;
     
-    ballPos.x += ball.velocity.x;
-    ballPos.z += ball.velocity.z;
+    ballPos.x += ball.vector.x * deltaTime * ball.speed;
+    ballPos.z += ball.vector.z * deltaTime * ball.speed;
   }
   
   function isSideCollision() {
     var ballX = ball.position.z,
         halfFieldWidth = 15.4 / 2;
-    return ballX - 0.207 < -halfFieldWidth || ballX + 0.207 > halfFieldWidth;
+    return ballX - rayonBall < -halfFieldWidth || ballX + rayonBall > halfFieldWidth;
   }
   
   function hitBallBack(paddle) {
-    ball.velocity.z = (ball.position.z - paddle.position.z) / 10; 
-    ball.velocity.x *= -1;
+	ball.speed += 0.2
+	ball.vector.x *= -1;
+    ball.vector.z = (ball.position.z - paddle.position.z) / (playeurSize / 2); 
   }
   
   function isPaddle2Collision() {
-    return ball.position.x - 0.207 <= racket2.position.x && 
+    return ball.position.x - rayonBall <= racket2.position.x && 
         isBallAlignedWithPaddle(racket2);
   }
   
   function isPaddle1Collision() {
-    return ball.position.x + 0.207 >= racket1.position.x && 
+    return ball.position.x + rayonBall >= racket1.position.x && 
         isBallAlignedWithPaddle(racket1);
   }
   
@@ -162,48 +222,6 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     return ballX > paddleX - halfPaddleWidth && 
         ballX < paddleX + halfPaddleWidth;
   }
-  
-
-
-  function stopBall(){ 
-    ball.stopped = true;
-  }
-  
-  
-  function startRender(){
-    running = true;
-    startVal = 0
-    render();  
-  }
-  
-  function stopRender() {
-    running = false;
-  }
-  
-  function render() {
-    if(running) {
-      setTimeout(render, 1000 / 60); // Appel à render() toutes les (1 / desiredFPS) secondes
-      processBallMovement();
-      handleKeys()
-      if (stateGame > 50 && stateGame < 60) {
-        processBotPaddle();
-      }
-    }
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -240,10 +258,31 @@ function endGame(winner)
   }
 }
 
+	function stopBall(){ 
+    ball.stopped = true;
+  }
+  
 
+  
+  function startRender(){
+    running = true;
+    startVal = 0
+    render();  
+  }
 
-
-
+  function stopRender() {
+    running = false;
+  }
+  
+  function render() {
+    if(running) {
+		setTimeout(render, 1000 / 60); // Appel à render() toutes les (1 / desiredFPS) secondes
+		handleKeys()
+    processBallMovement()
+    if (stateGame > 50 && stateGame < 52)
+      processBotPaddle()
+    }
+  }
 
   function scoreBy(playerName) {
       stopBall()
@@ -275,25 +314,148 @@ function endGame(winner)
         
       }
   }
+
   
 
 
-  
+
+
+
+
+  function getPositionOfBall()
+  {
+	infoIsReady = true;
+  }
+
+
+
+  function moov_right(){
+	if (racket2.position.z <= (largSize / 2) - (playeurSize / 2)) //droite
+        racket2.position.z += deltaTime * speedPaddle;
+	console.log("moov_right");
+  }
+
+  function moov_left(){
+	if (racket2.position.z >= (-largSize / 2) + (playeurSize / 2)) //gauche
+        racket2.position.z -= deltaTime * speedPaddle;
+	console.log("moov_left");
+  }
 
   function processBotPaddle() {
-    if(racket2.position.z > ball.position.z) {
-      racket2.position.z -= Math.min(racket2.position.z - ball.position.z, 0.05);
-    }else if(racket2.position.z < ball.position.z) {
-      racket2.position.z  += Math.min(ball.position.z - racket2.position.z, 0.05);
+
+    if (infoIsReady === true)
+	{
+		console.log("1 seconde timer");
+    	infoIsReady = false;
+		tmpBall.vector.x = ball.vector.x;
+		tmpBall.vector.z = ball.vector.z;
+		tmpBall.position.x = ball.position.x;
+		tmpBall.position.z = ball.position.z;
+		tmpBall.position.y = ball.position.y;
+		tmpBall.speed = ball.speed;
+	}
+	
+
+
+	if (tmpBall.position.x >= 11 || tmpBall.position.x <= -11)// ici la balle touche un des coter ou il y a les paddle, je n'interprete pas ou est le paddle pour reproduire un comportement humain
+	{
+		tmpBall.vector.z *= -1;
+	}
+	if (tmpBall.position.z >= 7,7 || tmpBall.position.z <= -7,7)// ici la balle touche un rebord, un humain comprend tres bien ce genre de rebond, donc calcule precis.
+	{
+		tmpBall.vector.x *= -1;
+	}
+
+	tmpBall.position.x += tmpBall.vector.x * deltaTime * tmpBall.speed;
+	tmpBall.position.z += tmpBall.vector.z * deltaTime * tmpBall.speed;
+
+	if (countMoov >= 10)
+		countMoov = 0;
+	else{
+		countMoov++;
+		if (lastDir === 1)
+			moov_left();
+		else if (lastDir === 2)
+			moov_right();
+		return;
+	}
+
+	let tmp = {
+		x: tmpBall.position.x,
+		z: tmpBall.position.z,
+		Vx: tmpBall.vector.x,
+		Vy: tmpBall.vector.x
+	}
+	let countTmp = 0;
+	while (1)
+	{
+		countTmp++;
+		tmp.x += tmp.Vx * deltaTime * ball.speed;
+		if (tmp.x <= -longSize / 2 || tmp.x >= longSize / 2)
+			break ;
+		if (tmp.y - rayonBall <= -largSize / 2 || tmp.y + rayonBall <= largSize / 2)
+			tmp.Vz *= -1;
+		tmp.y += tmp.Vy * deltaTime * ball.speed;
+	}
+
+	console.log("TMP BALL : ", tmpBall.position.x);
+	console.log("BALL      : ", ball.position.x);
+	let tmpValue = racket2.position.z - tmpBall.position.z;
+	if (tmpValue === 0 || (tmpValue < 0 && tmpValue >= -(playeurSize / 2) || tmpValue > 0 && tmpValue <= playeurSize / 2)){
+		lastDir = 0;
+		return ;
+	}
+
+
+	if(racket2.position.z > tmp.z) {
+		lastDir = 1; //il ce dirige a gauche
+		moov_left();
+    	// racket2.position.z -= Math.min(racket2.position.z - tmpBall.position.z, deltaTime * speedPaddle);
+    }else if(racket2.position.z < tmp.z) {
+		lastDir = 2;// il ce dirig a droite
+		moov_right();
+    	// racket2.position.z  += Math.min(tmpBall.position.z - racket2.position.z, deltaTime * speedPaddle);
     }
+	else
+		lastDir = 0;
+
+    // if(racket2.position.z > tmpBall.position.z) {
+	// 	lastDir = 1; //il ce dirige a gauche
+	// 	moov_left();
+    // 	// racket2.position.z -= Math.min(racket2.position.z - tmpBall.position.z, deltaTime * speedPaddle);
+    // }else if(racket2.position.z < tmpBall.position.z) {
+	// 	lastDir = 2;// il ce dirig a droite
+	// 	moov_right();
+    // 	// racket2.position.z  += Math.min(tmpBall.position.z - racket2.position.z, deltaTime * speedPaddle);
+    // }
+	// else
+	// 	lastDir = 0;
+
+    // clock.start();
+
   }
 
 
 
 
+
+
+
+
+
+
+
   function reset(bool) {
-    ball.velocity.x = 0
-    ball.velocity.y = 0
+    ball.vector.x = 0
+    ball.vector.y = 0
+    ball.speed = speedBall
+    tmpBall.vector.x = 0
+    tmpBall.vector.y = 0
+    tmpBall.position.x = 0
+    tmpBall.position.y = 0
+    tmpBall.speed = speedBall
+    racket1.position.z = 0
+    racket2.position.z = 0
     if (bool){
       gsap.to(ball.position, {
         duration:2,
@@ -311,8 +473,8 @@ function endGame(winner)
           } else{
             stop = false
             stopRender()
-            ball.velocity.x = 0
-            ball.velocity.y = 0
+            ball.vector.x = 0
+            ball.vector.y = 0
             ball.position.x = 0
             ball.position.z = 0
             racket1.position.z = 0
@@ -359,31 +521,25 @@ function endGame(winner)
   };
   
   const handleKeys = function () {
-    //console.log(selectedKeys, keysPressed)
     if (!keyListenerActive) return
     if (loaderGltf && loaderGltf.scene) {
-      console.log(stateGame)
       if (stateGame < 50 || stateGame > 52){
-        if (keysPressed[selectedKeys[3]]) {
-          console.log('test1')
-          if (racket2.position.z < 6.55)
-            racket2.position.z += 0.166 * 1
+        if (keysPressed[selectedKeys[3]]) {// key pour le playeur 2 (celui d'en face)
+          if (racket2.position.z < (largSize / 2) - (playeurSize / 2)) //droite
+            racket2.position.z += deltaTime * speedPaddle
         }
         if (keysPressed[selectedKeys[2]]) {
-          console.log('test2')
-          if (racket2.position.z > -6.55)
-            racket2.position.z -= 0.166 * 1
+          if (racket2.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
+            racket2.position.z -= deltaTime * speedPaddle
         }
     }
-      if (keysPressed[selectedKeys[0]]) {
-        console.log('test3')
-        if (racket1.position.z < 6.55)
-          racket1.position.z += 0.166 * 1
+      if (keysPressed[selectedKeys[0]]) {// key pour le playeur 1 (le notre)
+        if (racket1.position.z < (largSize / 2) - (playeurSize / 2)) //droite
+          racket1.position.z += deltaTime * speedPaddle
       }
       if (keysPressed[selectedKeys[1]]) {
-        console.log('test4')
-        if (racket1.position.z > -6.55)
-          racket1.position.z -= 0.166 * 1
+        if (racket1.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
+          racket1.position.z -= deltaTime * speedPaddle
       }
     }
   };
@@ -393,37 +549,17 @@ function endGame(winner)
 
 
   if (stateGame === 21 || stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51) {
-    if (newRound === true){
+    if (newRound === true && stateGame !== 21){
       newRound = false
         startRender()
       }
+    if (stateGame === 21){
+      isPlayerReady = true
+    }
     keyListenerActive = true
     document.addEventListener("keydown", onKeyPress)
     document.addEventListener("keyup", onKeyRelease)
     handleKeys()
-  /*  if (stateGame === 21){
-      client.post(
-        "/api/JoinQueue",
-        {
-          userId: userId,
-        }
-      )
-      do {
-        client.get(
-          "/api/CheckJoinGame",
-          {withCredentials: true}
-        ).then(function(res){
-          console.log(res)
-          serv = res
-        }).catch(function(error){
-         console.log(error)
-        })
-      } while (!serv)
-      if (gameId)
-      {
-        serverUpdate(gameId)
-      }
-    }*/
   } else {
     keyListenerActive = false
     keysPressed = {}
@@ -433,129 +569,160 @@ function endGame(winner)
 
 
 
-
-console.log('aaaaaaaaaaaaaaa', userId, username)
-
-
-
-    const websocketUrl = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
+  const websocketUrl = 'ws://' + newUrl + ':8080/ws/game/' + gameId + '/'
    
-    let websocket;
+  let websocket;
 
 
-    function sendInfo() {
-      // Send your information here
-      if (websocket.readyState === WebSocket.OPEN){
-        let dir = 'none'
-        if (leftKey === true){
-          dir = 'up'
-        } else if (rightKey === true){
-          dir = 'down'
-        }
+  function sendInfo() {
+	// Send your information here
+	if (websocket.readyState === WebSocket.OPEN){
+	  let dir = 'none'
+	  if (leftKey === true){
+		dir = 'up'
+	  } else if (rightKey === true){
+		dir = 'down'
+	  }
 
-        const data = {
-          "name_serv": nameServer,
-          "idMatch": playerId,
-          "isReady": isPlayerReady,
-          "playerDirection": dir,
-          "playerId": userId,
-          "username": username
-        };
-        console.log('envoi ready', data)
-        websocket.send(JSON.stringify(data));
-        } else{
-          console.error('La connexion WebSocket est fermée. Impossible d\'envoyer des données.');
-        }
-  }
+	  const data = {
+		"name_serv": nameServer,
+		"idMatch": playerId,
+		"isReady": isPlayerReady,
+		"playerDirection": dir,
+		"playerId": userId,
+		"username": username
+	  };
+	  console.log('envoi ready', data)
+	  websocket.send(JSON.stringify(data));
+	  } else{
+		console.error('La connexion WebSocket est fermée. Impossible d\'envoyer des données.');
+	  }
+}
 
 
 
 useEffect(() => {
 
-
-  if (findOnlineGame === true) {
+if (findOnlineGame === true) {
 console.log('tesssssssssssssssssssssssssssssssst')
-    websocket = new WebSocket(websocketUrl);
-    
-    websocket.onopen = function() {
-        console.log('Connected to WebSocket');
-        // Start sending info every 1 second once connected
-        setInterval(sendInfo, 1000);
-    };
+  websocket = new WebSocket(websocketUrl);
+  
+  websocket.onopen = function() {
+	  console.log('Connected to WebSocket');
+	  // Start sending info every 1 second once connected
+	  setInterval(sendInfo, 1000);
+  };
 
-    websocket.onmessage = function(event) {
-        console.log('Received message:', event.data);
-        const messageObj = JSON.parse(event.data); 
-        const type = messageObj.type;
-        if (type === 'playerId'){
-          const messageObj = JSON.parse(event.data)
-          playerId = messageObj.playerId
-          nameServer = messageObj.name_serv
-          console.log(messageObj.playerId, playerId)
-        }
-        if (type === 'state_update'){
+  websocket.onmessage = function(event) {
+	  console.log('Received message:', event.data);
+	  const messageObj = JSON.parse(event.data); 
+	  const type = messageObj.type;
+	  if (type === 'playerId'){
+		const messageObj = JSON.parse(event.data)
+		playerId = messageObj.playerId
+		nameServer = messageObj.name_serv
+		side = messageObj.side
+		console.log(messageObj.playerId, playerId, side)
+	  }
+	  if (type === 'state_update'){
+		if (side === 'right'){
+   /*      console.log(ball.position.x, messageObj.ball_x)
+      console.log(ball.position.z, messageObj.ball_y)
+      console.log(racket1.position.z, messageObj.player_1_y)
+      console.log(racket2.position.z, messageObj.player_2_y)
+      console.log(ball.vector.x, messageObj.player_2_y)
+      if (ball.position.x !== messageObj.ball_x * -1)
+		    ball.position.x = messageObj.ball_x * -1
+      if (ball.position.z !== messageObj.ball_y * -1)
+		    ball.position.z = messageObj.ball_y * -1
+      if (racket1.position.z !== messageObj.player_1_y * -1)
+		    racket1.position.z = messageObj.player_1_y * -1
+      if (racket2.position.z = messageObj.player_2_y * -1)
+		    racket2.position.z = messageObj.player_2_y * -1*/
+ 
+		} else if (side === 'left'){
+      console.log(ball.position.x, messageObj.ball_x)
+      console.log(ball.position.z, messageObj.ball_y)
+      console.log(racket1.position.z, messageObj.player_1_y)
+      console.log(racket2.position.z, messageObj.player_2_y)
+      if (ball.position.x !== messageObj.ball_x)
+		    ball.position.x = messageObj.ball_x
+      if (ball.position.z !== messageObj.ball_y)
+		    ball.position.z = messageObj.ball_y
+      if (racket1.position.z !== messageObj.player_1_y)
+		    racket1.position.z = messageObj.player_1_y
+      if (racket2.position.z !== messageObj.player_2_y)
+		    racket2.position.z = messageObj.player_2_y
 
-          ball.position.x = messageObj.ball_x
-          ball.position.z = messageObj.ball_y
-          racket1.position.z = messageObj.player_1_y
-          racket2.position.z = messageObj.player_2_y
-          console.log('ball : ', ball.position.x, ball.position.z)
+		}
+		
+    if (messageObj.isStarting === true){
+      newRound = false
+      startRender()
+    }
 
+		if (messageObj.isGoal === true){
+		  console.log('GOAL GOAL GOALLLLL')
+		  isPlayerReady = false
+		  sendInfo()
+		  /*setTimeout(function() {
+			isPlayerReady = true;
+			sendInfo()
+		}, 3000);*/
 
-          if (messageObj.isGoal === true){
-            console.log('GOAL GOAL GOALLLLL')
-            isPlayerReady = false
-            sendInfo()
-            setTimeout(function() {
-              isPlayerReady = true;
-              sendInfo()
-          }, 3000);
+		}
+		  
 
-          }
-            
+	  }
+	  
+	  // Handle incoming messages here
+  };
 
-        }
-        
-        // Handle incoming messages here
-    };
+  websocket.onerror = function(error) {
+	  console.error('WebSocket error:', error);
+  };
 
-    websocket.onerror = function(error) {
-        console.error('WebSocket error:', error);
-    };
-
-    websocket.onclose = function() {
-        console.log('WebSocket connection closed');
-        return
-        // You may attempt to reconnect here if needed
-    };
-
-
-
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key == 'd') {
-        rightKey = true
-        racket1.position.z -= 0.166 * 1
-      } else if (e.key == 'a') {
-        leftKey = true
-        racket1.position.z += 0.166 * 1
-      }
-      sendInfo()
-    })
-
-    window.addEventListener('keyup', (e) => {
-      if (e.key == 'd') {
-        rightKey = false
-      } else if (e.key == 'a') {
-        leftKey = false
-      }
-      sendInfo()
-    })	
+  websocket.onclose = function() {
+	  console.log('WebSocket connection closed');
+	  return
+	  // You may attempt to reconnect here if needed
+  };
 
 
 
 
-  } 
+  window.addEventListener('keydown', (e) => {
+	if (e.key == 'd') {
+	  rightKey = true
+	  if (side === 'left')
+		  racket1.position.z -= 0.166 * 1
+	 /* else if (side === 'right')
+		  racket2.position.z -= 0.166 * -1*/
+	} else if (e.key == 'a') {
+	  leftKey = true
+	  if (side === 'left')
+		  racket1.position.z += 0.166 * 1
+	/*  else if (side === 'right')
+		  racket2.position.z += 0.166 * -1*/
+	}else if (e.key == 't') {
+	  isPlayerReady = true
+	}
+	sendInfo()
+  })
+
+  window.addEventListener('keyup', (e) => {
+	if (e.key == 'd') {
+	  rightKey = false
+	} else if (e.key == 'a') {
+	  leftKey = false
+	}
+	sendInfo()
+  })	
+
+
+
+
+} 
 
 
 
@@ -564,42 +731,41 @@ console.log('tesssssssssssssssssssssssssssssssst')
 
 
 
-  
-
-  useEffect(() => {
-    if (location.pathname === '/lobby'){
-      
-      if (running === true){
-        stopRender()
-        ball.velocity.x = 0
-        ball.velocity.y = 0
-        ball.position.x = 0
-        ball.position.z = 0
-        racket1.position.z = 0
-        racket2.position.z = 0
-      } else if (preparationNewRound === true){
-          stop = true
-      }
-      newRound = true
-        
-      
-      
-      }
-  }, [location.pathname]);
-  
 
 
+useEffect(() => {
+  if (location.pathname === '/lobby'){
+	
+	if (running === true){
+	  stopRender()
+	  ball.velocity.x = 0
+	  ball.velocity.y = 0
+	  ball.position.x = 0
+	  ball.position.z = 0
+	  racket1.position.z = 0
+	  racket2.position.z = 0
+	} else if (preparationNewRound === true){
+		stop = true
+	}
+	newRound = true
+	  
+	
+	
+	}
+}, [location.pathname]);
 
-    if (gltf) {
-      return (
-        <>
-          <primitive object={gltf.scene} position={[0, 0, 0]}/>
-        </>
-      )
-    } else {
-      return null;
-    }
-  };
-  
-  export default Pong;
 
+
+
+  if (gltf) {
+	return (
+	  <>
+		<primitive object={gltf.scene} position={[0, 0, 0]}/>
+	  </>
+	)
+  } else {
+	return null;
+  }
+};
+
+export default Pong;
