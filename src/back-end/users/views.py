@@ -44,11 +44,15 @@ class UserLogin(APIView):
         if serializer.is_valid(raise_exception=True):
             user = serializer.check_user(data)
 
-            from . models import AppUser
-            user_obj = AppUser.objects.get(email=data.get("email"))
-            if user_obj:
-                user_obj.isOnline = True
-                user_obj.save()
+            try:
+                from . models import AppUser
+                user_obj = AppUser.objects.get(email=data.get("email"))
+                if user_obj:
+                    user_obj.isOnline = True
+                    user_obj.save()
+            except Exception as error:
+                logger = logging.getLogger(__name__)
+                logger.info("Error: %s", error)
 
             login(request, user)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -91,15 +95,18 @@ class UpateUserInfo(APIView):
         password = data.get("password")
         logger = logging.getLogger(__name__)
         image = request.FILES.get("file")
-        user_obj = AppUser.objects.get(pk=user_id)
-        if user_obj:
-            user_obj.username = username
-            user_obj.image = image
-            if (password != ""):
-                user_obj.password = password
-            user_obj.save()
-            return Response({"message": "Info updated successfuly"}, status=status.HTTP_200_OK)
-        return Response({"message": "Info update failed"}, status=status.HTTP_200_OK)
+        try:
+            user_obj = AppUser.objects.get(pk=user_id)
+            if user_obj:
+                user_obj.username = username
+                user_obj.image = image
+                if (password != ""):
+                    user_obj.set_password = password
+                user_obj.save()
+                return Response({"message": "Info updated successfuly"}, status=status.HTTP_200_OK)
+            return Response({"message": "Info update failed"}, status=status.HTTP_200_OK)
+        except Exception as error:
+            return Response({"error": error})
 
 class UpdateUserOption(APIView):
     permission_classes = [permissions.AllowAny]
