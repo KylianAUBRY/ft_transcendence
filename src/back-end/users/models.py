@@ -52,7 +52,7 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 	is_staff = models.BooleanField(default=False)
 	isOnline = models.BooleanField(default=False)
 	friends_list = ArrayField(models.IntegerField(default=0), default=list)
-	image = models.BinaryField(default=None, blank=True)
+	image = models.BinaryField(default=b'\x08', blank=True, null=True)
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
 	objects = AppUserManager()
