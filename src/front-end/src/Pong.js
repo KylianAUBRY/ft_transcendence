@@ -60,7 +60,7 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     racket1.material = new THREE.MeshBasicMaterial({ color: racketColor })
     racket2.material = new THREE.MeshBasicMaterial({ color: racketColor })
   }
-console.log(newUrl)
+
     // Chargement du model 3d
     const [gltf, setGltf] = React.useState(null);
     const [gltf2, setGltf2] = React.useState(null);
@@ -722,7 +722,6 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 		"playerId": userId,
 		"username": username
 	  };
-	  console.log('envoi ready', data)
 	  websocket.send(JSON.stringify(data));
 	  } else{
 		console.error('La connexion WebSocket est fermée. Impossible d\'envoyer des données.');
@@ -732,17 +731,13 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 useEffect(() => {
 
   if (findOnlineGame === true) {
-  console.log('tesssssssssssssssssssssssssssssssst')
     websocket = new WebSocket(websocketUrl);
     
     websocket.onopen = function() {
-      console.log('Connected to WebSocket');
-      // Start sending info every 1 second once connected
       setInterval(sendInfo, 1000);
     };
   
     websocket.onmessage = function(event) {
-      console.log('Received message:', event.data);
       const messageObj = JSON.parse(event.data); 
       const type = messageObj.type;
       if (type === 'playerId'){
@@ -750,7 +745,6 @@ useEffect(() => {
         playerId = messageObj.playerId
         nameServer = messageObj.name_serv
         side = messageObj.side
-        console.log(messageObj.playerId, playerId, side)
       }
       if (type === 'state_update'){
       if (isUsername === false){
@@ -778,7 +772,6 @@ useEffect(() => {
       }
   
       if (messageObj.isGoal === true){
-        console.log('GOAL GOAL GOALLLLL')
   
         if (onlineScore1 < messageObj.player_1_score){
           onlineScore1++
@@ -812,7 +805,6 @@ useEffect(() => {
   
   
       if (messageObj.gameIsFinished === true){
-        console.log('Game finish')
         websocket.close();
         if (messageObj.player_1_score === 5){
           winnerTournament.player = messageObj.player_1_username
@@ -826,7 +818,7 @@ useEffect(() => {
   
       }
       
-      // Handle incoming messages here
+
     };
   
     websocket.onerror = function(error) {
@@ -834,9 +826,8 @@ useEffect(() => {
     };
   
     websocket.onclose = function() {
-      console.log('WebSocket connection closed');
       return
-      // You may attempt to reconnect here if needed
+
     };
   
   

@@ -41,7 +41,6 @@ function displayList(){
 }
 
 function updateOptions(){
-    console.log('test')
     fetch(props.baseURL + ':8080/' + 'api/UpdateUserOption', {
         method: 'POST',
         headers: {
@@ -67,7 +66,9 @@ function updateOptions(){
         })
 }
 
-
+function findFriend(){
+    console.log('test')
+}
 
 
 
@@ -81,7 +82,6 @@ const handleChangeLang = event => {
   
 const handleChangeMusic = event => {
     musicValue = event.target.value
-    console.log(musicValue, inPlay)
     if (inPlay == 1)
         stop1()
     else if (inPlay == 2)
@@ -90,7 +90,6 @@ const handleChangeMusic = event => {
         stop3()
 
     if (musicValue == 1){
-        console.log('test')
         play1()
         setInPlay(1)
     } else if (musicValue == 2){
@@ -153,8 +152,7 @@ const handleChangeMusic = event => {
   function uploadImage(e) {
     e.preventDefault();
     // Faire quelque chose avec l'image sélectionnée, comme l'envoyer à un serveur
-    if (selectedImage) {
-      console.log("Image sélectionnée :", selectedImage);
+
       // Vous pouvez également utiliser FormData pour envoyer l'image à un serveur
       // const formData = new FormData();
       // formData.append('image', selectedImage);
@@ -162,14 +160,12 @@ const handleChangeMusic = event => {
 
     
       const formData = new FormData();
-      console.log('la ', selectedImage)
       formData.append('file', selectedImage);
     
 
         if (username !== '')
-            username = props.username
+            setUsername(props.username) 
 
-        console.log(props.userId, username, password, formData)
 
       fetch(props.baseURL + ':8080/' + 'api/UpateUserInfo', {
         method: 'POST',
@@ -190,7 +186,6 @@ const handleChangeMusic = event => {
       }).catch(function(error){
         console.error(error)
         })
-    }
 }
 
 
@@ -199,7 +194,6 @@ const handleImageChange = (e) => {
     const file = e.target.files[0]; // Récupérer le premier fichier sélectionné
     const imageUrl = URL.createObjectURL(file);
     setSelectedImage(imageUrl); // Mettre à jour l'état avec l'URL de l'image
-    console.log("URL de l'image :", imageUrl);
   };
 
 

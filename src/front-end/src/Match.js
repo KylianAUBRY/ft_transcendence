@@ -5,7 +5,6 @@ import './Match.css'
 
 
 const Match = (matchObject) => {
-    console.log('MATCH ', matchObject)
     const id = matchObject.matchObject.gameId
     var match = document.getElementById(`match${id}`)
 
@@ -17,7 +16,6 @@ const Match = (matchObject) => {
         } catch{}
     }
         
-    console.log(id)
 
     const opponentUsername = matchObject.matchObject.opponentUsername
     const score = matchObject.matchObject.userScore + ' - ' + matchObject.matchObject.opponentScore

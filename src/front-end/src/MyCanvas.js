@@ -13,6 +13,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import Chart from 'chart.js/auto';
 import Match from './Match'
+import useSound from 'use-sound'
 
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
@@ -25,7 +26,6 @@ let newUrl = baseUrl.replace('http://', '')
 let socketUrl = 'ws'
 
 if (baseUrl.startsWith('https://')) {
-  baseUrl = baseUrl.replace('https://', 'http://');
   socketUrl = 'wss'
 }
 
@@ -56,7 +56,6 @@ let auth42
 let multiple= false
 
 const path = baseUrl + ':8080'
-console.log(path, baseUrl); 
 const client = axios.create({
   baseURL: path
 })
@@ -64,6 +63,8 @@ const client = axios.create({
 
 
 let stopDecompte = false
+
+
 
 function MyCanvas( props ) {
   const [username, setUsername] = useState('')
@@ -195,7 +196,6 @@ function MyCanvas( props ) {
         setisLocalMatch(false)
         setisDecompte(true)
     }, 500); 
-    console.log('test5', state)
       setisInMatchTournament(true)
     }else {
       setisTableTournament(false)
@@ -236,7 +236,7 @@ useEffect(() => {
     ).then(function(res){
       updateUser(false)
     }).catch(function(error){
-     console.log(error)
+     console.error(error)
     })
     }
 
@@ -252,7 +252,6 @@ useEffect(() => {
   client.get("/api/URL42")
   .then(res => {
     auth42 = res.data.URL42
-    console.log(res, auth42)
 }).catch(error => {
   console.error('There was a problem for 42url:', error);
 })
@@ -471,7 +470,6 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
     loadDiv.style.display = 'block'
 
     isSearch = true
-    console.log(isSearch)
 
 
 
@@ -497,12 +495,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         key2 = user.key2
         key3 = user.key3
         key4 = user.key4
-        console.log(user)
     }).then(function(res){
-
-        console.log(csrfToken)
-        console.log('userId', userId)
-
     fetch(baseUrl + ':8080/' + 'api/JoinQueue', {
       method: 'POST',
       headers: {
@@ -517,15 +510,9 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
       }
       return response.json();
     }).then(async data => {
-      console.log('JoinQueue', data);
-
-      console.log('search: ', isSearch)
       while (gameId === null && isSearch === true) {
-        console.log('test' , gameId)
         const data = await checkJoinGame();
-        
         if (data.hasOwnProperty('gameId')) {
-          console.log('La ressource est un game_id:', data.gameId);
           gameId = data.gameId
         }
     
@@ -536,7 +523,6 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         await new Promise(resolve => setTimeout(resolve, 1000)); // Attendez 1 seconde avant de renvoyer la requête
       }
       if (isSearch === false){
-      console.log('search: ', isSearch)
         try {
           const response = await fetch(baseUrl + ':8080/' + 'api/ExitQueue', {
             method: 'POST',
@@ -553,7 +539,6 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
           }
       
           const data = await response.json();
-          console.log('stop search', data);
           return data;
         } catch (error) {
           console.error('There was a problem stop searching:', error);
@@ -561,23 +546,15 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         }
       }
 
-      
-      console.log('trouve', gameId, userId)
+    
       isSearch = false
 
 
-      console.log('webSocket')
-
-
-      //serverUpdate(gameId)
 
     var localMatch = document.querySelector('.onlineLoad');
     localMatch.classList.remove('visible');
     localMatch.classList.add('hidden');
-    // if (state === 20){
-    //   updateSetScore('name1', 'Player 1')
-    //   updateSetScore('name2', 'Player 2')
-    // }
+
     setTimeout(function() {
         setisOnlineLoad(false)
         setisDecompte(true)
@@ -619,7 +596,6 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
       }
   
       const data = await response.json();
-      console.log('CheckJoinGame', data);
       return data;
     } catch (error) {
       console.error('There was a problem CheckJoinGame:', error);
@@ -669,9 +645,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
     var localMatch = document.querySelector('.localMatch');
     localMatch.classList.remove('visible');
     localMatch.classList.add('hidden');
-    console.log('test1',  multiple, state)
     updateSetState(60)
-    console.log('test2',  multiple, state)
     
   }
 
@@ -1078,9 +1052,51 @@ function affDecompte(){
   }
 
 
+  const [tt, i18n] = useTranslation("global")
+
+
+  function setOptions(){
+    try{
+      setracketColor(color)
+      if (language === 'French')
+        i18n.changeLanguage('fr')
+      if (language === 'English')
+        i18n.changeLanguage('en')
+      if (language === 'Spanish')
+        i18n.changeLanguage('es')
+
+
+    } catch(err){
+      console.error(err)
+    }
+    
+  }
+
+
+  function setOptionsDefault(){
+    try{
+      setracketColor(color)
+      i18n.changeLanguage('en')
+
+
+    } catch(err){
+      console.error(err)
+    }
+    
+  }
 
 
   function handleconnection(event) {
+
+
+    try{
+
+
+    }catch(err){
+      console.error(err)
+    }
+
+
     event.preventDefault()
     refBadPassword.current.innerText = ''
     document.getElementById('badEmail2').innerText = ''
@@ -1105,7 +1121,12 @@ function affDecompte(){
         password: password2
       }
     ).then(function(res){
-      console.log(res)
+
+
+      if (!res.ok){
+        console.error(res)
+      }
+
       updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
@@ -1144,6 +1165,9 @@ function affDecompte(){
             key2 = user.key2
             key3 = user.key3
             key4 = user.key4
+            setOptions()
+        }).catch(function(err){
+          console.error(err)
         })
 
 
@@ -1152,6 +1176,10 @@ function affDecompte(){
       
     }
  
+
+
+
+
 
 
   function handleRegister(event){
@@ -1181,7 +1209,6 @@ function affDecompte(){
       document.getElementById('badPassword').innerText = t("home.badP")
       return
     }
-    console.log('post', csrfToken)
 
 
     client.post(
@@ -1218,9 +1245,37 @@ function affDecompte(){
         setEmail('')
         setUsername('')
         setPassword('')
+        client.get("/api/user")
+        .then(res => {
+            user = res.data.user
+            LongestExchange = user.LongestExchange
+            aceRate = user.aceRate
+            nbAce = user.nbAce
+            nbGameLose = user.nbGameLose
+            nbGamePlayed = user.nbGamePlayed
+            nbGameWin = user.nbGameWin
+            nbPointLose = user.nbPointLose
+            nbPointMarked = user.nbPointMarked
+            nbTouchedBall = user.nbTouchedBall
+            name = user.username
+            winRate = user.winRate
+            userId = user.user_id
+            language = user.language
+            color = user.color
+            music = user.music
+            key1 = user.key1
+            key2 = user.key2
+            key3 = user.key3
+            key4 = user.key4
+            setOptions()
+        }).catch(function(err){
+          console.error(err)
+        })
       })
     }
-    )
+    ).catch(function(err){
+      console.error(err)
+    })
   }
 
 
@@ -1232,8 +1287,9 @@ function affDecompte(){
     ).then(function(res){
       updateUser(false)
       navigate('/')
+      setOptionsDefault()
     }).catch(function(error){
-     console.log(error)
+     console.error(error)
     })
   }
 
@@ -1297,7 +1353,6 @@ function getChart() {
         key2 = user.key2
         key3 = user.key3
         key4 = user.key4
-        console.log(user)
     }).then(function(res){
 
 
@@ -1376,13 +1431,9 @@ function getChart() {
           }
           return response.json();
         }).then(function(data){
-          console.log(data)
           try {
-            // Pas besoin d'analyser les données JSON car elles sont déjà au format JSON
-            const objets = data; // Les données sont déjà un tableau d'objets
-            // Mettre à jour l'état avec les données récupérées
+            const objets = data;
             setMatchArray(objets);
-            console.log("Données traitées avec succès :", objets);
         } catch (error) {
             console.error("Erreur lors du traitement des données :", error);
         }

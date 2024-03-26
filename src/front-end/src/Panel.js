@@ -93,7 +93,6 @@ React.useEffect((rotaY) => {
 function handleStart(){
   props.updateSetState(10)
   stateG = 1    
-   console.log('test2')
      navigate('/lobby')
   gsap.to(camera.position, {
     duration:3,
