@@ -173,14 +173,14 @@ class GameRoom(AsyncWebsocketConsumer):
         logger.info('innit info')
         field_high = 15.4
         field_length = 22
-        player_speed = 4
-        player_size = 1
+        player_speed = 7.5
+        player_size = 1.3
         ball_x = 0
         ball_y = 0
         ball_dx = 0
         ball_dy = 0
-        ball_speed = 5
-        ball_speed_gain_per_hit = 0.2
+        ball_speed = 6.5
+        ball_speed_gain_per_hit = 0.5
         ball_size = 0.207
         countdown = 3
         isGoal = False

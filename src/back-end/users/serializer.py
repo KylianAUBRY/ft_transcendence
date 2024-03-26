@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from django.core.exceptions import ValidationError
-from . models import HistoryModel, GameServerModel
+from . models import HistoryModel, GameServerModel, AppUser
 
 UserModel = get_user_model()
 
@@ -32,7 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UserModel
-        fields = ('user_id', 'email', 'username', 'nbGamePlayed', 'nbGameWin', 'nbGameLose', 'winRate',
+        fields = ('user_id', 'email', 'username', 'nbGamePlayed', 'nbGameWin', 'nbGameLose', 'winRate', 'image'
                   'nbTouchedBall', 'nbAce', 'aceRate', 'LongestExchange', 'nbPointMarked', 'nbPointLose', 'language', 'color', 'music', 'key1', 'key2', 'key3', 'key4')
     
     def get_winRate(self, obj):
@@ -55,3 +55,8 @@ class ServerSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameServerModel
         fields = ('serverId')
+
+class FriendListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AppUser
+        fields = ('id', 'username', 'isOnline', 'image')
