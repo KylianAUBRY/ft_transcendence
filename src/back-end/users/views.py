@@ -58,15 +58,17 @@ class UserLogout(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        email = getattr(request.user, "email", None)
         logout(request)
 
-        from . models import AppUser
-        user_obj = AppUser.objects.get(email=email)
-        if user_obj:
-            user_obj.isOnline = False
-            user_obj.save()
-
+        try:
+            email = getattr(request.user, "email", None)
+            from . models import AppUser
+            user_obj = AppUser.objects.get(email=email)
+            if user_obj:
+                user_obj.isOnline = False
+                user_obj.save()
+        except:
+            pass
         return Response(status=status.HTTP_200_OK)
 
 # Get info of user connected
@@ -87,6 +89,7 @@ class UpateUserInfo(APIView):
         user_id = data.get("userId")
         username = data.get("username")
         password = data.get("password")
+        logger = logging.getLogger(__name__)
         image = request.FILES.get("file")
         user_obj = AppUser.objects.get(pk=user_id)
         if user_obj:
