@@ -702,6 +702,19 @@ console.log('tesssssssssssssssssssssssssssssssst')
       nameServer = messageObj.name_serv
       side = messageObj.side
       console.log(messageObj.playerId, playerId, side)
+      console.log(side)
+      console.log(side)
+      console.log(side)
+      console.log(side)
+      console.log(side)
+      console.log(side)
+      console.log(side)
+      console.log(side)
+      console.log(side)
+      console.log(side)
+      console.log(side)
+      console.log(side)
+      console.log(side)
 	  }
 	  if (type === 'state_update'){
     if (isUsername === false){
@@ -719,8 +732,8 @@ console.log('tesssssssssssssssssssssssssssssssst')
 		  ball.position.z = messageObj.ball_y * -1
       ball.vector.x = messageObj.ball_dx * -1
       ball.vector.y = messageObj.ball_dy * -1
-		  racket1.position.z = messageObj.player_1_y
-		  racket2.position.z = messageObj.player_2_y
+		  racket1.position.z = messageObj.player_1_y * -1
+		  racket2.position.z = messageObj.player_2_y * -1
       ball.speed = messageObj.ball_speed
  
 		} else if (side === 'right'){
@@ -752,7 +765,7 @@ console.log('tesssssssssssssssssssssssssssssssst')
         updateSetScore('player1', onlineScore1)
       } else if (onlineScore2 < messageObj.player_2_score){
         onlineScore2++
-        updateSetScore('playe2', onlineScore2)
+        updateSetScore('player2', onlineScore2)
       }
 
 
@@ -815,26 +828,18 @@ console.log('tesssssssssssssssssssssssssssssssst')
 
 
   window.addEventListener('keydown', (e) => {
-	if (e.key == 'd') {
+	if (e.key == 'a') {
 	  rightKey = true
-	  /*if (side === 'left')
-		  racket1.position.z -= deltaTime * speedPaddle
-	  else if (side === 'right')
-		  racket1.position.z -= deltaTime * speedPaddle*/
-	} else if (e.key == 'a') {
+	} else if (e.key == 'd') {
 	  leftKey = true
-	  /*if (side === 'left')
-		  racket1.position.z += deltaTime * speedPaddle
-	  else if (side === 'right')
-		  racket1.position.z += deltaTime * speedPaddle*/
 	}
 	sendInfo()
   })
 
   window.addEventListener('keyup', (e) => {
-	if (e.key == 'd') {
+	if (e.key == 'a') {
 	  rightKey = false
-	} else if (e.key == 'a') {
+	} else if (e.key == 'd') {
 	  leftKey = false
 	}
 	sendInfo()
