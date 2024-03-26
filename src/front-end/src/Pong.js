@@ -6,10 +6,14 @@ import { useLocation } from 'react-router-dom';
 
 
 
+
 const loader = new GLTFLoader();
 let loaderGltf
+let loaderGltf2
 let racket1 = null
 let racket2 = null
+let racket11 = null
+let racket22 = null
 let ball = null
 let startVal = 0
 let running = false
@@ -24,6 +28,7 @@ let leftKey = false
 let rightKey = false
 let isPlayerReady = false
 let side
+let multiplePlayer = false
 
 let deltaTime = 0.0166
 
@@ -43,8 +48,7 @@ let lastDir = 0;
 
 let tmpBall = null
 
-const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client, findOnlineGame, newUrl, username, userId, gameId, position, rotation }) => {
-	console.log(ball);
+const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client, findOnlineGame, newUrl, username, userId, gameId, position, rotation, multiple }) => {
 	const location = useLocation()
   if (racket1 && racket2){
     racket1.material = new THREE.MeshBasicMaterial({ color: racketColor })
@@ -53,6 +57,7 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
 
     // Chargement du model 3d
     const [gltf, setGltf] = React.useState(null);
+    const [gltf2, setGltf2] = React.useState(null);
     React.useEffect(() => {
 		if (clockActiv === false)
 		{
@@ -78,6 +83,30 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
 			clockActiv = true
     		setInterval(getPositionOfBall, 1000);
   		}
+      loader.load('./pong2.glb', (loaded2Gltf) => {
+        setGltf2(loaded2Gltf);
+        loaderGltf2 = loaded2Gltf
+        loaded2Gltf.scene.traverse((child) => {
+          child.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        if (child.name === 'Player1'){
+          racket11 = child
+          racket11.position.z = 3   
+          racket11.position.x = 11  
+          racket11.position.y = 0.5 
+          racket11.visible = false
+        }else if (child.name === 'Player2'){
+          racket22 = child
+          racket22.position.z = 3
+          racket22.position.x = -11
+          racket22.position.y = 0.5
+          racket22.visible = false
+        }
+        })
+      }, undefined, (error) => {
+        console.error('Erreur lors du chargement du fichier GLTF', error);
+      });
+
+
     	loader.load('./pong.glb', (loadedGltf) => {
         setGltf(loadedGltf);
         loaderGltf = loadedGltf
@@ -542,13 +571,49 @@ function endGame(winner)
           racket1.position.z -= deltaTime * speedPaddle
       }
     }
+
+
+    if (multiplePlayer){
+      if (loaderGltf && loaderGltf.scene) {
+        if (stateGame < 50 || stateGame > 52){
+          if (keysPressed['Numpad9']) {// key pour le playeur 2 (celui d'en face)
+            if (racket22.position.z < (largSize / 2) - (playeurSize / 2)) //droite
+              racket22.position.z += deltaTime * speedPaddle
+          }
+          if (keysPressed['Numpad6']) {
+            if (racket22.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
+              racket22.position.z -= deltaTime * speedPaddle
+          }
+      }
+        if (keysPressed['KeyU']) {// key pour le playeur 1 (le notre)
+          if (racket11.position.z < (largSize / 2) - (playeurSize / 2)) //droite
+            racket11.position.z += deltaTime * speedPaddle
+        }
+        if (keysPressed['KeyJ']) {
+          if (racket11.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
+            racket11.position.z -= deltaTime * speedPaddle
+        }
+      }
+
+    }
+
   };
 
-
+if (multiple && loaderGltf2 && loaderGltf2.scene){
+      if (score.name1 = "Team 1"){
+        //afficher eme raquettes
+        multiplePlayer = true
+        racket11.visible = true
+        racket22.visible = true
+      }
+    }
 
 
 
   if (stateGame === 21 || stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51) {
+    
+    
+    
     if (newRound === true && stateGame !== 21){
       newRound = false
         startRender()
@@ -761,6 +826,7 @@ useEffect(() => {
 	return (
 	  <>
 		<primitive object={gltf.scene} position={[0, 0, 0]}/>
+    <primitive object={gltf2.scene} position={[0, 0, 0]}/>
 	  </>
 	)
   } else {

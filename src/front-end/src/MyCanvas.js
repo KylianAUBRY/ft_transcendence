@@ -47,6 +47,7 @@ let key2
 let key3
 let key4
 let auth42
+let multiple= false
 
 const path = baseUrl + ':8080'
 console.log(path); 
@@ -639,6 +640,25 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
    
     setisInMatchTournament(true)
   }
+
+
+  function goMatchLocal2(){
+    var localMatch = document.querySelector('.localMatch');
+    localMatch.classList.remove('visible');
+    localMatch.classList.add('hidden');
+    if (state === 30){
+      multiple = true
+      updateSetScore('name1', 'Team 1')
+      updateSetScore('name2', 'Team 2')
+    }
+    setTimeout(function() {
+        setisLocalMatch(false)
+        setisDecompte(true)
+    }, 500); 
+   
+    setisInMatchTournament(true)
+  }
+
 
 
   function replayLocal(){
@@ -1507,6 +1527,7 @@ function handle42register(){
               <div className='buttonLocal'>
                 <button className='btnExitMatchLocal' onClick={exitTournament}>{t("game.exit")}</button>
                 <button className='btnPlayMatchLocal' onClick={goMatchLocal}>{t("game.play")}</button>
+                <button className='btnPlayMatchLocal' onClick={goMatchLocal2}>2 v 2</button>
               </div>
             </div>
       </div>
@@ -1563,7 +1584,7 @@ function handle42register(){
   
           <Environment files="fond.hdr" background blur={0.5}/>
           <Suspense fallback={null}>
-            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId} position={props.position} rotation={props.rotation}/>
+            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId} position={props.position} rotation={props.rotation} multiple={multiple}/>
             <Stade/>
           </Suspense>
           <Stars
