@@ -35,9 +35,11 @@ let isUsername = false
 
 let deltaTime = 0.0166
 
-let speedPaddle = 5;
-let speedBall = 5;
-let playeurSize = 2;
+let speedPaddle = 7.5;
+let speedBall = 6.5;
+let speedBallGainParHeat = 0.4
+
+let playeurSize = 2.6;
 let rayonBall = 0.207;
 
 let largSize = 15.4;
@@ -50,6 +52,7 @@ let countMoov = 0
 let lastDir = 0;
 
 let tmpBall = null
+
 
 const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client, findOnlineGame, newUrl, username, userId, gameId, position, rotation, multiple }) => {
 	const location = useLocation()
@@ -143,13 +146,6 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
           }
 
 
-
-          if (typeof ball.velocity === 'undefined') {   //vas etre bientot supprimer
-            ball.velocity = {
-              x: 0,
-              z: 0
-             };
-          }
           if (typeof ball.stopped === 'undefined') {
             ball.stopped = true
           }
@@ -162,8 +158,10 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     }, []);
     
 	function startBallMovement() {
-  isPlayerReady = true
-	sendInfo()
+  if (stateGame === 21){
+    isPlayerReady = true
+	  sendInfo()
+  }
 	let ball_z;
 	let ball_x =  Math.random() < 0.5 ? -1 : 1;
 	while (1) {
@@ -202,11 +200,13 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     }
     
     if(isPastPaddle1()) {
+		console.log("HIT : ", ball.position.z)
       scoreBy('player2')
       return
     }
     
     if(isPastPaddle2()) {
+		console.log("HIT : ", ball.position.z)
       scoreBy('player1')
       return
     }
@@ -222,21 +222,20 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
   
   function updateBallPosition() {
     var ballPos = ball.position;
-    
-    ballPos.x += ball.vector.x * deltaTime * ball.speed
-    ballPos.z += ball.vector.z * deltaTime * ball.speed
+    ballPos.x += ball.vector.x * deltaTime * ball.speed;
+    ballPos.z += ball.vector.z * deltaTime * ball.speed;
   }
   
   function isSideCollision() {
-    var ballX = ball.position.z,
-        halfFieldWidth = 15.4 / 2;
-    return ballX - rayonBall < -halfFieldWidth || ballX + rayonBall > halfFieldWidth;
+    var ballZ = ball.position.z
+    return ballZ - rayonBall < -largSize / 2 || ballZ + rayonBall > largSize / 2;
   }
   
   function hitBallBack(paddle) {
-	ball.speed += 0.2
+	console.log("HIT : ", ball.position.z)
+	ball.speed += speedBallGainParHeat
 	ball.vector.x *= -1;
-    ball.vector.z = (ball.position.z - paddle.position.z) / (playeurSize / 2); 
+    ball.vector.z = (ball.position.z - paddle.position.z) / (playeurSize / 2);
   }
   
   function isPaddle2Collision() {
@@ -264,8 +263,10 @@ function endGame(winner)
     if (stateGame === 31){
       winner === 1 ? winnerTournament.player = 'player 1' : winnerTournament.player = 'player 2'
       updateSetState(32)
-    }
-    else if (stateGame === 41){
+    } else if (stateGame === 61){
+      winner === 1 ? winnerTournament.player = 'Team 1' : winnerTournament.player = 'Team 2'
+      updateSetState(32)
+    } else if (stateGame === 41){
       winner === 1 ? formData4.player1 = formData8.player1 : formData4.player1 = formData8.player2
       updateSetState(42)
     } else if (stateGame === 43){
@@ -364,114 +365,125 @@ function endGame(winner)
 
 
   function moov_right(){
-	if (racket2.position.z <= (largSize / 2) - (playeurSize / 2)) //droite
-        racket2.position.z += deltaTime * speedPaddle;
-	console.log("moov_right");
-  }
-
-  function moov_left(){
-	if (racket2.position.z >= (-largSize / 2) + (playeurSize / 2)) //gauche
-        racket2.position.z -= deltaTime * speedPaddle;
-	console.log("moov_left");
-  }
-
-  function processBotPaddle() {
-
-    if (infoIsReady === true)
-	{
-		console.log("1 seconde timer");
-    	infoIsReady = false;
-		tmpBall.vector.x = ball.vector.x;
-		tmpBall.vector.z = ball.vector.z;
-		tmpBall.position.x = ball.position.x;
-		tmpBall.position.z = ball.position.z;
-		tmpBall.position.y = ball.position.y;
-		tmpBall.speed = ball.speed;
-	}
-	
-
-
-	if (tmpBall.position.x >= 11 || tmpBall.position.x <= -11)// ici la balle touche un des coter ou il y a les paddle, je n'interprete pas ou est le paddle pour reproduire un comportement humain
-	{
-		tmpBall.vector.z *= -1;
-	}
-	if (tmpBall.position.z >= 7,7 || tmpBall.position.z <= -7,7)// ici la balle touche un rebord, un humain comprend tres bien ce genre de rebond, donc calcule precis.
-	{
-		tmpBall.vector.x *= -1;
-	}
-
-	tmpBall.position.x += tmpBall.vector.x * deltaTime * tmpBall.speed;
-	tmpBall.position.z += tmpBall.vector.z * deltaTime * tmpBall.speed;
-
-	if (countMoov >= 10)
-		countMoov = 0;
-	else{
-		countMoov++;
-		if (lastDir === 1)
-			moov_left();
-		else if (lastDir === 2)
-			moov_right();
-		return;
-	}
-
-	let tmp = {
-		x: tmpBall.position.x,
-		z: tmpBall.position.z,
-		Vx: tmpBall.vector.x,
-		Vy: tmpBall.vector.x
-	}
-	let countTmp = 0;
-	while (1)
-	{
-		countTmp++;
-		tmp.x += tmp.Vx * deltaTime * ball.speed;
-		if (tmp.x <= -longSize / 2 || tmp.x >= longSize / 2)
-			break ;
-		if (tmp.y - rayonBall <= -largSize / 2 || tmp.y + rayonBall <= largSize / 2)
-			tmp.Vz *= -1;
-		tmp.y += tmp.Vy * deltaTime * ball.speed;
-	}
-
-	console.log("TMP BALL : ", tmpBall.position.x);
-	console.log("BALL      : ", ball.position.x);
-	let tmpValue = racket2.position.z - tmpBall.position.z;
-	if (tmpValue === 0 || (tmpValue < 0 && tmpValue >= -(playeurSize / 2) || tmpValue > 0 && tmpValue <= playeurSize / 2)){
-		lastDir = 0;
-		return ;
-	}
-
-
-	if(racket2.position.z > tmp.z) {
-		lastDir = 1; //il ce dirige a gauche
-		moov_left();
-    	// racket2.position.z -= Math.min(racket2.position.z - tmpBall.position.z, deltaTime * speedPaddle);
-    }else if(racket2.position.z < tmp.z) {
-		lastDir = 2;// il ce dirig a droite
-		moov_right();
-    	// racket2.position.z  += Math.min(tmpBall.position.z - racket2.position.z, deltaTime * speedPaddle);
+    if (racket2.position.z <= (largSize / 2) - (playeurSize / 2)) //droite
+          racket2.position.z += deltaTime * speedPaddle;
+    // console.log("moov_right");
     }
-	else
-		lastDir = 0;
+  
+    function moov_left(){
+    if (racket2.position.z >= (-largSize / 2) + (playeurSize / 2)) //gauche
+          racket2.position.z -= deltaTime * speedPaddle;
+    // console.log("moov_left");
+    }
 
-    // if(racket2.position.z > tmpBall.position.z) {
-	// 	lastDir = 1; //il ce dirige a gauche
-	// 	moov_left();
-    // 	// racket2.position.z -= Math.min(racket2.position.z - tmpBall.position.z, deltaTime * speedPaddle);
-    // }else if(racket2.position.z < tmpBall.position.z) {
-	// 	lastDir = 2;// il ce dirig a droite
-	// 	moov_right();
-    // 	// racket2.position.z  += Math.min(tmpBall.position.z - racket2.position.z, deltaTime * speedPaddle);
-    // }
-	// else
-	// 	lastDir = 0;
+    function processBotPaddle() {
 
-    // clock.start();
-
-  }
-
-
-
-
+      if (infoIsReady === true)
+    {
+      console.log("1 seconde timer");
+        infoIsReady = false;
+      tmpBall.vector.x = ball.vector.x;
+      tmpBall.vector.z = ball.vector.z;
+      tmpBall.position.x = ball.position.x;
+      tmpBall.position.z = ball.position.z;
+      tmpBall.position.y = ball.position.y;
+      tmpBall.speed = ball.speed;
+    }
+    
+    tmpBall.position.x += tmpBall.vector.x * deltaTime * tmpBall.speed;
+    tmpBall.position.z += tmpBall.vector.z * deltaTime * tmpBall.speed;
+  
+  
+    if (tmpBall.position.x >= longSize / 2 || tmpBall.position.x <= -longSize / 2 )// ici la balle touche un des coter ou il y a les paddle, je n'interprete pas ou est le paddle pour reproduire un comportement humain
+    {
+      tmpBall.vector.z *= -1;
+    }
+    if (tmpBall.position.z >= largSize / 2 || tmpBall.position.z <= -largSize / 2)// ici la balle touche un rebord, un humain comprend tres bien ce genre de rebond, donc calcule precis.
+    {
+      tmpBall.vector.x *= -1;
+    }
+  
+    
+    if (countMoov >= 20)
+      countMoov = 0;
+    else{
+      countMoov++;
+      if (lastDir === 1)
+        moov_left();
+      else if (lastDir === 2)
+        moov_right();
+      else if (countMoov >= 10)
+        countMoov = 20;
+      return;
+    }
+    let tmp = {
+      x: tmpBall.position.x,
+      z: tmpBall.position.z,
+      Vx: tmpBall.vector.x,
+      Vz: tmpBall.vector.z
+      // x: ball.position.x,
+      // z: ball.position.z,
+      // Vx: ball.vector.x,
+      // Vz: ball.vector.z
+    }
+    
+  
+    const timeToWall = Math.abs(longSize / 2 - Math.abs(tmp.x)) / Math.abs(tmp.Vx);
+    console.log("chat Gtp :", tmp.z + tmp.Vz * timeToWall)
+  
+    let collisionTop = ((longSize / 2) - tmp.x) * (tmp.Vz / tmp.Vx) + tmp.z;
+    let collisionBot = (-(longSize / 2) - tmp.x) * (tmp.Vz / tmp.Vx) + tmp.z;
+  
+    console.log("predition top", collisionTop)
+    console.log("predition bot", collisionBot)
+    console.log("pz:", tmp.z, "px:", tmp.x , "  vz:", tmp.Vz, "vx:", tmp.Vx)
+  
+    let collisionPosition;
+    if(tmp.Vx >	 0)
+      collisionPosition = collisionTop;
+    else
+      collisionPosition = collisionBot;
+    if (collisionPosition < -largSize / 2)
+    {
+      let tmpVal = -largSize / 2 - collisionPosition;
+      if (tmpVal > largSize /2)
+        tmp.z = 0;
+      else
+        tmp.z = -largSize + tmpVal;
+    }
+  
+    else if (collisionPosition > largSize / 2)
+    {
+      let tmpVal = largSize / 2 - collisionPosition;
+      if (tmpVal < -largSize / 2)
+        tmp.z = 0;
+      else
+        tmp.z = largSize + tmpVal;
+    }
+    else
+      tmp.z = collisionPosition;
+    
+  
+    // console.log("TMP BALL : ", tmpBall.position.x);
+    // console.log("BALL      : ", ball.position.x);
+    let tmpValue = racket2.position.z - tmp.z // tmpBall.position.z;
+    if (tmpValue === 0 || (tmpValue < 0 && tmpValue >= -((playeurSize - 0.3) / 2) || tmpValue > 0 && tmpValue <= (playeurSize - 0.3) / 2)){
+      lastDir = 0;
+      return ;
+    }
+  
+  
+    if(racket2.position.z > tmp.z) {
+      lastDir = 1; //il ce dirige a gauche
+      moov_left();
+    }else if(racket2.position.z < tmp.z) {
+      lastDir = 2;// il ce dirig a droite
+      moov_right();
+    }
+    else
+      lastDir = 0;
+  
+    }
 
 
 
@@ -481,7 +493,7 @@ function endGame(winner)
 
   function reset(bool) {
     ball.vector.x = 0
-    ball.vector.y = 0
+    ball.vector.z = 0
     ball.speed = speedBall
     tmpBall.vector.x = 0
     tmpBall.vector.y = 0
@@ -508,7 +520,7 @@ function endGame(winner)
             stop = false
             stopRender()
             ball.vector.x = 0
-            ball.vector.y = 0
+            ball.vector.z = 0
             ball.position.x = 0
             ball.position.z = 0
             racket1.position.z = 0
@@ -580,24 +592,30 @@ function endGame(winner)
 
     if (multiplePlayer){
       if (loaderGltf && loaderGltf.scene) {
-        if (stateGame < 50 || stateGame > 52){
-          if (keysPressed['Numpad9']) {// key pour le playeur 2 (celui d'en face)
-            if (racket22.position.z < (largSize / 2) - (playeurSize / 2)) //droite
-              racket22.position.z += deltaTime * speedPaddle
+        if (stateGame === 61){
+          if (stateGame < 50 || stateGame > 52){ //racket 22   (si stateGame === 61)
+            if (keysPressed['Numpad9']) {// key pour le playeur 2 (celui d'en face)
+              if (racket22.position.z < (largSize / 2) - (playeurSize / 2)) //droite
+                racket22.position.z += deltaTime * speedPaddle
+            }
+            if (keysPressed['Numpad6']) {
+              if (racket22.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
+                racket22.position.z -= deltaTime * speedPaddle
+            }
           }
-          if (keysPressed['Numpad6']) {
-            if (racket22.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
-              racket22.position.z -= deltaTime * speedPaddle
+          if (keysPressed['KeyU']) {// key pour le playeur 1 (le notre)  racket 11
+            if (racket11.position.z < (largSize / 2) - (playeurSize / 2)) //droite
+              racket11.position.z += deltaTime * speedPaddle
           }
-      }
-        if (keysPressed['KeyU']) {// key pour le playeur 1 (le notre)
-          if (racket11.position.z < (largSize / 2) - (playeurSize / 2)) //droite
-            racket11.position.z += deltaTime * speedPaddle
+          if (keysPressed['KeyJ']) {
+            if (racket11.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
+              racket11.position.z -= deltaTime * speedPaddle
+          }
+
+
+
         }
-        if (keysPressed['KeyJ']) {
-          if (racket11.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
-            racket11.position.z -= deltaTime * speedPaddle
-        }
+        
       }
 
     }
@@ -615,9 +633,9 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 
 
 
-  if (stateGame === 21 || stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51) {
-    
-    
+  if (stateGame === 21 || stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51 || stateGame === 61) {
+    console.log(stateGame)
+
     
     if (newRound === true && stateGame !== 21){
       newRound = false
@@ -840,8 +858,8 @@ useEffect(() => {
 	
 	if (running === true){
 	  stopRender()
-	  ball.velocity.x = 0
-	  ball.velocity.y = 0
+	  ball.vector.x = 0
+	  ball.vector.y = 0
 	  ball.position.x = 0
 	  ball.position.z = 0
 	  racket1.position.z = 0

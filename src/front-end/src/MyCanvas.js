@@ -181,6 +181,16 @@ function MyCanvas( props ) {
         if (localMatch)
           localMatch.classList.add('visible');
       }, 100); 
+    }else if (newValue === 60){
+      multiple = true
+      updateSetScore('name1', 'Team 1')
+      updateSetScore('name2', 'Team 2')
+      setTimeout(function() {
+        setisLocalMatch(false)
+        setisDecompte(true)
+    }, 500); 
+    console.log('test5', state)
+      setisInMatchTournament(true)
     }else {
       setisTableTournament(false)
       setisSetterTournament(false)
@@ -503,7 +513,6 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
     }).then(async data => {
       console.log('JoinQueue', data);
 
-//gameId = 2
       console.log('search: ', isSearch)
       while (gameId === null && isSearch === true) {
         console.log('test' , gameId)
@@ -654,17 +663,10 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
     var localMatch = document.querySelector('.localMatch');
     localMatch.classList.remove('visible');
     localMatch.classList.add('hidden');
-    if (state === 30){
-      multiple = true
-      updateSetScore('name1', 'Team 1')
-      updateSetScore('name2', 'Team 2')
-    }
-    setTimeout(function() {
-        setisLocalMatch(false)
-        setisDecompte(true)
-    }, 500); 
-   
-    setisInMatchTournament(true)
+    console.log('test1',  multiple, state)
+    updateSetState(60)
+    console.log('test2',  multiple, state)
+    
   }
 
 
