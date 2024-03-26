@@ -366,10 +366,14 @@ class GameRoom(AsyncWebsocketConsumer):
         
         try:
             game_server = GameServerModel.objects.filter(pk=int(serv)).first()
-            logger.info('%s', game_server.serverId)
-            logger.info('%s', game_server.firstPlayerId)
-            logger.info('%s', game_server.secondPlayerId)
-            logger.info('%s', game_server.state)
+            if not game_server:
+                logger.info('GameServerModel Not Found : %s', error)
+            logger.info("---------------------------------------------------")
+            logger.info("%s", game_server.serverId)
+            logger.info("%s", game_server.firstPlayerId)
+            logger.info("%s", game_server.secondPlayerId)
+            logger.info("%s", game_server.state)
+            logger.info("---------------------------------------------------")
             game_server.delete()
         except Exception as error:
-            logger.info('GameServerModel Not Found : %s', error)
+            logger.info("Error in GameServerModel--------------- : %s", error)
