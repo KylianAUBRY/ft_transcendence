@@ -219,6 +219,39 @@
     margin-left: 5%;
  }
 
- .options{
-    margin-bottom: 10%;
- }
+
+
+
+
+
+  .ChangeInfo {
+    background-color: #052352;
+    color: white;
+    width: auto;
+    border: none;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    -webkit-appearance: button;
+    appearance: button;
+    outline: none;
+    margin: 1% 3%;
+  }
+
+ .ChangeInfo::before {
+    content: "\f13a";
+    width: auto;
+    height: auto;
+    text-align: center;
+    line-height: 45px;
+    color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+  }
+
+  .ChangeInfo:hover::before {
+    color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .ChangeInfo button{
+    color: black;
+  }

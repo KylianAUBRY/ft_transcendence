@@ -5,6 +5,9 @@ import MessageBox from './MessageBox'
 import { useTranslation } from 'react-i18next'
 import useSound from 'use-sound'
 
+let langValue
+let musicValue
+let colorValue
 
 function SocialMenu( props ) {
     const [play1, { stop: stop1 }] = useSound('music1.mp3', { loop: true, volume: 0.5 })
@@ -37,14 +40,47 @@ function displayList(){
         
 }
 
+function updateOptions(){
+    console.log('test')
+    fetch(props.baseURL + ':8080/' + 'api/UpdateUserOption', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            'userId': props.userId,
+            'language': langValue,
+            'color': colorValue,
+            'music': musicValue,
+            'key1': props.selectedKeys[0],
+            'key2': props.selectedKeys[1],
+            'key3': props.selectedKeys[2],
+            'key4': props.selectedKeys[3]
+        }),
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      }).catch(function(error){
+        console.error(error)
+        })
+}
+
+
+
+
+
+
 
 const handleChangeLang = event => {
-    var langValue = event.target.value
+    langValue = event.target.value
     i18n.changeLanguage(langValue)
+    updateOptions()
   };
   
 const handleChangeMusic = event => {
-    var musicValue = event.target.value
+    musicValue = event.target.value
     console.log(musicValue, inPlay)
     if (inPlay == 1)
         stop1()
@@ -64,10 +100,11 @@ const handleChangeMusic = event => {
         play3()
         setInPlay(3)
     }
+    updateOptions()
   };
 
   const handleChangeColor = event => {
-    var colorValue = event.target.value
+    colorValue = event.target.value
     if (colorValue === 'white')
         props.setracketColor(0xffffff)
     else if (colorValue === 'dark grey')
@@ -78,6 +115,7 @@ const handleChangeMusic = event => {
         props.setracketColor(0x898989)
     else if (colorValue === 'purple')
         props.setracketColor(0x720F8F)
+    updateOptions()
   };
 
  
@@ -104,6 +142,66 @@ const handleChangeMusic = event => {
     newSelectedKeys[index] = 'listening';
     props.setSelectedKeys(newSelectedKeys);
   };
+
+
+
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+
+  function uploadImage(e) {
+    e.preventDefault();
+    // Faire quelque chose avec l'image sélectionnée, comme l'envoyer à un serveur
+    if (selectedImage) {
+      console.log("Image sélectionnée :", selectedImage);
+      // Vous pouvez également utiliser FormData pour envoyer l'image à un serveur
+      // const formData = new FormData();
+      // formData.append('image', selectedImage);
+      // Ensuite, vous pouvez utiliser fetch() pour envoyer la FormData à votre backend
+
+    
+      const formData = new FormData();
+      console.log('la ', selectedImage)
+      formData.append('file', selectedImage);
+    
+
+        if (username !== '')
+            username = props.username
+
+        console.log(props.userId, username, password, formData)
+
+      fetch(props.baseURL + ':8080/' + 'api/UpateUserInfo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: props.userId,
+          username: username,
+          password: password,
+          image: formData
+        }),
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      }).catch(function(error){
+        console.error(error)
+        })
+    }
+}
+
+
+
+const handleImageChange = (e) => {
+    const file = e.target.files[0]; // Récupérer le premier fichier sélectionné
+    const imageUrl = URL.createObjectURL(file);
+    setSelectedImage(imageUrl); // Mettre à jour l'état avec l'URL de l'image
+    console.log("URL de l'image :", imageUrl);
+  };
+
 
     return (
         <div className='friendList'>
@@ -199,6 +297,21 @@ const handleChangeMusic = event => {
                 </div>
             </div>
             </div>
+
+
+
+
+            <div className='ChangeInfo'>
+                <p>Change Info</p>
+                <form onSubmit={uploadImage}>
+                    <input placeholder='Image' type='file' accept="image/*" onChange={handleImageChange}></input>
+                    <input placeholder='Username'type='text' onChange={e => setUsername(e.target.value)}></input>
+                    <input placeholder='Password' type='password' onChange={e => setPassword(e.target.value)}></input>
+                    <button type='submit' >Change !</button>
+                </form>
+            </div>
+           
+
             </div>
         </div>
     )}

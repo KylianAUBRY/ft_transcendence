@@ -37,7 +37,7 @@ let deltaTime = 0.0166
 
 let speedPaddle = 7.5;
 let speedBall = 6.5;
-let speedBallGainParHeat = 0.4
+let speedBallGainParHeat = 0.5
 
 let playeurSize = 2.6;
 let rayonBall = 0.207;
@@ -168,6 +168,8 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
 		ball_z = Math.random() * (0.5 - (-0.5)) + (-0.5);
 		if (ball_z !== 0){
 			break;
+      ball_z = 0;
+      break ;
 		}
 	}
 	ball.vector = {
@@ -198,15 +200,21 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     if(isPaddle2Collision()) {
       hitBallBack(racket2)
     }
+
+    if (stateGame === 61 && isPaddle11Collision()){
+      hitBallBack(racket11)
+    }
+
+    if(stateGame === 61 && isPaddle22Collision()) {
+      hitBallBack(racket22)
+    }
     
     if(isPastPaddle1()) {
-		console.log("HIT : ", ball.position.z)
       scoreBy('player2')
       return
     }
     
     if(isPastPaddle2()) {
-		console.log("HIT : ", ball.position.z)
       scoreBy('player1')
       return
     }
@@ -232,9 +240,8 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
   }
   
   function hitBallBack(paddle) {
-	console.log("HIT : ", ball.position.z)
-	ball.speed += speedBallGainParHeat
-	ball.vector.x *= -1;
+  	ball.speed += speedBallGainParHeat
+	  ball.vector.x *= -1;
     ball.vector.z = (ball.position.z - paddle.position.z) / (playeurSize / 2);
   }
   
@@ -247,9 +254,19 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     return ball.position.x + rayonBall >= racket1.position.x && 
         isBallAlignedWithPaddle(racket1);
   }
+
+  function isPaddle22Collision() {
+    return ball.position.x - rayonBall <= racket22.position.x && 
+        isBallAlignedWithPaddle(racket22);
+  }
+
+  function isPaddle11Collision() {
+    return ball.position.x + rayonBall >= racket11.position.x && 
+        isBallAlignedWithPaddle(racket11);
+  }
   
   function isBallAlignedWithPaddle(paddle) {
-    var halfPaddleWidth = 2 / 2,
+    var halfPaddleWidth = playeurSize / 2,
         paddleX = paddle.position.z,
         ballX = ball.position.z;
     return ballX > paddleX - halfPaddleWidth && 
@@ -297,8 +314,6 @@ function endGame(winner)
     ball.stopped = true;
   }
   
-
-  
   function startRender(){
     running = true;
     startVal = 0
@@ -345,8 +360,6 @@ function endGame(winner)
             setTimeout(reset(true), 2000)
           }
         })
-
-        
       }
   }
 
@@ -428,15 +441,12 @@ function endGame(winner)
     }
     
   
-    const timeToWall = Math.abs(longSize / 2 - Math.abs(tmp.x)) / Math.abs(tmp.Vx);
-    console.log("chat Gtp :", tmp.z + tmp.Vz * timeToWall)
-  
     let collisionTop = ((longSize / 2) - tmp.x) * (tmp.Vz / tmp.Vx) + tmp.z;
     let collisionBot = (-(longSize / 2) - tmp.x) * (tmp.Vz / tmp.Vx) + tmp.z;
   
-    console.log("predition top", collisionTop)
-    console.log("predition bot", collisionBot)
-    console.log("pz:", tmp.z, "px:", tmp.x , "  vz:", tmp.Vz, "vx:", tmp.Vx)
+    // console.log("predition top", collisionTop)
+    // console.log("predition bot", collisionBot)
+    // console.log("pz:", tmp.z, "px:", tmp.x , "  vz:", tmp.Vz, "vx:", tmp.Vx)
   
     let collisionPosition;
     if(tmp.Vx >	 0)
@@ -467,8 +477,10 @@ function endGame(winner)
     // console.log("TMP BALL : ", tmpBall.position.x);
     // console.log("BALL      : ", ball.position.x);
     let tmpValue = racket2.position.z - tmp.z // tmpBall.position.z;
-    if (tmpValue === 0 || (tmpValue < 0 && tmpValue >= -((playeurSize - 0.3) / 2) || tmpValue > 0 && tmpValue <= (playeurSize - 0.3) / 2)){
+    if (tmpValue === 0 || ((tmpValue < 0 && tmpValue >= -((playeurSize / 2)- 0.3)) || (tmpValue > 0 && tmpValue <= ((playeurSize / 2)- 0.3)))){
       lastDir = 0;
+      if((tmpValue < 0 && tmpValue >= -((playeurSize - 0.3) / 4)) || (tmpValue > 0 && tmpValue <= (playeurSize - 0.3) / 4))
+        countMoov = 10;
       return ;
     }
   
@@ -492,6 +504,8 @@ function endGame(winner)
 
 
   function reset(bool) {
+    racket11.position.z = 1.5
+    racket22.position.z = 1.5
     ball.vector.x = 0
     ball.vector.z = 0
     ball.speed = speedBall
@@ -502,6 +516,10 @@ function endGame(winner)
     tmpBall.speed = speedBall
     racket1.position.z = 0
     racket2.position.z = 0
+    if (stateGame === 61){
+      racket1.position.z = -1.5
+      racket2.position.z = -1.5
+    }
     if (bool){
       gsap.to(ball.position, {
         duration:2,
@@ -571,49 +589,60 @@ function endGame(winner)
     if (loaderGltf && loaderGltf.scene) {
       if (stateGame < 50 || stateGame > 52){
         if (keysPressed[selectedKeys[3]]) {// key pour le playeur 2 (celui d'en face)
-          if (racket2.position.z < (largSize / 2) - (playeurSize / 2)) //droite
-            racket2.position.z += deltaTime * speedPaddle
+          if (racket2.position.z < (largSize / 2) - (playeurSize / 2)){ //gauche
+            if(stateGame != 61 || racket2.position.z > racket22.position.z || (racket22.position.z - racket2.position.z > playeurSize))
+              racket2.position.z += deltaTime * speedPaddle
+          }
         }
         if (keysPressed[selectedKeys[2]]) {
-          if (racket2.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
-            racket2.position.z -= deltaTime * speedPaddle
+          if (racket2.position.z > (-largSize / 2) + (playeurSize / 2)){ //droite
+            if (stateGame != 61 || racket2.position.z < racket22.position.z || (racket2.position.z - racket22.position.z > playeurSize))
+              racket2.position.z -= deltaTime * speedPaddle
+          }
         }
     }
       if (keysPressed[selectedKeys[0]]) {// key pour le playeur 1 (le notre)
-        if (racket1.position.z < (largSize / 2) - (playeurSize / 2)) //droite
-          racket1.position.z += deltaTime * speedPaddle
+        if (racket1.position.z < (largSize / 2) - (playeurSize / 2)){ //gauche
+          if (stateGame != 61 || racket1.position.z > racket11.position.z || (racket11.position.z - racket1.position.z > playeurSize))
+            racket1.position.z += deltaTime * speedPaddle;
+      }
       }
       if (keysPressed[selectedKeys[1]]) {
-        if (racket1.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
-          racket1.position.z -= deltaTime * speedPaddle
+        if (racket1.position.z > (-largSize / 2) + (playeurSize / 2)) //droite
+         
+          if (stateGame != 61 || racket1.position.z < racket11.position.z || (racket1.position.z - racket11.position.z > playeurSize))
+            racket1.position.z -= deltaTime * speedPaddle
+        }
       }
-    }
-
-
     if (multiplePlayer){
       if (loaderGltf && loaderGltf.scene) {
         if (stateGame === 61){
           if (stateGame < 50 || stateGame > 52){ //racket 22   (si stateGame === 61)
             if (keysPressed['Numpad9']) {// key pour le playeur 2 (celui d'en face)
-              if (racket22.position.z < (largSize / 2) - (playeurSize / 2)) //droite
-                racket22.position.z += deltaTime * speedPaddle
+              if (racket22.position.z < (largSize / 2) - (playeurSize / 2)){ //gauche
+                if (racket22.position.z > racket2.position.z || (racket2.position.z - racket22.position.z > playeurSize))
+                  racket22.position.z += deltaTime * speedPaddle
+              }
             }
             if (keysPressed['Numpad6']) {
-              if (racket22.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
-                racket22.position.z -= deltaTime * speedPaddle
+              if (racket22.position.z > (-largSize / 2) + (playeurSize / 2)){ //droite
+                if (racket22.position.z < racket2.position.z || (racket22.position.z - racket2.position.z > playeurSize))
+                  racket22.position.z -= deltaTime * speedPaddle
+              }
+            }
+          } //                                  racket 11
+          if (keysPressed['KeyU']) {// key pour le playeur 1 (le notre)
+            if (racket11.position.z < (largSize / 2) - (playeurSize / 2)){ //gauche
+              if((racket11.position.z > racket1.position.z) || (racket1.position.z - racket11.position.z > playeurSize))
+                racket11.position.z += deltaTime * speedPaddle
             }
           }
-          if (keysPressed['KeyU']) {// key pour le playeur 1 (le notre)  racket 11
-            if (racket11.position.z < (largSize / 2) - (playeurSize / 2)) //droite
-              racket11.position.z += deltaTime * speedPaddle
-          }
           if (keysPressed['KeyJ']) {
-            if (racket11.position.z > (-largSize / 2) + (playeurSize / 2)) //gauche
-              racket11.position.z -= deltaTime * speedPaddle
+            if (racket11.position.z > (-largSize / 2) + (playeurSize / 2)){//droite   
+              if ((racket11.position.z < racket1.position.z) || (racket11.position.z - racket1.position.z > playeurSize))
+                racket11.position.z -= deltaTime * speedPaddle;
+            }
           }
-
-
-
         }
         
       }
@@ -628,13 +657,17 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
         multiplePlayer = true
         racket11.visible = true
         racket22.visible = true
+        racket11.position.z = 1.5
+        racket22.position.z = 1.5
+        racket1.position.z = -1.5
+        racket2.position.z = -1.5
       }
     }
 
 
 
   if (stateGame === 21 || stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51 || stateGame === 61) {
-    console.log(stateGame)
+    // console.log(stateGame)
 
     
     if (newRound === true && stateGame !== 21){
@@ -696,159 +729,145 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 	  }
 }
 
-
-
 useEffect(() => {
 
-if (findOnlineGame === true) {
-console.log('tesssssssssssssssssssssssssssssssst')
-  websocket = new WebSocket(websocketUrl);
+  if (findOnlineGame === true) {
+  console.log('tesssssssssssssssssssssssssssssssst')
+    websocket = new WebSocket(websocketUrl);
+    
+    websocket.onopen = function() {
+      console.log('Connected to WebSocket');
+      // Start sending info every 1 second once connected
+      setInterval(sendInfo, 1000);
+    };
   
-  websocket.onopen = function() {
-	  console.log('Connected to WebSocket');
-	  // Start sending info every 1 second once connected
-	  setInterval(sendInfo, 1000);
-  };
-
-  websocket.onmessage = function(event) {
-	  console.log('Received message:', event.data);
-	  const messageObj = JSON.parse(event.data); 
-	  const type = messageObj.type;
-	  if (type === 'playerId'){
-      const messageObj = JSON.parse(event.data)
-      playerId = messageObj.playerId
-      nameServer = messageObj.name_serv
-      side = messageObj.side
-      console.log(messageObj.playerId, playerId, side)
-	  }
-	  if (type === 'state_update'){
-    if (isUsername === false){
-      updateSetScore('name1', messageObj.player_1_username)
-      updateSetScore('name2', messageObj.player_2_username)
-      isUsername = true
-    }
-		if (side === 'left'){
-		  ball.position.x = messageObj.ball_x * -1
-		  ball.position.z = messageObj.ball_y * -1
-      ball.vector.x = messageObj.ball_dx * -1
-      ball.vector.y = messageObj.ball_dy * -1
-		  racket1.position.z = messageObj.player_1_y * -1
-		  racket2.position.z = messageObj.player_2_y * -1
-      ball.speed = messageObj.ball_speed
- 
-		} else if (side === 'right'){
-      ball.position.x = messageObj.ball_x
-      ball.position.z = messageObj.ball_y
-      racket1.position.z = messageObj.player_2_y
-      racket2.position.z = messageObj.player_1_y
-      ball.vector.x = messageObj.ball_dx
-      ball.vector.y = messageObj.ball_dy
-      ball.speed = messageObj.ball_speed
-		}
-		
-    if (messageObj.isStarting === true){
-      /*newRound = false
-      startRender()*/
-    }
-
-		if (messageObj.isGoal === true){
-		  console.log('GOAL GOAL GOALLLLL')
-
-      if (onlineScore1 < messageObj.player_1_score){
-        onlineScore1++
-        updateSetScore('player1', onlineScore1)
-      } else if (onlineScore2 < messageObj.player_2_score){
-        onlineScore2++
-        updateSetScore('player2', onlineScore2)
+    websocket.onmessage = function(event) {
+      console.log('Received message:', event.data);
+      const messageObj = JSON.parse(event.data); 
+      const type = messageObj.type;
+      if (type === 'playerId'){
+        const messageObj = JSON.parse(event.data)
+        playerId = messageObj.playerId
+        nameServer = messageObj.name_serv
+        side = messageObj.side
+        console.log(messageObj.playerId, playerId, side)
       }
-
-
-		  isPlayerReady = false
-		  sendInfo()
-      ball.material = new THREE.MeshBasicMaterial({ color: 0xff1500 });
-      racket1.position.z = 0
-      racket2.position.z = 0
-      ball.vector.x = 0
-      ball.vector.z = 0
-      ball.speed = 0
-      gsap.to(ball.position, {
-        duration:2,
-        z: 0,
-        x: 0,
-        onComplete: () => {
-          ball.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-          isPlayerReady = true
-		      sendInfo()
+      if (type === 'state_update'){
+      if (isUsername === false){
+        updateSetScore('name1', messageObj.player_1_username)
+        updateSetScore('name2', messageObj.player_2_username)
+        isUsername = true
+      }
+      if (side === 'left'){
+        ball.position.x = messageObj.ball_x * -1
+        ball.position.z = messageObj.ball_y * -1
+        ball.vector.x = messageObj.ball_dx * -1
+        ball.vector.y = messageObj.ball_dy * -1
+        racket1.position.z = messageObj.player_1_y * -1
+        racket2.position.z = messageObj.player_2_y * -1
+        ball.speed = messageObj.ball_speed
+   
+      } else if (side === 'right'){
+        ball.position.x = messageObj.ball_x
+        ball.position.z = messageObj.ball_y
+        racket1.position.z = messageObj.player_2_y
+        racket2.position.z = messageObj.player_1_y
+        ball.vector.x = messageObj.ball_dx
+        ball.vector.y = messageObj.ball_dy
+        ball.speed = messageObj.ball_speed
+      }
+  
+      if (messageObj.isGoal === true){
+        console.log('GOAL GOAL GOALLLLL')
+  
+        if (onlineScore1 < messageObj.player_1_score){
+          onlineScore1++
+          updateSetScore('player1', onlineScore1)
+        } else if (onlineScore2 < messageObj.player_2_score){
+          onlineScore2++
+          updateSetScore('player2', onlineScore2)
         }
-      })
-		  /*setTimeout(function() {
-			isPlayerReady = true;
-			sendInfo()
-		}, 3000);*/
-
-		}
-
-
-    if (messageObj.gameIsFinished === true){
-		  console.log('Game finish')
-		  isPlayerReady = false
-		  sendInfo()
-      if (messageObj.player_1_score === 5){
-        winnerTournament.player = messageObj.player_1_username
-      } else if (messageObj.player_2_score === 5){
-        winnerTournament.player = messageObj.player_2_username
+  
+  
+        isPlayerReady = false
+        sendInfo()
+        ball.material = new THREE.MeshBasicMaterial({ color: 0xff1500 });
+        racket1.position.z = 0
+        racket2.position.z = 0
+        ball.vector.x = 0
+        ball.vector.z = 0
+        ball.speed = 0
+        gsap.to(ball.position, {
+          duration:2,
+          z: 0,
+          x: 0,
+          onComplete: () => {
+            ball.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            isPlayerReady = true
+            sendInfo()
+          }
+        })
+  
       }
-      updateSetState(22)
-      playerId = -1
-
-		}
-
-	  }
-	  
-	  // Handle incoming messages here
-  };
-
-  websocket.onerror = function(error) {
-	  console.error('WebSocket error:', error);
-  };
-
-  websocket.onclose = function() {
-	  console.log('WebSocket connection closed');
-	  return
-	  // You may attempt to reconnect here if needed
-  };
-
-
-
-
-  window.addEventListener('keydown', (e) => {
-	if (e.key == 'a') {
-	  rightKey = true
-	} else if (e.key == 'd') {
-	  leftKey = true
-	}
-	sendInfo()
-  })
-
-  window.addEventListener('keyup', (e) => {
-	if (e.key == 'a') {
-	  rightKey = false
-	} else if (e.key == 'd') {
-	  leftKey = false
-	}
-	sendInfo()
-  })	
-
-
-
-
-} 
-
-
-
-}, [findOnlineGame]);
-
-
+  
+  
+      if (messageObj.gameIsFinished === true){
+        console.log('Game finish')
+        websocket.close();
+        if (messageObj.player_1_score === 5){
+          winnerTournament.player = messageObj.player_1_username
+        } else if (messageObj.player_2_score === 5){
+          winnerTournament.player = messageObj.player_2_username
+        }
+        updateSetState(22)
+        playerId = -1
+  
+      }
+  
+      }
+      
+      // Handle incoming messages here
+    };
+  
+    websocket.onerror = function(error) {
+      console.error('WebSocket error:', error);
+    };
+  
+    websocket.onclose = function() {
+      console.log('WebSocket connection closed');
+      return
+      // You may attempt to reconnect here if needed
+    };
+  
+  
+  
+  
+    window.addEventListener('keydown', (e) => {
+    if (e.key == 'a') {
+      rightKey = true
+    } else if (e.key == 'd') {
+      leftKey = true
+    }
+    sendInfo()
+    })
+  
+    window.addEventListener('keyup', (e) => {
+    if (e.key == 'a') {
+      rightKey = false
+    } else if (e.key == 'd') {
+      leftKey = false
+    }
+    sendInfo()
+    })	
+  
+  
+  
+  
+  } 
+  
+  
+  
+  }, [findOnlineGame]);
 
 
 

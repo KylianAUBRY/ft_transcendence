@@ -19,9 +19,9 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 axios.defaults.withCredentials = true
 
 const url = window.location.href
-const url2 = new URL(url);
-const baseUrl = `${url2.protocol}//${url2.hostname}`;
-let newUrl = baseUrl.replace('http://', '');
+const url2 = new URL(url)
+const baseUrl = `${url2.protocol}//${url2.hostname}`
+let newUrl = baseUrl.replace('http://', '')
 
 let isSearch
 let gameId = null
@@ -50,7 +50,7 @@ let auth42
 let multiple= false
 
 const path = baseUrl + ':8080'
-console.log(path); 
+console.log(path, baseUrl); 
 const client = axios.create({
   baseURL: path
 })
@@ -1115,7 +1115,34 @@ function affDecompte(){
       }).catch(function(error) {
         console.error("Erreur lors de la requête de connexion :", error);
         refBadPassword.current.innerText = t("home.WPass")
-      }); 
+      }).then(function(res){
+        client.get("/api/user")
+        .then(res => {
+            user = res.data.user
+            LongestExchange = user.LongestExchange
+            aceRate = user.aceRate
+            nbAce = user.nbAce
+            nbGameLose = user.nbGameLose
+            nbGamePlayed = user.nbGamePlayed
+            nbGameWin = user.nbGameWin
+            nbPointLose = user.nbPointLose
+            nbPointMarked = user.nbPointMarked
+            nbTouchedBall = user.nbTouchedBall
+            name = user.username
+            winRate = user.winRate
+            userId = user.user_id
+            language = user.language
+            color = user.color
+            music = user.music
+            key1 = user.key1
+            key2 = user.key2
+            key3 = user.key3
+            key4 = user.key4
+        })
+
+
+
+      }) 
       
     }
  
@@ -1264,6 +1291,7 @@ function getChart() {
         key2 = user.key2
         key3 = user.key3
         key4 = user.key4
+        console.log(user)
     }).then(function(res){
 
 
@@ -1480,7 +1508,7 @@ function handle42register(){
       </div>
       ) : null}
     { state === 10 ? (
-      <SocialMenu setisSocialMenu={setisSocialMenu} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout}/>
+      <SocialMenu setisSocialMenu={setisSocialMenu} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId}/>
     ) : null}
             {isInMatchTournament ? (
       <div className='scoreDirect' id='scoreDirect'>Score</div>
