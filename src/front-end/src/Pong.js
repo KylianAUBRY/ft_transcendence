@@ -702,19 +702,6 @@ console.log('tesssssssssssssssssssssssssssssssst')
       nameServer = messageObj.name_serv
       side = messageObj.side
       console.log(messageObj.playerId, playerId, side)
-      console.log(side)
-      console.log(side)
-      console.log(side)
-      console.log(side)
-      console.log(side)
-      console.log(side)
-      console.log(side)
-      console.log(side)
-      console.log(side)
-      console.log(side)
-      console.log(side)
-      console.log(side)
-      console.log(side)
 	  }
 	  if (type === 'state_update'){
     if (isUsername === false){
@@ -723,11 +710,6 @@ console.log('tesssssssssssssssssssssssssssssssst')
       isUsername = true
     }
 		if (side === 'left'){
-      console.log(ball.position.x, messageObj.ball_x)
-      console.log(ball.position.z, messageObj.ball_y)
-      console.log(racket1.position.z, messageObj.player_1_y)
-      console.log(racket2.position.z, messageObj.player_2_y)
-      console.log(ball.vector.x, messageObj.player_2_y)
 		  ball.position.x = messageObj.ball_x * -1
 		  ball.position.z = messageObj.ball_y * -1
       ball.vector.x = messageObj.ball_dx * -1
@@ -737,12 +719,6 @@ console.log('tesssssssssssssssssssssssssssssssst')
       ball.speed = messageObj.ball_speed
  
 		} else if (side === 'right'){
-      console.log('ball posX', ball.position.x, messageObj.ball_x)
-      console.log('ball posY', ball.position.z, messageObj.ball_y)
-      console.log('paddle1', racket1.position.z, messageObj.player_1_y)
-      console.log('paddle2', racket2.position.z, messageObj.player_2_y)
-      console.log('ball vectX', ball.vector.x, messageObj.ball_dx)
-      console.log('ball vectY', ball.vector.y, messageObj.ball_dy)
       ball.position.x = messageObj.ball_x
       ball.position.z = messageObj.ball_y
       racket1.position.z = messageObj.player_2_y
