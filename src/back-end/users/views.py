@@ -88,7 +88,7 @@ class UpateUserInfo(APIView):
         username = data.get("username")
         password = data.get("password")
         image = data.get("image")
-        image = image.FILES['file'].read()
+        image = image.FILES.get("file")
         user_obj = AppUser.objects.get(pk=user_id)
         if user_obj:
             user_obj.username = username
