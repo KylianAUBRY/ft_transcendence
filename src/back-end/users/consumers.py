@@ -6,6 +6,7 @@ import random
 import time
 import logging
 
+from django.utils import timezone
 from datetime import date
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
@@ -226,7 +227,7 @@ class GameRoom(AsyncWebsocketConsumer):
                         ball_dy = random.uniform(-0.5, 0.5)
                         if ball_dy != 0:
                             break
-                    timeStartGame = time.time()
+                    timeStartGame = timezone.now()
             await asyncio.sleep(1)
 
         logger.info('First send')
@@ -382,8 +383,9 @@ class GameRoom(AsyncWebsocketConsumer):
 
             await asyncio.sleep(timePerFrame)
 
-        timeEndGame = time.time()
-        timeGame = timeEndGame - timeStartGame
+        timeEndGame = timezone.now()
+        timeGame = (timeEndGame - timeStartGame).total_seconds()
+        timeGame = str(timeGame)
         player1 = self.players[serv][player1_id]
         player2 = self.players[serv][player2_id]
         updateUserStatistic(player1["idPlayer"], player1["isWin"], player1["nbTouchBall"], player1["nbAce"], player1["nbLongestExchange"], player1["score"], player2["score"])
