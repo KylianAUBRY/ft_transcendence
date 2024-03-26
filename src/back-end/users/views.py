@@ -101,7 +101,7 @@ class UpateUserInfo(APIView):
                 user_obj.username = username
                 user_obj.image = image
                 if (password != ""):
-                    user_obj.set_password = password
+                    user_obj.set_password(password)
                 user_obj.save()
                 return Response({"message": "Info updated successfuly"}, status=status.HTTP_200_OK)
             return Response({"message": "Info update failed"}, status=status.HTTP_200_OK)
