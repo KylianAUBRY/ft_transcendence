@@ -34,7 +34,7 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 	email = models.EmailField(max_length=50, unique=True)
 	username = models.CharField(max_length=50)
 	date_joined = models.DateField(default=django.utils.timezone.now)
-	language = models.CharField(max_length=50, default='French')
+	language = models.CharField(max_length=50, default='English')
 	color = models.CharField(max_length=50, default="white")
 	music = models.IntegerField(default=0)
 	nbGamePlayed = models.IntegerField(default=0)
