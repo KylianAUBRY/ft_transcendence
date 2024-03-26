@@ -43,6 +43,13 @@ class UserLogin(APIView):
         serializer = UserLoginSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.check_user(data)
+
+            from . models import AppUser
+            user_obj = AppUser.objects.get(pk=data.get("email"))
+            if user_obj:
+                user_obj.isOnline = True
+                user_obj.save()
+
             login(request, user)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -52,6 +59,13 @@ class UserLogout(APIView):
 
     def get(self, request):
         logout(request)
+
+        from . models import AppUser
+        user_obj = AppUser.objects.get(pk=request.user.email)
+        if user_obj:
+            user_obj.isOnline = False
+            user_obj.save()
+
         return Response(status=status.HTTP_200_OK)
 
 # Get info of user connected
@@ -61,28 +75,6 @@ class UserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response({'user': serializer.data}, status=status.HTTP_200_OK)
-
-# Maj of user info after a match
-class UpdateUserView(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    # Update nbGamePlayed, nbGameWin/nbGameLose, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose   on  user_id
-    def get(self, request):
-        data = request.data
-
-        user_id = data.get('userId')
-        isWin = data.get('isWin')
-        nbTouchedBall = data.get('nbTouchedBall')
-        nbAce = data.get('nbAce')
-        nbLongestExchange = data.get('nbLongestExchange')
-        nbPointMarked = data.get('nbPointMarked')
-        nbPointLose = data.get('nbPointLose')
-
-        try:
-            updateUserStatistic(user_id, isWin, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose)
-            return Response({'message': 'User statistics updated successfully'})
-        except Exception as e:
-            return Response({'message': 'User update failed', 'error': str(e)}, status=500)
 
 class UpdateUserOption(APIView):
     permission_classes = [permissions.AllowAny]
@@ -111,7 +103,7 @@ class HistoryView(APIView):
     
     def post(self, request):
         data = request.data
-        user_id = data.get["userId"]
+        user_id = data.get("userId")
         history_object = HistoryModel.objects.filter(userId=user_id)
         serializer = HistorySerializer(history_object, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
