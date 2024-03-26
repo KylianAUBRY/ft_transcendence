@@ -166,7 +166,7 @@ class GameRoom(AsyncWebsocketConsumer):
         timeEndGame = 0
 
         countForInfo = 0
-        nbInfoPerSecond = 4
+        nbInfoPerSecond = 60
 
         timePerFrame = 0.0166
 
