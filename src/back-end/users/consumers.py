@@ -9,8 +9,30 @@ import logging
 from datetime import date
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
-from . utils import updateUserStatistic
   
+async def updateUserStatistic(user_id, isWin, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose):
+    from . models import AppUser
+    user = await AppUser.objects.get(pk=user_id)
+
+    # Update nbGamePlayed, nbGameWin/nbGameLose, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose
+    user.nbGamePlayed += 1
+
+    if (isWin):
+        user.nbGameWin += 1
+    else:
+        user.nbGameLose += 1
+
+    user.nbTouchedBall += int(nbTouchedBall)
+    user.nbAce += int(nbAce)
+    
+    if (int(nbLongestExchange) > user.LongestExchange):
+        user.LongestExchange = int(nbLongestExchange)
+    
+    user.nbPointMarked += int(nbPointMarked)
+    user.nbPointLose += int(nbPointLose)
+
+    user.save()
+
 class GameRoom(AsyncWebsocketConsumer):
     players = {}
 
@@ -364,14 +386,14 @@ class GameRoom(AsyncWebsocketConsumer):
         timeGame = timeEndGame - timeStartGame
         player1 = self.players[serv][player1_id]
         player2 = self.players[serv][player2_id]
-        await sync_to_async(updateUserStatistic(player1["idPlayer"], player1["isWin"], player1["nbTouchBall"], player1["nbAce"], player1["nbLongestExchange"], player1["score"], player2["score"]))
-        await sync_to_async(updateUserStatistic(player2["idPlayer"], player2["isWin"], player2["nbTouchBall"], player2["nbAce"], player2["nbLongestExchange"], player2["score"], player1["score"]))
+        updateUserStatistic(player1["idPlayer"], player1["isWin"], player1["nbTouchBall"], player1["nbAce"], player1["nbLongestExchange"], player1["score"], player2["score"])
+        updateUserStatistic(player2["idPlayer"], player2["isWin"], player2["nbTouchBall"], player2["nbAce"], player2["nbLongestExchange"], player2["score"], player1["score"])
         
         from . models import HistoryModel, GameServerModel
-        await sync_to_async(HistoryModel.objects.create(userId=player1["idPlayer"], userUsername=player1["username"], opponentId=player2["idPlayer"], opponentUsername=player2["username"], userScore=player1["score"], opponentScore=player2["score"], isWin=player1["isWin"], gameDate=date.today(), gameTime=timeGame))
-        await sync_to_async(HistoryModel.objects.create(userId=player2["idPlayer"], userUsername=player2["username"], opponentId=player1["idPlayer"], opponentUsername=player1["username"], userScore=player2["score"], opponentScore=player1["score"], isWin=player2["isWin"], gameDate=date.today(), gameTime=timeGame))        
+        await sync_to_async(HistoryModel.objects.create)(userId=player1["idPlayer"], userUsername=player1["username"], opponentId=player2["idPlayer"], opponentUsername=player2["username"], userScore=player1["score"], opponentScore=player2["score"], isWin=player1["isWin"], gameDate=date.today(), gameTime=timeGame)
+        await sync_to_async(HistoryModel.objects.create)(userId=player2["idPlayer"], userUsername=player2["username"], opponentId=player1["idPlayer"], opponentUsername=player1["username"], userScore=player2["score"], opponentScore=player1["score"], isWin=player2["isWin"], gameDate=date.today(), gameTime=timeGame)
         try:
-            game_server = await sync_to_async(GameServerModel.objects.filter(pk=int(serv)).first())
+            game_server = await sync_to_async(GameServerModel.objects.filter)(pk=int(serv)).first()
             if not game_server:
                 logger.info('GameServerModel Not Found : %s', error)
             logger.info("---------------------------------------------------")
@@ -380,6 +402,6 @@ class GameRoom(AsyncWebsocketConsumer):
             logger.info("%s", game_server.secondPlayerId)
             logger.info("%s", game_server.state)
             logger.info("---------------------------------------------------")
-            await sync_to_async(game_server.delete())
+            await sync_to_async(game_server.delete)()
         except Exception as error:
             logger.info("Error in GameServerModel--------------- : %s", error)
