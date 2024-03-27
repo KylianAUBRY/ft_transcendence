@@ -52,6 +52,7 @@ function updateOptions(){
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRFTOKEN': 'csrftoken',
         },
         body: JSON.stringify({
             'userId': props.userId,
@@ -84,6 +85,7 @@ function handleAddFriend(e){
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRFTOKEN': 'csrftoken',
         },
         body: JSON.stringify({
           userId: props.userId,
@@ -107,6 +109,7 @@ function handleAddFriend(e){
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRFTOKEN': 'csrftoken',
         },
         body: JSON.stringify({
           userId: props.userId
@@ -215,6 +218,7 @@ const handleChangeMusic = event => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRFTOKEN': 'csrftoken',
         },
         body: JSON.stringify({
           userId: props.userId,

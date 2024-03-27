@@ -544,6 +544,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-CSRFTOKEN': 'csrftoken',
       },
       body: JSON.stringify({
         userId: userId
@@ -572,6 +573,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'X-CSRFTOKEN': 'csrftoken',
             },
             body: JSON.stringify({
               userId: userId
@@ -629,6 +631,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRFTOKEN': 'csrftoken',
         },
         body: JSON.stringify({
           userId: userId
@@ -1459,6 +1462,7 @@ function getChart() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-CSRFTOKEN': 'csrftoken',
           },
           body: JSON.stringify({
             userId: userId
