@@ -228,6 +228,35 @@ useEffect(() => {
   }
 
 
+  if (location.pathname !== '/' && props.isSize && currentUser === true){
+    client.get("/api/user")
+        .then(res => {
+            user = res.data.user
+            LongestExchange = user.LongestExchange
+            aceRate = user.aceRate
+            nbAce = user.nbAce
+            nbGameLose = user.nbGameLose
+            nbGamePlayed = user.nbGamePlayed
+            nbGameWin = user.nbGameWin
+            nbPointLose = user.nbPointLose
+            nbPointMarked = user.nbPointMarked
+            nbTouchedBall = user.nbTouchedBall
+            name = user.username
+            winRate = user.winRate
+            userId = user.user_id
+            language = user.language
+            color = user.color
+            music = user.music
+            key1 = user.key1
+            key2 = user.key2
+            key3 = user.key3
+            key4 = user.key4
+            setOptions()
+        }).catch(function(err){
+          console.error(err)
+        })
+  }
+
   if (location.pathname === '/' && props.isSize){
     if (currentUser === true){
     client.get(
@@ -1307,10 +1336,6 @@ var profil = document.getElementById('profil')
 
 
 
-
-
-
-
 const [matchArray, setMatchArray] = useState([]);
 
 const chartRef = useRef(null)
@@ -1435,14 +1460,7 @@ function getChart() {
         } catch (error) {
             console.error("Erreur lors du traitement des données :", error);
         }
-
-
-
         });
-        
-
-
-
       }
 
 }

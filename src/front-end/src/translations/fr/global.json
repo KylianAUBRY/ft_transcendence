@@ -19,7 +19,10 @@
         "nbPointMarked": "Points marqués: ",
         "nbPointLose": "Points perdus: ",
         "WPass: ": "Mauvais mot de passe",
-        "imposible": "Inscription impossible"
+        "imposible": "Inscription impossible",
+        "logout": "Se déconnecter",
+        "id": "Mon id : ",
+        "change": "Changer !"
     },
     "game":{
         "online": "Jouer en ligne",

@@ -19,7 +19,10 @@
         "nbPointMarked": "Point marked: ",
         "nbPointLose": "Point Lose: ",
         "WPass": "Wrong password",
-        "imposible": "Unable to register"
+        "imposible": "Unable to register",
+        "logout": "Log out",
+        "id": "My id : ",
+        "change": "Change !"
     },
     "game":{
         "online": "Play online",

@@ -19,7 +19,10 @@
         "nbPointMarked": "Puntos marcados: ",
         "nbPointLose": "Puntos perdidos: ",
         "WPass: ": "Contraseña incorrecta",
-        "imposible": "registro imposible"
+        "imposible": "registro imposible",
+        "logout": "cerrar sesión",
+        "id": "Mi id : ",
+        "change": "Cambiar !"
     },
     "game":{
         "online": "Jugar en línea",

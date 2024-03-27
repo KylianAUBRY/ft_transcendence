@@ -78,6 +78,7 @@
     width: 100%;
     transition: all 800ms cubic-bezier(.8, 0, .33, 1);
     border-radius: 0% 0% 100% 50%;
+    overflow: auto;
 }
 
 .container.active {
@@ -88,6 +89,12 @@
 
 .container .title{
     margin: 3%;
+}
+
+.myId{
+  padding: 0;
+  margin: 0;
+  margin-left: 10%;
 }
 
 .formFriend{
@@ -138,7 +145,7 @@
 
 .logoutBtn{
     margin: 5%;
-    width: 40%;
+    width: 50%;
     height: 5%;
     position: relative;
     background-color: transparent;

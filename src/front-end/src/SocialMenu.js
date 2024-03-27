@@ -82,7 +82,7 @@ function handleAddFriend(e){
         },
         body: JSON.stringify({
           userId: props.userId,
-          friendId: e.target.value
+          friendId: add
         }),
       }).then(response => {
         if (!response.ok) {
@@ -245,9 +245,10 @@ const handleImageChange = (e) => {
             </button>
             <div className='container' id='container'>
             {props.currentUser ? (
-            <button className="logoutBtn" onClick={props.handleLogout}>log out</button>  
+            <button className="logoutBtn" onClick={props.handleLogout}>{t("home.logout")}</button>  
             ) : null}
                 <h3 className='title'>{t("social.list")}</h3>
+                <div className='myId'>{t("home.id")}{props.userId}</div>
                 <form className='formFriend' onSubmit={handleAddFriend}>
                     <input placeholder={t("social.add")} className='inputFriend' onChange={handleAddChange}></input>
                     <button className='btnFriend' type='submit'>+</button>
@@ -340,7 +341,7 @@ const handleImageChange = (e) => {
                     <input placeholder='Image' type='file' accept="image/*" onChange={handleImageChange}></input>
                     <input placeholder='Username'type='text' onChange={e => setUsername(e.target.value)}></input>
                     <input placeholder='Password' type='password' onChange={e => setPassword(e.target.value)}></input>
-                    <button type='submit' >Change !</button>
+                    <button type='submit' >{t("home.change")}</button>
                 </form>
             </div>
            
