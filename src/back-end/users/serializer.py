@@ -59,4 +59,4 @@ class ServerSerializer(serializers.ModelSerializer):
 class FriendListSerializer(serializers.ModelSerializer):
     class Meta:
         model = AppUser
-        fields = ('id', 'username', 'isOnline', 'image')
+        fields = ('user_id', 'username', 'isOnline', 'image')

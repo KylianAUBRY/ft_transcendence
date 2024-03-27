@@ -103,8 +103,9 @@ class UpateUserInfo(APIView):
         try:
             user_obj = AppUser.objects.get(pk=user_id)
             if user_obj:
-                user_obj.username = username
-                user_obj.image = image
+                user_obj.image.save(image.name, image)
+                if username != "":
+                    user_obj.username = username
                 if (password != ""):
                     user_obj.set_password(password)
                 user_obj.save()
@@ -119,7 +120,7 @@ class UpdateUserOption(APIView):
     def post(self, request):
         data = request.data
 
-        user_id = data.get('userId')
+        userId = data.get('userId')
         language = data.get('language')
         color = data.get('color')
         music = data.get('music')
@@ -129,7 +130,16 @@ class UpdateUserOption(APIView):
         key4 = data.get('key4')
         
         try:
-            updateUserOption(user_id, language, color, music, key1, key2, key3, key4)
+            user_obj = AppUser.objects.get(pk=userId)
+            if user_obj:
+                user_obj.language = language
+                user_obj.color = color
+                user_obj.music = music
+                user_obj.key1 = key1
+                user_obj.key2 = key2
+                user_obj.key3 = key3
+                user_obj.key4 = key4
+                user_obj.save()
             return Response({'message': 'User statistics updated successfully'})
         except Exception as e:
             return Response({'message': 'User update failed', 'error': str(e)})
@@ -277,17 +287,22 @@ class AddFriend(APIView):
     def post(self, request):
         from . models import AppUser
 
-        data = request.data
-        friend_id = data.get("friendId")
-        friend_obj = AppUser.objects.get(pk=friend_id)
-        if not friend_obj:
-            return Response({"error": "User doesn't exist"}, status=status.HTTP_200_OK)
-        if friend_obj:
-            user_id = data.get("userId")
-            user_obj = AppUser.objects.get(pk=user_id)
-            if user_obj:
-                user_obj.friends_list.append(friend_id)
-            return Response({"message": "'" + friend_obj.username + "'#'" + str(friend_obj.user_id) + "' added to friend list"}, status=status.HTTP_200_OK)
+        try:
+            data = request.data
+            friend_id = data.get("friendId")
+            friend_obj = AppUser.objects.get(pk=friend_id)
+            if not friend_obj:
+                return Response({"error": "User doesn't exist"}, status=status.HTTP_200_OK)
+            if friend_obj:
+                user_id = data.get("userId")
+                user_obj = AppUser.objects.get(pk=user_id)
+                if user_obj:
+                    user_obj.friends_list.append(friend_id)
+                user_obj.save()
+                return Response({"message": "'" + friend_obj.username + "#" + str(friend_obj.user_id) + "' added to friend list"}, status=status.HTTP_200_OK)
+        except Exception as error:
+                return Response({"message": "User doesn't exist"}, status=status.HTTP_200_OK)
+        
 
 class RemoveFriend(APIView):
     permission_classes = [permissions.AllowAny]
@@ -311,16 +326,21 @@ class GetFriendList(APIView):
 
     def post(self, request):
         from . models import AppUser
+        logger = logging.getLogger(__name__)
 
         data = request.data
         user_id = data.get("userId")
         user_obj = AppUser.objects.get(pk=user_id)
         friend_data = []
         if user_obj:
+            logger.info('ENTER IN IF USER_OBJ')
+            logger.info('---> %s', str(user_obj.friends_list))
             for friend_id in user_obj.friends_list:
                 friend = AppUser.objects.get(pk=friend_id)
+                logger.info('Friend : %s', str(friend_id))
                 if friend :
                     friend_data.append(FriendListSerializer(user_obj).data)
+                logger.info('List : %s', str(friend))
             return Response({"friend_list": friend_data}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Can't find user in database"})
