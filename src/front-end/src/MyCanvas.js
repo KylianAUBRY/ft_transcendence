@@ -1289,7 +1289,7 @@ function affDecompte(){
         setUsername('')
         setPassword('')
         fetch(baseUrl + ':8000/' + 'api/GetTokenKey', {
-          method: 'POST',
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
