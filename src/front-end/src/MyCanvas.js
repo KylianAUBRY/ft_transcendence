@@ -1269,7 +1269,6 @@ function affDecompte(){
           password: password
         }
       ).then(function(res){
-        console.log(res.data.get('token'))
         console.log(res)
         console.log(res.data)
         console.log(res.data.data)
