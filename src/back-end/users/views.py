@@ -223,12 +223,7 @@ class Register42(APIView):
         host_without_port = request.get_host().split(':')[0]
         
         # Génération de l'URL avec le port 8000
-        if (settings.DJANGO_PROTOCOL == 'http'):
-            server_url = request.scheme + '://' + host_without_port + ':8000/register42'
-        elif (settings.DJANGO_PROTOCOL == 'https'):
-            server_url = request.scheme + '://' + host_without_port + ':443/register42'
-        else :
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={'error': 'Invalid Django protocol'})
+        server_url = request.scheme + '://' + host_without_port + ':8000/register42'
         
         # Faire ce que vous voulez avec l'URL du serveur
         print("\n\n\nURL du serveur :", server_url,file=sys.stderr)

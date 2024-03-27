@@ -32,7 +32,7 @@ services:
       retries: 3
     env_file: .env
     ports:
-      - "8080:8000"
+      - "8000:8000"
 
   front:
     depends_on:

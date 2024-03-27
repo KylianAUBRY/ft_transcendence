@@ -41,16 +41,16 @@ services:
       context: ./
       dockerfile: ./nginx/Dockerfile
       args:
-        - NGINX_PROTOCOL=${DJANGO_PROTOCOL:-http}
+        - NGINX_PROTOCOL=https
     ports:
-      - ${NGINX_PORT}
+      - '8000:8000'
     restart: always
     networks:
       - main
     volumes:
       - /var/www/html
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${NGINX_PORT}/ || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
       interval: 3s
       timeout: 10s
       retries: 3
