@@ -276,7 +276,7 @@ class AddFriend(APIView):
         friend_id = data.get("friendId")
         friend_obj = AppUser.objects.get(pk=friend_id)
         if not friend_obj:
-            Response({"message": "User doesn't exist"}, status=status.HTTP_200_OK)
+            Response({"error": "User doesn't exist"}, status=status.HTTP_200_OK)
         if friend_obj:
             user_id = data.get("userId")
             user_obj = AppUser.objects.get(pk=user_id)
@@ -298,7 +298,7 @@ class RemoveFriend(APIView):
             user_obj.friends_list.remove(friend_id)
             Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
         else:
-            Response({"error": "Can't find user in database"}, status=status.HTTP_400_BAD_REQUEST)
+            Response({"error": "Can't find user in database"}, status=status.HTTP_200_OK)
         
 
 class GetFriendList(APIView):
