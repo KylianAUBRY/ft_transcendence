@@ -32,6 +32,7 @@ let multiplePlayer = false
 let onlineScore1 = 0
 let onlineScore2 = 0
 let isUsername = false
+let intervalSendinfo
 
 let deltaTime = 0.0166
 
@@ -741,7 +742,7 @@ useEffect(() => {
     websocket = new WebSocket(websocketUrl);
     
     websocket.onopen = function() {
-      setInterval(sendInfo, 1000);
+      intervalSendinfo = setInterval(sendInfo, 1000);
     };
   
     websocket.onmessage = function(event) {
@@ -812,6 +813,7 @@ useEffect(() => {
   
   
       if (messageObj.gameIsFinished === true){
+        clearInterval(intervalSendinfo);
         websocket.close();
         if (messageObj.player_1_score === 5){
           winnerTournament.player = messageObj.player_1_username
