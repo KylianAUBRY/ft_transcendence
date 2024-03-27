@@ -287,10 +287,23 @@ color = racketColor
     
 
 
-  const tokenCookie = getCookie('csrftoken')
-  updatecsrfToken(tokenCookie)
+  //const tokenCookie = getCookie('csrftoken')
+  
 
-    
+    fetch(baseUrl + ':8000/' + 'api/GetTokenKey', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    }).then(function(res){
+      console.log(res)
+      updatecsrfToken(res)
+    })
 
 
   client.get("/api/URL42")
