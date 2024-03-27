@@ -1260,8 +1260,7 @@ function affDecompte(){
       {
         headers: {
           'Content-Type': 'application/json',
-          "Authorization": "Token " + csrfToken
-        },
+        }
       }
     ).then(function(res){
       client.post(
