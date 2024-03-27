@@ -97,7 +97,8 @@ class UpateUserInfo(APIView):
         logger.info('user_id : %s', username)
         password = data.get("password")
         logger.info('user_id : %s', password)
-        image = request.FILES.get("file")
+        image = data.get("image")
+        logger.info('image : %s', str(image))
         try:
             user_obj = AppUser.objects.get(pk=user_id)
             if user_obj:
@@ -305,6 +306,7 @@ class RemoveFriend(APIView):
         
 
 class GetFriendList(APIView):
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         from . models import AppUser
