@@ -107,13 +107,9 @@ function handleAddFriend(e){
 
     fetch(props.baseUrl + ':8000/' + 'api/GetFriendList', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFTOKEN': props.csrfToken,
-        },
-        body: JSON.stringify({
+        body: {
           userId: props.userId
-        }),
+        }
       }).then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
