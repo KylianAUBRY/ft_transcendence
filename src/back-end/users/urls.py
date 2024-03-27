@@ -15,5 +15,6 @@ urlpatterns = [
 	path('URL42', views.URL42.as_view(), name='URL42'),
 	path('AddFriend', views.AddFriend.as_view(), name='AddFriend'),
 	path('RemoveFriend', views.RemoveFriend.as_view(), name='RemoveFriend'),
+	path('GetTokenKey', views.GetTokenKey.as_view(), name='GetTokenKey'),
 	path('GetFriendList', views.GetFriendList.as_view(), name='GetFriendList')
 ]

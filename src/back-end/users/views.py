@@ -14,6 +14,7 @@ import sys
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from rest_framework.authtoken.models import Token
 #from ..GameServer import test
 
 # Create your views here.
@@ -56,6 +57,19 @@ class UserLogin(APIView):
 
             login(request, user)
             return Response(serializer.data, status=status.HTTP_200_OK)
+
+class GetTokenKey(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def get(self, request):
+        logger = logging.getLogger(__name__)
+        try:
+            token = Token.objects.get(user=request.user)
+            logger.info("\n\n\Token : %s\n\n", token.key)
+            return Response({"csrf": token.key}, status=status.HTTP_200_OK)
+        except Token.DoesNotExist:
+            logger.info("Don't have any csrfToken : %s", token.key)
+            return Response("Error: Token.DoesNotExist", status=status.HTTP_400_BAD_REQUEST)
 
 # Post request to logout user
 class UserLogout(APIView):
