@@ -1248,24 +1248,8 @@ function affDecompte(){
       document.getElementById('badPassword').innerText = t("home.badP")
       return
     }
-    fetch(baseUrl + ':8000/' + 'api/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email,
-        username: username,
-        password: password
-      }),
-    }).then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
 
-    /*client.post(
+    client.post(
       "/api/register",
       {
         email: email,
@@ -1276,7 +1260,7 @@ function affDecompte(){
         headers: {
           'Content-Type': 'application/json',
         }
-      })*/
+      })
     .then(function(res){
       client.post(
         "/api/login",
@@ -1285,9 +1269,9 @@ function affDecompte(){
           password: password
         }
       ).then(function(res){
-        console.log(res)
-        console.log(res.token)
-        updatecsrfToken(res.token)
+        console.log(res.data)
+        console.log(res.data.token)
+        updatecsrfToken(res.data.token)
 
         
         updateUser(true)
