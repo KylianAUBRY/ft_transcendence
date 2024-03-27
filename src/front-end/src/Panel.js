@@ -93,22 +93,20 @@ React.useEffect((rotaY) => {
 function handleStart(){
   props.updateSetState(10)
   stateG = 1    
-     navigate('/lobby')
-  gsap.to(camera.position, {
+  navigate('/lobby')
+  setIsPanel(true)
+  /*gsap.to(camera.position, {
     duration:3,
     x: 17,
     y: 4,
     z: 0,
-    onComplete: () => {
-      setIsPanel(true)
-    }
   })
   gsap.to(camera.rotation, {
     duration:2,
     x: 0,
     y: Math.PI / 2,
     z: 0,    
-  })
+  })*/
 }
 
 function handleBtnExit(){
@@ -215,7 +213,8 @@ document.addEventListener('keydown', function(event) {
 
 // Touche apuyee
   const onKeyDown = function (event) {
-  if (loaderGltf && loaderGltf.scene && stateG === 1 && props.isSocialMenu === false && props.state < 11){
+  if (loaderGltf && loaderGltf.scene && stateG === 1 && props.isSocialMenu === false && props.state < 20){
+    console.log('test rota', props.state)
     switch (event.code) {
       case "ArrowRight":
       case "KeyD":
@@ -382,7 +381,8 @@ useEffect(() => {
 
 
 function Click (rota) {
-  setClick(rota)
+  if (props.state < 20)
+    setClick(rota)
 }
 
 
@@ -391,7 +391,7 @@ function Click (rota) {
       return (
         <>
         {isPanel ? (
-          <mesh ref={panelRef} onClick={()=>{Click(loaderGltf.scene.rotation.y)}}>
+          <mesh ref={panelRef} onClick={()=>{Click(loaderGltf.scene.rotation.y, props.stateGame)}}>
             <mesh
                 geometry={cone.geometry}
                 material={cone.material}
@@ -406,7 +406,7 @@ function Click (rota) {
             <Screen model={child5} Gltf={gltf.scene} text={t("game.tournament")} meshTextPos={[-4.3, 7.5, 0]} meshTextRot={[0, -Math.PI / 2, 0]} textPos={[0, 0, 0]} textRot={[0.4, 0, 0]} />
           </mesh>
         ) : null}
-        <Pong stateGame={props.state} updateSetState={props.updateSetState} formData8={props.formData8} formData4={props.formData4} formData2={props.formData2} winnerTournament={props.winnerTournament} score={props.score} updateSetScore={props.updateSetScore} racketColor={props.racketColor} selectedKeys={props.selectedKeys} findOnlineGame={props.findOnlineGame} newUrl={props.newUrl} username={props.username} userId={props.userId} gameId={props.gameId} position={props.position} rotation={props.rotation} multiple={props.multiple} socketUrl={props.socketUrl}/>
+        <Pong stateGame={props.state} setFindOnlineGame={props.setFindOnlineGame} updateSetState={props.updateSetState} formData8={props.formData8} formData4={props.formData4} formData2={props.formData2} winnerTournament={props.winnerTournament} score={props.score} updateSetScore={props.updateSetScore} racketColor={props.racketColor} selectedKeys={props.selectedKeys} findOnlineGame={props.findOnlineGame} newUrl={props.newUrl} username={props.username} userId={props.userId} gameId={props.gameId} position={props.position} rotation={props.rotation} multiple={props.multiple} socketUrl={props.socketUrl}/>
       </>
       ) 
     } else {

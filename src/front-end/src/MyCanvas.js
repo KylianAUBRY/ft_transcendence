@@ -13,7 +13,6 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import Chart from 'chart.js/auto';
 import Match from './Match'
-import useSound from 'use-sound'
 
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
@@ -24,6 +23,13 @@ const url2 = new URL(url)
 let baseUrl = `${url2.protocol}//${url2.hostname}`
 let newUrl = baseUrl.replace('http://', '')
 let socketUrl = 'ws'
+
+
+window.onerror = function(message, source, lineno, colno, error) {
+  console.error(message, source, lineno, colno, error);
+};
+
+
 
 if (baseUrl.startsWith('https://')) {
   socketUrl = 'wss'
@@ -119,9 +125,9 @@ function MyCanvas( props ) {
   const [racketColor, setracketColor] = useState(0xffffff);
   const [selectedKeys, setSelectedKeys] = useState(['KeyA', 'KeyD', 'ArrowLeft', 'ArrowRight']);
   const [isProfilView, setIsProfilView] = useState(false)
- 
+  const [isResultOnline, setisResultOnline] = useState(false)
 
-
+  
 
 
   const updateSetState = (newValue) => {
@@ -135,7 +141,7 @@ function MyCanvas( props ) {
           localMatch.classList.add('visible');
     }, 100); 
    }else  if(newValue === 22) {
-    setisResultLocal(true)
+    setisResultOnline(true)
     setTimeout(function() {
       var localMatch = document.querySelector('.localMatch');
       if (localMatch)
@@ -203,6 +209,8 @@ function MyCanvas( props ) {
       setisMatchTournament(false)
       setisResultTournamnt(false)
       setisDecompte(false)
+      setisResultOnline(false)
+      setisResultLocal(false)
     }
 
   }
@@ -215,6 +223,7 @@ useEffect(() => {
   setisInMatchTournament(false)
   setisLocalMatch(false)
   setisResultLocal(false)
+  setisResultOnline(false)
   setisOnlineLoad(false)
   setisBotMatch(false)
   setisDecompte(false)
@@ -683,6 +692,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
   function replayLocal(){
     if (state === 32){
       setisResultLocal(false)
+      setisResultOnline(false)
       setisLocalMatch(true)
       setTimeout(function() {
           var localMatch = document.querySelector('.localMatch');
@@ -693,6 +703,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
       updateSetState(30)
     } else if (state === 52){
       setisResultLocal(false)
+      setisResultOnline(false)
       setisBotMatch(true)
       setTimeout(function() {
           var localMatch = document.querySelector('.botMatch');
@@ -762,6 +773,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
 function exitTournament(){
     isSearch = false
     setisResultLocal(false)
+    setisResultOnline(false)
     setisLocalMatch(false)
     setisResultTournamnt(false)
     setisTableTournament(false)
@@ -817,6 +829,11 @@ function exitTournament(){
   };
   setscore(initialFormDataScore);
   callChildFunction()
+  if (state === 22){
+    navigate('/lobby')
+    updateSetState(10)
+    return
+  }
   updateSetState(10)
   }
 
@@ -886,7 +903,7 @@ function affResult(){
   const winner = document.getElementById('winner')
   const textWinner = document.getElementById('textWinner')
   if (state === 22){
-    const winnerLocal = document.getElementById('winnerLocal')
+    const winnerLocal = document.getElementById('winnerOnline')
     winnerLocal.textContent = winnerTournament.player
   } else if (state === 32){
     const winnerLocal = document.getElementById('winnerLocal')
@@ -996,14 +1013,14 @@ function affDecompte(){
     if (isDecompte){
       affDecompte()
     }
-    if (isResultTournamnt || isResultLocal){
+    if (isResultTournamnt || isResultLocal || isResultOnline){
       affResult()
     }
     if (isInMatchTournament){
       affScoreDirect()
     }
 
-}, [isMatchTournament, isDecompte, isResultTournamnt, isInMatchTournament, score, isResultLocal])
+}, [isMatchTournament, isDecompte, isResultTournamnt, isInMatchTournament, score, isResultLocal, isResultOnline])
 
 
 
@@ -1116,16 +1133,6 @@ function affDecompte(){
 
 
   function handleconnection(event) {
-
-
-    try{
-
-
-    }catch(err){
-      console.error(err)
-    }
-
-
     event.preventDefault()
     refBadPassword.current.innerText = ''
     document.getElementById('badEmail2').innerText = ''
@@ -1376,6 +1383,7 @@ function getChart() {
         key2 = user.key2
         key3 = user.key3
         key4 = user.key4
+        console.log(res)
     }).then(function(res){
 
 
@@ -1690,6 +1698,15 @@ function handle42register(){
           <button className='btnPlayMatchLocal' onClick={replayLocal}>{t("game.replay")}</button>
         </div>
       </div>
+    ): isResultOnline ? (
+      <div id='lcl' className='localMatch'>
+        <p className='text-local'>Online Game</p>
+        <div id='textWinner' className='textWinnerLocal'>{t("game.victory")}</div>
+        <div id='winnerOnline' className='winnerLocal'></div>
+        <div className='buttonLocal'>
+          <button className='btnExitMatchLocal' onClick={exitTournament}>{t("game.exit")}</button>
+        </div>
+      </div>
     ): isOnlineLoad ? (
         <div className='onlineLoad'>
             <p className='text-online'>{t("game.online")}</p>
@@ -1733,7 +1750,7 @@ function handle42register(){
   
           <Environment files="fond.hdr" background blur={0.5}/>
           <Suspense fallback={null}>
-            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId} position={props.position} rotation={props.rotation} multiple={multiple} socketUrl={socketUrl}/>
+            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} setFindOnlineGame={setFindOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId} position={props.position} rotation={props.rotation} multiple={multiple} socketUrl={socketUrl}/>
             <Stade/>
           </Suspense>
           <Stars

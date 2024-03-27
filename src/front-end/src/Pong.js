@@ -5,8 +5,6 @@ import { gsap } from 'gsap/gsap-core';
 import { useLocation } from 'react-router-dom';
 
 
-
-
 const loader = new GLTFLoader();
 let loaderGltf
 let loaderGltf2
@@ -14,6 +12,8 @@ let racket1 = null
 let racket2 = null
 let racket11 = null
 let racket22 = null
+
+
 let ball = null
 let startVal = 0
 let running = false
@@ -26,13 +26,13 @@ let playerId
 let nameServer
 let leftKey = false
 let rightKey = false
-let isPlayerReady = false
+let isPlayerReady
 let side
 let multiplePlayer = false
 let onlineScore1 = 0
 let onlineScore2 = 0
 let isUsername = false
-let intervalSendinfo
+//let intervalSendinfo
 
 let deltaTime = 0.0166
 
@@ -55,7 +55,7 @@ let lastDir = 0;
 let tmpBall = null
 
 
-const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client, findOnlineGame, newUrl, username, userId, gameId, position, rotation, multiple, socketUrl }) => {
+const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winnerTournament, score, updateSetScore, racketColor, selectedKeys, client, findOnlineGame, newUrl, username, userId, gameId, position, rotation, multiple, socketUrl, setFindOnlineGame }) => {
 	const location = useLocation()
   if (racket1 && racket2){
     racket1.material = new THREE.MeshBasicMaterial({ color: racketColor })
@@ -159,10 +159,6 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     }, []);
     
 	function startBallMovement() {
-  if (stateGame === 21){
-    isPlayerReady = true
-	  sendInfo()
-  }
 	let ball_z;
 	let ball_x =  Math.random() < 0.5 ? -1 : 1;
 	while (1) {
@@ -290,6 +286,10 @@ function endGame(winner)
       updateSetState(32)
     } else if (stateGame === 61){
       winner === 1 ? winnerTournament.player = 'Team 1' : winnerTournament.player = 'Team 2'
+      multiple = false
+      racket11.position.z = 100
+      racket22.position.z = 100
+      console.log('here')
       updateSetState(32)
     } else if (stateGame === 41){
       winner === 1 ? formData4.player1 = formData8.player1 : formData4.player1 = formData8.player2
@@ -676,15 +676,17 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 
   if (stateGame === 21 || stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51 || stateGame === 61) {
     // console.log(stateGame)
-
+    if (stateGame !== 61){
+      multiple = false
+      racket11.visible = false
+      racket22.visible = false
+    }
     
     if (newRound === true && stateGame !== 21){
-      newRound = false
+        newRound = false
         startRender()
       }
-    if (stateGame === 21){
-      isPlayerReady = true
-    }
+
     keyListenerActive = true
     document.addEventListener("keydown", onKeyPress)
     document.addEventListener("keyup", onKeyRelease)
@@ -705,7 +707,7 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 
   function sendInfo() {
 	// Send your information here
-	if (websocket.readyState === WebSocket.OPEN){
+	if (websocket && websocket.readyState === WebSocket.OPEN){
 	  let dir = 'none'
     if (side === 'right'){
       if (leftKey === true){
@@ -732,7 +734,7 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 	  };
 	  websocket.send(JSON.stringify(data));
 	  } else{
-		console.error('La connexion WebSocket est fermée. Impossible d\'envoyer des données.');
+		  console.error('La connexion WebSocket est fermée. Impossible d\'envoyer des données.');
 	  }
 }
 
@@ -740,9 +742,13 @@ useEffect(() => {
 
   if (findOnlineGame === true) {
     websocket = new WebSocket(websocketUrl);
-    
+    console.log(websocketUrl)
     websocket.onopen = function() {
-      intervalSendinfo = setInterval(sendInfo, 1000);
+      console.log(gameId, socketUrl)
+      //intervalSendinfo = setInterval(sendInfo, 1000);
+      console.log('isReady')
+      isPlayerReady = true
+      sendInfo()
     };
   
     websocket.onmessage = function(event) {
@@ -813,8 +819,10 @@ useEffect(() => {
   
   
       if (messageObj.gameIsFinished === true){
-        clearInterval(intervalSendinfo);
+        //clearInterval(intervalSendinfo);
         websocket.close();
+        websocket = null
+        
         if (messageObj.player_1_score === 5){
           winnerTournament.player = messageObj.player_1_username
         } else if (messageObj.player_2_score === 5){
@@ -822,7 +830,10 @@ useEffect(() => {
         }
         updateSetState(22)
         playerId = -1
-  
+        setFindOnlineGame(false)
+        isUsername = false
+        onlineScore1 = 0
+        onlineScore2 = 0
       }
   
       }
@@ -843,21 +854,26 @@ useEffect(() => {
   
   
     window.addEventListener('keydown', (e) => {
-    if (e.key == 'a') {
-      rightKey = true
-    } else if (e.key == 'd') {
-      leftKey = true
-    }
-    sendInfo()
+      if (websocket && websocket.readyState === WebSocket.OPEN){
+        if (e.key == 'a') {
+          rightKey = true
+        } else if (e.key == 'd') {
+          leftKey = true
+        }
+        sendInfo()
+        console.log('state', stateGame)
+      }
     })
   
     window.addEventListener('keyup', (e) => {
-    if (e.key == 'a') {
-      rightKey = false
-    } else if (e.key == 'd') {
-      leftKey = false
+    if (websocket && websocket.readyState === WebSocket.OPEN){
+      if (e.key == 'a') {
+        rightKey = false
+      } else if (e.key == 'd') {
+        leftKey = false
+      }
+      sendInfo()
     }
-    sendInfo()
     })	
   
   
@@ -874,7 +890,12 @@ useEffect(() => {
 
 useEffect(() => {
   if (location.pathname === '/lobby'){
-	
+    console.log(racket11)
+    if (racket11){
+        racket11.visible = false
+        racket22.visible = false
+    }
+
 	if (running === true){
 	  stopRender()
 	  ball.vector.x = 0

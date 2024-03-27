@@ -75,7 +75,7 @@ function handleAddChange(e){
 function handleAddFriend(e){
     e.preventDefault()
     console.log(add)
-    fetch(props.baseUrl + ':8080/' + 'api/history', {
+    fetch(props.baseUrl + ':8080/' + 'api/AddFriend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ function handleAddFriend(e){
 
 
     console.log('test')
-    fetch(props.baseUrl + ':8080/' + 'api/history', {
+    fetch(props.baseUrl + ':8080/' + 'api/GetFriendList', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

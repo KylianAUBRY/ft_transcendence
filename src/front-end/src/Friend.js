@@ -4,8 +4,8 @@ function Friend( props ) {
     
 
     return (
-        <li className='friend'>{props.name} 
-            
+        <li className='friend'>
+            {props.name}    
         </li>
 
     )}
