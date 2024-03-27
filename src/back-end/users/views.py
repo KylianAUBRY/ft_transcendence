@@ -88,12 +88,15 @@ class UpateUserInfo(APIView):
 
     def post(self, request):
         from . models import AppUser
+        logger = logging.getLogger(__name__)
 
         data = request.data
         user_id = data.get("userId")
+        logger.info('user_id : %s', user_id)
         username = data.get("username")
+        logger.info('user_id : %s', username)
         password = data.get("password")
-        logger = logging.getLogger(__name__)
+        logger.info('user_id : %s', password)
         image = request.FILES.get("file")
         try:
             user_obj = AppUser.objects.get(pk=user_id)
@@ -276,13 +279,13 @@ class AddFriend(APIView):
         friend_id = data.get("friendId")
         friend_obj = AppUser.objects.get(pk=friend_id)
         if not friend_obj:
-            Response({"error": "User doesn't exist"}, status=status.HTTP_200_OK)
+            return Response({"error": "User doesn't exist"}, status=status.HTTP_200_OK)
         if friend_obj:
             user_id = data.get("userId")
             user_obj = AppUser.objects.get(pk=user_id)
             if user_obj:
                 user_obj.friends_list.append(friend_id)
-            Response({"message": "'" + friend_obj.username + "' added to friend list"}, status=status.HTTP_200_OK)
+            return Response({"message": "'" + friend_obj.username + "'#'" + friend_obj.user_id + "' added to friend list"}, status=status.HTTP_200_OK)
 
 class RemoveFriend(APIView):
     permission_classes = [permissions.AllowAny]
@@ -296,9 +299,9 @@ class RemoveFriend(APIView):
         user_obj = AppUser.objects.get(pk=user_id)
         if user_obj:
             user_obj.friends_list.remove(friend_id)
-            Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
+            return Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
         else:
-            Response({"error": "Can't find user in database"}, status=status.HTTP_200_OK)
+            return Response({"error": "Can't find user in database"}, status=status.HTTP_200_OK)
         
 
 class GetFriendList(APIView):
@@ -315,6 +318,6 @@ class GetFriendList(APIView):
                 friend = AppUser.objects.get(pk=friend_id)
                 if friend :
                     friend_data.append(FriendListSerializer(user_obj).data)
-            Response({"friend_list": friend_data}, status=status.HTTP_200_OK)
+            return Response({"friend_list": friend_data}, status=status.HTTP_200_OK)
         else:
-            Response({"error": "Can't find user in database"})
+            return Response({"error": "Can't find user in database"})

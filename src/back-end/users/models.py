@@ -52,13 +52,13 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 	is_staff = models.BooleanField(default=False)
 	isOnline = models.BooleanField(default=False)
 	friends_list = ArrayField(models.IntegerField(default=0), default=list)
-	# image = models.ImageField(null=True, upload_to='profil_image/')
-	image = models.BinaryField(null=True)
+	image = models.ImageField(upload_to='profile_pic/', default='profil.png')
+	# image = models.BinaryField(null=True)
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
 	objects = AppUserManager()
 	def __str__(self):
-		return f"ID : {self.user_id} | EMAIL : {self.email} |  USERNAME : {self.username} | CREATE_DATE : {self.date_joined}"
+		return f"ID : {self.user_id} | EMAIL : {self.email} |  USERNAME : {self.username} | CREATE_DATE : {self.date_joined} | IMAGE_URL: {self.image.url}"
 
 class HistoryModel(models.Model):
 	gameId = models.AutoField(primary_key=True)
