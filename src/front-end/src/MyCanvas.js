@@ -545,8 +545,8 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRFTOKEN': csrfToken,
-      },
+        "Authorization": "Token " + csrfToken
+        },
       body: JSON.stringify({
         userId: userId
       }),
@@ -574,8 +574,8 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'X-CSRFTOKEN': csrfToken,
-            },
+              "Authorization": "Token " + csrfToken
+          },
             body: JSON.stringify({
               userId: userId
             }),
@@ -632,8 +632,8 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFTOKEN': csrfToken,
-        },
+          "Authorization": "Token " + csrfToken
+          },
         body: JSON.stringify({
           userId: userId
         }),
@@ -1265,9 +1265,9 @@ function affDecompte(){
       },
       {
         headers: {
-          'X-CSRFToken': csrfToken,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+          "Authorization": "Token " + csrfToken
+        },
       }
     ).then(function(res){
       client.post(
@@ -1278,6 +1278,7 @@ function affDecompte(){
         }
       ).then(function(res){
         console.log(res)
+        console.log(res.token)
         updatecsrfToken(res.token)
 
         
@@ -1474,7 +1475,7 @@ function getChart() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRFTOKEN': csrfToken,
+            "Authorization": "Token " + csrfToken
           },
           body: JSON.stringify({
             userId: userId

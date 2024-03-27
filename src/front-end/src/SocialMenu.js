@@ -52,8 +52,8 @@ function updateOptions(){
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFTOKEN': props.csrfToken,
-        },
+          "Authorization": "Token " + props.csrfToken
+          },
         body: JSON.stringify({
             'userId': props.userId,
             'language': lng,
@@ -85,8 +85,8 @@ function handleAddFriend(e){
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFTOKEN': props.csrfToken,
-        },
+          "Authorization": "Token " + props.csrfToken
+          },
         body: JSON.stringify({
           userId: props.userId,
           friendId: add
@@ -105,24 +105,25 @@ function handleAddFriend(e){
 
 
 
-props.client
-  .post("/api/GetFriendList", {  
-    userId: props.userId
-  })
-  .then(function(response){
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(function(data){
-    console.log(data);
-  })
-  .catch(function(err){
-    console.error(err);
-  });
-
-
+    fetch(props.baseUrl + ':8000/' + 'api/GetFriendList', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Token " + props.csrfToken
+          },
+        body: {
+          userId: props.userId
+        },
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      }).then(function(data){
+        console.log(data)
+      }).catch(function(err){
+        console.error(err)
+      });
         
 
 const handleChangeLang = event => {
@@ -217,8 +218,8 @@ const handleChangeMusic = event => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFTOKEN': props.csrfToken,
-        },
+          "Authorization": "Token " + props.csrfToken
+          },
         body: JSON.stringify({
           userId: props.userId,
           username: username,
