@@ -544,6 +544,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-CSRFTOKEN': csrfToken,
       },
       body: JSON.stringify({
         userId: userId
@@ -572,6 +573,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'X-CSRFTOKEN': csrfToken,
             },
             body: JSON.stringify({
               userId: userId
@@ -629,6 +631,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRFTOKEN': csrfToken,
         },
         body: JSON.stringify({
           userId: userId
@@ -1459,6 +1462,7 @@ function getChart() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-CSRFTOKEN': csrfToken,
           },
           body: JSON.stringify({
             userId: userId
@@ -1596,7 +1600,7 @@ function handle42register(){
       </div>
       ) : null}
     { state === 10 ? (
-      <SocialMenu setisSocialMenu={setisSocialMenu} setracketColor={updateRacketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
+      <SocialMenu setisSocialMenu={setisSocialMenu} csrfToken={csrfToken} setracketColor={updateRacketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
     ) : null}
             {isInMatchTournament ? (
       <div className='scoreDirect' id='scoreDirect'>Score</div>
