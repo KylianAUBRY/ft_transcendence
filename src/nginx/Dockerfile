@@ -25,7 +25,6 @@ COPY ./nginx/nginx_start.sh /etc/nginx/nginx_start.sh
 RUN chmod +x /etc/nginx/nginx_start.sh
 
 EXPOSE 8000
-EXPOSE 443
 
 COPY ./nginx/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

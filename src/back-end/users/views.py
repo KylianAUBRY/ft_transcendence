@@ -130,6 +130,7 @@ class UpdateUserOption(APIView):
         key4 = data.get('key4')
         
         try:
+            from . models import AppUser
             user_obj = AppUser.objects.get(pk=userId)
             if user_obj:
                 user_obj.language = language

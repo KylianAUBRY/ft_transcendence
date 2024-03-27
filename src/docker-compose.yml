@@ -31,8 +31,6 @@ services:
       timeout: 10s
       retries: 3
     env_file: .env
-    ports:
-      - "8080:8000"
 
   nginx:
     container_name: nginx
