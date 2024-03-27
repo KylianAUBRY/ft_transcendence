@@ -82,6 +82,8 @@ function MyCanvas( props ) {
   const cameraRef = useRef()
 
 
+
+
   let initialUser = localStorage.getItem('currentUser');
   if (initialUser === null) {
     initialUser = false
@@ -1275,6 +1277,10 @@ function affDecompte(){
           password: password
         }
       ).then(function(res){
+        console.log(res)
+        updatecsrfToken(res.token)
+
+        
         updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
@@ -1288,7 +1294,7 @@ function affDecompte(){
         setEmail('')
         setUsername('')
         setPassword('')
-        fetch(baseUrl + ':8000/' + 'api/GetTokenKey', {
+        /*fetch(baseUrl + ':8000/' + 'api/GetTokenKey', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -1300,7 +1306,7 @@ function affDecompte(){
           return response.json();
         }).then(function(res){
           console.log(res)
-          updatecsrfToken(res)
+          updatecsrfToken(res)*/
         }).then(function(res){
           client.get("/api/user")
           .then(res => {
