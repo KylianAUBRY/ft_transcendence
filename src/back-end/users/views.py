@@ -286,7 +286,7 @@ class AddFriend(APIView):
             user_obj = AppUser.objects.get(pk=user_id)
             if user_obj:
                 user_obj.friends_list.append(friend_id)
-            return Response({"message": "'" + friend_obj.username + "'#'" + friend_obj.user_id + "' added to friend list"}, status=status.HTTP_200_OK)
+            return Response({"message": "'" + friend_obj.username + "'#'" + int(friend_obj.user_id) + "' added to friend list"}, status=status.HTTP_200_OK)
 
 class RemoveFriend(APIView):
     permission_classes = [permissions.AllowAny]
