@@ -40,7 +40,7 @@ API_INFO_URL = os.environ['API_INFO_URL']
 
 # -------------------------- #
 
-SECURE_SSL_REDIRECT = True
+# SECURE_SSL_REDIRECT = True
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
