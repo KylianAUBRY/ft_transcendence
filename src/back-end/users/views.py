@@ -120,7 +120,7 @@ class UpdateUserOption(APIView):
     def post(self, request):
         data = request.data
 
-        user_id = data.get('userId')
+        userId = data.get('userId')
         language = data.get('language')
         color = data.get('color')
         music = data.get('music')
@@ -130,7 +130,16 @@ class UpdateUserOption(APIView):
         key4 = data.get('key4')
         
         try:
-            updateUserOption(user_id, language, color, music, key1, key2, key3, key4)
+            user_obj = AppUser.objects.get(pk=userId)
+            if user_obj:
+                user_obj.language = language
+                user_obj.color = color
+                user_obj.music = music
+                user_obj.key1 = key1
+                user_obj.key2 = key2
+                user_obj.key3 = key3
+                user_obj.key4 = key4
+                user_obj.save()
             return Response({'message': 'User statistics updated successfully'})
         except Exception as e:
             return Response({'message': 'User update failed', 'error': str(e)})
