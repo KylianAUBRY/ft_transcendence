@@ -90,6 +90,7 @@ class UpateUserInfo(APIView):
         from . models import AppUser
         logger = logging.getLogger(__name__)
 
+        logger.info('GROS LOGGER SA MERE : %s ||||| %s', str(request.FILES), str(request.data))
         data = request.data
         user_id = data.get("userId")
         logger.info('user_id : %s', user_id)
@@ -97,7 +98,7 @@ class UpateUserInfo(APIView):
         logger.info('user_id : %s', username)
         password = data.get("password")
         logger.info('user_id : %s', password)
-        image = data.get("image")
+        image = request.FILES['file']
         logger.info('image : %s', str(image))
         try:
             user_obj = AppUser.objects.get(pk=user_id)
@@ -286,7 +287,7 @@ class AddFriend(APIView):
             user_obj = AppUser.objects.get(pk=user_id)
             if user_obj:
                 user_obj.friends_list.append(friend_id)
-            return Response({"message": "'" + friend_obj.username + "'#'" + int(friend_obj.user_id) + "' added to friend list"}, status=status.HTTP_200_OK)
+            return Response({"message": "'" + friend_obj.username + "'#'" + str(friend_obj.user_id) + "' added to friend list"}, status=status.HTTP_200_OK)
 
 class RemoveFriend(APIView):
     permission_classes = [permissions.AllowAny]
