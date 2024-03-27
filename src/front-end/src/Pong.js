@@ -168,8 +168,6 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
 		ball_z = Math.random() * (0.5 - (-0.5)) + (-0.5);
 		if (ball_z !== 0){
 			break;
-      ball_z = 0;
-      break ;
 		}
 	}
 	ball.vector = {
@@ -178,6 +176,15 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
 	}
   }
   
+
+
+
+
+
+
+
+
+
   function processBallMovement() {
     
     if(startVal === 0) {

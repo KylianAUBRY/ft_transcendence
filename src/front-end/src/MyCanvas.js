@@ -1123,9 +1123,7 @@ function affDecompte(){
     ).then(function(res){
 
 
-      if (!res.ok){
-        console.error(res)
-      }
+    
 
       updateUser(true)
         var loginPage = document.getElementById('loginPage');
@@ -1565,7 +1563,7 @@ function handle42register(){
       </div>
       ) : null}
     { state === 10 ? (
-      <SocialMenu setisSocialMenu={setisSocialMenu} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId}/>
+      <SocialMenu setisSocialMenu={setisSocialMenu} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId} client={client} baseUrl={baseUrl}/>
     ) : null}
             {isInMatchTournament ? (
       <div className='scoreDirect' id='scoreDirect'>Score</div>
@@ -1659,7 +1657,7 @@ function handle42register(){
               <div id='matchplayer2' className='matchPlayer2Local'>{t("game.player2")}</div>
               <div className='buttonLocal'>
                 <button className='btnExitMatchLocal' onClick={exitTournament}>{t("game.exit")}</button>
-                <button className='btnPlayMatchLocal' onClick={goMatchLocal}>{t("game.play")}</button>
+                <button className='btnPlayMatchLocal' onClick={goMatchLocal}>1 v 1</button>
                 <button className='btnPlayMatchLocal' onClick={goMatchLocal2}>2 v 2</button>
               </div>
             </div>

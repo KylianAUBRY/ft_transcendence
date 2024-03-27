@@ -15,6 +15,7 @@ function SocialMenu( props ) {
     const [play3, { stop: stop3 }] = useSound('music3.mp3', { loop: true, volume: 0.5 })
     const [t, i18n] = useTranslation("global")
     const [inPlay, setInPlay] = useState(0)
+    const [add, setAdd] = useState('')
 
 function displayList(){
     var list = document.getElementById("container")
@@ -66,13 +67,57 @@ function updateOptions(){
         })
 }
 
-function findFriend(){
-    console.log('test')
+function handleAddChange(e){
+    e.preventDefault()
+    setAdd(e.target.value)
+}
+
+function handleAddFriend(e){
+    e.preventDefault()
+    console.log(add)
+    fetch(props.baseUrl + ':8080/' + 'api/history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: props.userId,
+          friendId: e.target.value
+        }),
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      }).then(function(data){
+        console.log(data)
+      }).catch(function(err){
+        console.error(err)
+      });
 }
 
 
 
-
+    console.log('test')
+    fetch(props.baseUrl + ':8080/' + 'api/history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: props.userId
+        }),
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      }).then(function(data){
+        console.log(data)
+      }).catch(function(err){
+        console.error(err)
+      });
+        
 
 const handleChangeLang = event => {
     langValue = event.target.value
@@ -151,14 +196,8 @@ const handleChangeMusic = event => {
 
   function uploadImage(e) {
     e.preventDefault();
-    // Faire quelque chose avec l'image sélectionnée, comme l'envoyer à un serveur
 
-      // Vous pouvez également utiliser FormData pour envoyer l'image à un serveur
-      // const formData = new FormData();
-      // formData.append('image', selectedImage);
-      // Ensuite, vous pouvez utiliser fetch() pour envoyer la FormData à votre backend
 
-    
       const formData = new FormData();
       formData.append('file', selectedImage);
     
@@ -209,9 +248,9 @@ const handleImageChange = (e) => {
             <button className="logoutBtn" onClick={props.handleLogout}>log out</button>  
             ) : null}
                 <h3 className='title'>{t("social.list")}</h3>
-                <form className='formFriend'>
-                    <input placeholder={t("social.add")} className='inputFriend'></input>
-                    <button className='btnFriend'>+</button>
+                <form className='formFriend' onSubmit={handleAddFriend}>
+                    <input placeholder={t("social.add")} className='inputFriend' onChange={handleAddChange}></input>
+                    <button className='btnFriend' type='submit'>+</button>
                 </form>
                 <ul className='list'>
                     <Friend name={"Friend 1"}/>
