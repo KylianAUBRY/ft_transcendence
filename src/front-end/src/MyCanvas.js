@@ -21,8 +21,8 @@ axios.defaults.withCredentials = true
 const url = window.location.href
 const url2 = new URL(url)
 let baseUrl = `${url2.protocol}//${url2.hostname}`
-let newUrl = baseUrl.replace('http://', '')
-let socketUrl = 'ws'
+let newUrl = baseUrl.replace('https://', '')
+let socketUrl = 'wss'
 
 
 window.onerror = function(message, source, lineno, colno, error) {
@@ -30,10 +30,6 @@ window.onerror = function(message, source, lineno, colno, error) {
 };
 
 
-
-if (baseUrl.startsWith('https://')) {
-  socketUrl = 'wss'
-}
 
 let isSearch
 let gameId = null
@@ -61,7 +57,7 @@ let key4
 let auth42
 let multiple= false
 
-const path = baseUrl + ':8080'
+const path = baseUrl + ':8000'
 const client = axios.create({
   baseURL: path
 })
@@ -78,7 +74,7 @@ function MyCanvas( props ) {
   const [password, setPassword] = useState('')
   const [email2, setEmail2] = useState('')
   const [password2, setPassword2] = useState('')
-  const [t] = useTranslation("global")
+  const [t, i18n] = useTranslation("global")
   const navigate = useNavigate();
 
   const location = useLocation()
@@ -95,6 +91,17 @@ function MyCanvas( props ) {
     setCurrentUser(newValue);
     localStorage.setItem('currentUser', JSON.stringify(newValue));
   };
+
+  let initialColor = localStorage.getItem('color');
+  if (initialColor === null) {
+    initialColor = 0xffffff
+  }
+  const [racketColor, setracketColor] = useState(JSON.parse(initialColor));
+  const updateRacketColor = (newValue) => {
+    setracketColor(newValue);
+    localStorage.setItem('color', JSON.stringify(newValue));
+  };
+
 
 
   let initialToken = localStorage.getItem('csrfToken');
@@ -122,7 +129,6 @@ function MyCanvas( props ) {
   const [isSocialMenu, setisSocialMenu] = useState(false)
   const [state, setState] = useState(5)
   const [isLoginPage, setisLoginPage] = useState(true)
-  const [racketColor, setracketColor] = useState(0xffffff);
   const [selectedKeys, setSelectedKeys] = useState(['KeyA', 'KeyD', 'ArrowLeft', 'ArrowRight']);
   const [isProfilView, setIsProfilView] = useState(false)
   const [isResultOnline, setisResultOnline] = useState(false)
@@ -235,7 +241,7 @@ useEffect(() => {
   if (location.pathname !== '/' && currentUser === false){
     navigate('/')
   }
-
+color = racketColor
 
   if (location.pathname !== '/' && props.isSize && currentUser === true){
     client.get("/api/user")
@@ -534,7 +540,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         key3 = user.key3
         key4 = user.key4
     }).then(function(res){
-    fetch(baseUrl + ':8080/' + 'api/JoinQueue', {
+    fetch(baseUrl + ':8000/' + 'api/JoinQueue', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -562,7 +568,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
       }
       if (isSearch === false){
         try {
-          const response = await fetch(baseUrl + ':8080/' + 'api/ExitQueue', {
+          const response = await fetch(baseUrl + ':8000/' + 'api/ExitQueue', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -619,7 +625,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
 
   const checkJoinGame = async () => {
     try {
-      const response = await fetch(baseUrl + ':8080/' + 'api/CheckJoinGame', {
+      const response = await fetch(baseUrl + ':8000/' + 'api/CheckJoinGame', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1098,12 +1104,13 @@ function affDecompte(){
   }
 
 
-  const [tt, i18n] = useTranslation("global")
+
 
 
   function setOptions(){
     try{
-      setracketColor(color)
+      updateRacketColor(color)
+      console.log(language)
       if (language === 'French')
         i18n.changeLanguage('fr')
       if (language === 'English')
@@ -1121,7 +1128,7 @@ function affDecompte(){
 
   function setOptionsDefault(){
     try{
-      setracketColor(color)
+      updateRacketColor(color)
       i18n.changeLanguage('en')
 
 
@@ -1199,7 +1206,7 @@ function affDecompte(){
             key2 = user.key2
             key3 = user.key3
             key4 = user.key4
-            setOptions()
+            //setOptions()
         }).catch(function(err){
           console.error(err)
         })
@@ -1301,7 +1308,7 @@ function affDecompte(){
             key2 = user.key2
             key3 = user.key3
             key4 = user.key4
-            setOptions()
+            //setOptions()
         }).catch(function(err){
           console.error(err)
         })
@@ -1321,7 +1328,7 @@ function affDecompte(){
     ).then(function(res){
       updateUser(false)
       navigate('/')
-      setOptionsDefault()
+      //setOptionsDefault()
     }).catch(function(error){
      console.error(error)
     })
@@ -1448,7 +1455,7 @@ function getChart() {
           console.error(err)
         })
 
-        fetch(baseUrl + ':8080/' + 'api/history', {
+        fetch(baseUrl + ':8000/' + 'api/history', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1589,7 +1596,7 @@ function handle42register(){
       </div>
       ) : null}
     { state === 10 ? (
-      <SocialMenu setisSocialMenu={setisSocialMenu} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId} client={client} baseUrl={baseUrl}/>
+      <SocialMenu setisSocialMenu={setisSocialMenu} setracketColor={updateRacketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
     ) : null}
             {isInMatchTournament ? (
       <div className='scoreDirect' id='scoreDirect'>Score</div>
@@ -1750,7 +1757,7 @@ function handle42register(){
   
           <Environment files="fond.hdr" background blur={0.5}/>
           <Suspense fallback={null}>
-            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} setFindOnlineGame={setFindOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId} position={props.position} rotation={props.rotation} multiple={multiple} socketUrl={socketUrl}/>
+            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} setFindOnlineGame={setFindOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId} position={props.position} rotation={props.rotation} multiple={multiple} socketUrl={socketUrl} t={t}/>
             <Stade/>
           </Suspense>
           <Stars

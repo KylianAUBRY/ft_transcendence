@@ -1,8 +1,6 @@
 import './SocialMenu.css'
 import Friend from './Friend'
 import { useState, useEffect } from 'react'
-import MessageBox from './MessageBox'
-import { useTranslation } from 'react-i18next'
 import useSound from 'use-sound'
 
 let langValue
@@ -13,7 +11,6 @@ function SocialMenu( props ) {
     const [play1, { stop: stop1 }] = useSound('music1.mp3', { loop: true, volume: 0.5 })
     const [play2, { stop: stop2 }] = useSound('music2.mp3', { loop: true, volume: 0.5 })
     const [play3, { stop: stop3 }] = useSound('music3.mp3', { loop: true, volume: 0.5 })
-    const [t, i18n] = useTranslation("global")
     const [inPlay, setInPlay] = useState(0)
     const [add, setAdd] = useState('')
 
@@ -42,14 +39,23 @@ function displayList(){
 }
 
 function updateOptions(){
-    fetch(props.baseURL + ':8080/' + 'api/UpdateUserOption', {
+  var lng = 'fr'
+  console.log('icii')
+  if (langValue === 'fr'){
+    lng = 'French'
+  } else if (langValue == 'es'){
+    lng = 'Spanish'
+  }else if (langValue === 'en'){
+    lng = 'English'
+  }
+    fetch(props.baseURL + ':8000/' + 'api/UpdateUserOption', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             'userId': props.userId,
-            'language': langValue,
+            'language': lng,
             'color': colorValue,
             'music': musicValue,
             'key1': props.selectedKeys[0],
@@ -74,8 +80,7 @@ function handleAddChange(e){
 
 function handleAddFriend(e){
     e.preventDefault()
-    console.log(add)
-    fetch(props.baseUrl + ':8080/' + 'api/AddFriend', {
+    fetch(props.baseUrl + ':8000/' + 'api/AddFriend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,8 +103,7 @@ function handleAddFriend(e){
 
 
 
-    console.log('test')
-    fetch(props.baseUrl + ':8080/' + 'api/GetFriendList', {
+    fetch(props.baseUrl + ':8000/' + 'api/GetFriendList', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -121,8 +125,8 @@ function handleAddFriend(e){
 
 const handleChangeLang = event => {
     langValue = event.target.value
-    i18n.changeLanguage(langValue)
-    updateOptions()
+    props.i18n.changeLanguage(langValue)
+    //updateOptions()
   };
   
 const handleChangeMusic = event => {
@@ -144,10 +148,11 @@ const handleChangeMusic = event => {
         play3()
         setInPlay(3)
     }
-    updateOptions()
+    //updateOptions()
   };
 
   const handleChangeColor = event => {
+    console.log('test1')
     colorValue = event.target.value
     if (colorValue === 'white')
         props.setracketColor(0xffffff)
@@ -159,7 +164,7 @@ const handleChangeMusic = event => {
         props.setracketColor(0x898989)
     else if (colorValue === 'purple')
         props.setracketColor(0x720F8F)
-    updateOptions()
+    //updateOptions()
   };
 
  
@@ -206,7 +211,7 @@ const handleChangeMusic = event => {
             setUsername(props.username) 
 
 
-      fetch(props.baseURL + ':8080/' + 'api/UpateUserInfo', {
+      fetch(props.baseURL + ':8000/' + 'api/UpateUserInfo', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -245,12 +250,12 @@ const handleImageChange = (e) => {
             </button>
             <div className='container' id='container'>
             {props.currentUser ? (
-            <button className="logoutBtn" onClick={props.handleLogout}>{t("home.logout")}</button>  
+            <button className="logoutBtn" onClick={props.handleLogout}>{props.t("home.logout")}</button>  
             ) : null}
-                <h3 className='title'>{t("social.list")}</h3>
-                <div className='myId'>{t("home.id")}{props.userId}</div>
+                <h3 className='title'>{props.t("social.list")}</h3>
+                <div className='myId'>{props.t("home.id")}{props.userId}</div>
                 <form className='formFriend' onSubmit={handleAddFriend}>
-                    <input placeholder={t("social.add")} className='inputFriend' onChange={handleAddChange}></input>
+                    <input placeholder={props.t("social.add")} className='inputFriend' onChange={handleAddChange}></input>
                     <button className='btnFriend' type='submit'>+</button>
                 </form>
                 <ul className='list'>
@@ -263,34 +268,34 @@ const handleImageChange = (e) => {
                     <Friend name={"Friend 7"}/>
                 </ul>
                 <div className='customize'>
-                <p>{t("social.customize")}</p>
+                <p>{props.t("social.customize")}</p>
                 <div>
                 <div className='options'>
                 <div>
-                    {t("social.language")}
+                    {props.t("social.language")}
                     <select name="lang" id="lang-select" onChange={handleChangeLang} className='lang'>
-                        <option value="en">{t("social.english")}</option>
-                        <option value="fr">{t("social.french")}</option>
-                        <option value="es">{t("social.spanish")}</option>
+                        <option value="en">{props.t("social.english")}</option>
+                        <option value="fr">{props.t("social.french")}</option>
+                        <option value="es">{props.t("social.spanish")}</option>
                     </select>
                 </div>
                 <div>
-                    {t("social.music")}
+                    {props.t("social.music")}
                     <select name="music" id="music-select" onChange={handleChangeMusic}>
-                        <option value="">{t("social.noMusic")}</option>
-                        <option value="1">{t("social.music1")}</option>
-                        <option value="2">{t("social.music2")}</option>
-                        <option value="3">{t("social.music3")}</option>
+                        <option value="">{props.t("social.noMusic")}</option>
+                        <option value="1">{props.t("social.music1")}</option>
+                        <option value="2">{props.t("social.music2")}</option>
+                        <option value="3">{props.t("social.music3")}</option>
                     </select>
                 </div>
                 <div>
-                    {t("social.colorR")}
+                    {props.t("social.colorR")}
                     <select name="color" id="color-select" onChange={handleChangeColor}>
-                        <option value="white">{t("social.white")}</option>
-                        <option value="light blue">{t("social.blue")}</option>
-                        <option value="light grey">{t("social.grey1")}</option>
-                        <option value="dark grey">{t("social.grey2")}</option>
-                        <option value="purple">{t("social.purple")}</option>
+                        <option value="white">{props.t("social.white")}</option>
+                        <option value="light blue">{props.t("social.blue")}</option>
+                        <option value="light grey">{props.t("social.grey1")}</option>
+                        <option value="dark grey">{props.t("social.grey2")}</option>
+                        <option value="purple">{props.t("social.purple")}</option>
                     </select>
                 </div>
                 </div>
@@ -298,33 +303,33 @@ const handleImageChange = (e) => {
                 <div>
                     <div className='labelKey'>
                         <label>
-                            {t("social.key1")} {props.selectedKeys[0] || 'KeyA'}
+                            {props.t("social.key1")} {props.selectedKeys[0] || 'KeyA'}
                             <br />
-                            <button onClick={() => handleClickSelectKey(0)}>{t("social.select")}</button>
+                            <button onClick={() => handleClickSelectKey(0)}>{props.t("social.select")}</button>
                         </label>
                     </div>
                     <br />
                     <div className='labelKey'>
                         <label>
-                            {t("social.key2")} {props.selectedKeys[1] || 'KeyD'}
+                            {props.t("social.key2")} {props.selectedKeys[1] || 'KeyD'}
                             <br />
-                            <button onClick={() => handleClickSelectKey(1)}>{t("social.select")}</button>
+                            <button onClick={() => handleClickSelectKey(1)}>{props.t("social.select")}</button>
                         </label>
                     </div>
                     <br />
                     <div className='labelKey'>
                         <label>
-                            {t("social.key3")} {props.selectedKeys[2] || 'ArrowLeft'}
+                            {props.t("social.key3")} {props.selectedKeys[2] || 'ArrowLeft'}
                             <br />
-                            <button onClick={() => handleClickSelectKey(2)}>{t("social.select")}</button>
+                            <button onClick={() => handleClickSelectKey(2)}>{props.t("social.select")}</button>
                         </label>
                     </div>
                     <br />
                     <div className='labelKey'>
                         <label>
-                            {t("social.key4")} {props.selectedKeys[3] || 'ArrowRight'}
+                            {props.t("social.key4")} {props.selectedKeys[3] || 'ArrowRight'}
                             <br />
-                            <button onClick={() => handleClickSelectKey(3)}>{t("social.select")}</button>
+                            <button onClick={() => handleClickSelectKey(3)}>{props.t("social.select")}</button>
                         </label>
                     </div>
                 </div>
@@ -341,7 +346,7 @@ const handleImageChange = (e) => {
                     <input placeholder='Image' type='file' accept="image/*" onChange={handleImageChange}></input>
                     <input placeholder='Username'type='text' onChange={e => setUsername(e.target.value)}></input>
                     <input placeholder='Password' type='password' onChange={e => setPassword(e.target.value)}></input>
-                    <button type='submit' >{t("home.change")}</button>
+                    <button type='submit' >{props.t("home.change")}</button>
                 </form>
             </div>
            

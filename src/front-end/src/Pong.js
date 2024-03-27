@@ -118,7 +118,7 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
         setGltf(loadedGltf);
         loaderGltf = loadedGltf
         loadedGltf.scene.traverse((child) => {
-          child.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+          child.material = new THREE.MeshBasicMaterial({ color: racketColor });
         if (child.name === 'Player1'){
           racket1 = child			// vitesse des paddle = 2 
           racket1.position.z = 0    // 7,7max et -7,7 min donc la largeur fait 15,4     2 tant la taille du paddle
@@ -289,7 +289,6 @@ function endGame(winner)
       multiple = false
       racket11.position.z = 100
       racket22.position.z = 100
-      console.log('here')
       updateSetState(32)
     } else if (stateGame === 41){
       winner === 1 ? formData4.player1 = formData8.player1 : formData4.player1 = formData8.player2
@@ -402,7 +401,7 @@ function endGame(winner)
       if (infoIsReady === true)
     {
       console.log("1 seconde timer");
-        infoIsReady = false;
+      infoIsReady = false;
       tmpBall.vector.x = ball.vector.x;
       tmpBall.vector.z = ball.vector.z;
       tmpBall.position.x = ball.position.x;
@@ -700,7 +699,7 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 
 
 
-  const websocketUrl = socketUrl + '://' + newUrl + ':8080/ws/game/' + gameId + '/'
+  const websocketUrl = socketUrl + '://' + newUrl + ':8000/ws/game/' + gameId + '/'
    
   let websocket;
 
@@ -742,11 +741,8 @@ useEffect(() => {
 
   if (findOnlineGame === true) {
     websocket = new WebSocket(websocketUrl);
-    console.log(websocketUrl)
     websocket.onopen = function() {
-      console.log(gameId, socketUrl)
       //intervalSendinfo = setInterval(sendInfo, 1000);
-      console.log('isReady')
       isPlayerReady = true
       sendInfo()
     };
@@ -861,7 +857,6 @@ useEffect(() => {
           leftKey = true
         }
         sendInfo()
-        console.log('state', stateGame)
       }
     })
   
@@ -890,11 +885,6 @@ useEffect(() => {
 
 useEffect(() => {
   if (location.pathname === '/lobby'){
-    console.log(racket11)
-    if (racket11){
-        racket11.visible = false
-        racket22.visible = false
-    }
 
 	if (running === true){
 	  stopRender()

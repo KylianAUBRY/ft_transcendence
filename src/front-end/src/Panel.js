@@ -7,7 +7,6 @@ import { gsap } from 'gsap/gsap-core'
 import Pong from './Pong'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
-import { useTranslation } from 'react-i18next';
 
 const loader = new GLTFLoader()
 let loaderGltf
@@ -24,7 +23,6 @@ let rotaPanel = 0
 
 
 const Panel = React.forwardRef((props, ref) => {
-const [t] = useTranslation("global")
 // Declaration des variables
 const panelRef = useRef()
 const { camera } = useThree();
@@ -400,10 +398,10 @@ function Click (rota) {
                 rotation={cone.rotation}
                 
             />
-            <Screen model={child2} Gltf={gltf.scene} text={t("game.computer")} meshTextPos={[0, 7.5, 4.3]} meshTextRot={[0.4, 0, 0]} textPos={[0, 0, 0]} textRot={[0, 0, 0]} />
-            <Screen model={child3} Gltf={gltf.scene} text={t("game.online")}  meshTextPos={[4.3, 7.5, 0]} meshTextRot={[0, Math.PI / 2, 0]} textPos={[0, 0, 0]} textRot={[0.4, 0, 0]} />
-            <Screen model={child4} Gltf={gltf.scene} text={t("game.local")}  meshTextPos={[0, 7.5, -4.3]} meshTextRot={[-0.4, Math.PI, 0]} textPos={[0, 0, 0]} textRot={[0, 0, 0]} />
-            <Screen model={child5} Gltf={gltf.scene} text={t("game.tournament")} meshTextPos={[-4.3, 7.5, 0]} meshTextRot={[0, -Math.PI / 2, 0]} textPos={[0, 0, 0]} textRot={[0.4, 0, 0]} />
+            <Screen model={child2} Gltf={gltf.scene} text={props.t("game.computer")} meshTextPos={[0, 7.5, 4.3]} meshTextRot={[0.4, 0, 0]} textPos={[0, 0, 0]} textRot={[0, 0, 0]} />
+            <Screen model={child3} Gltf={gltf.scene} text={props.t("game.online")}  meshTextPos={[4.3, 7.5, 0]} meshTextRot={[0, Math.PI / 2, 0]} textPos={[0, 0, 0]} textRot={[0.4, 0, 0]} />
+            <Screen model={child4} Gltf={gltf.scene} text={props.t("game.local")}  meshTextPos={[0, 7.5, -4.3]} meshTextRot={[-0.4, Math.PI, 0]} textPos={[0, 0, 0]} textRot={[0, 0, 0]} />
+            <Screen model={child5} Gltf={gltf.scene} text={props.t("game.tournament")} meshTextPos={[-4.3, 7.5, 0]} meshTextRot={[0, -Math.PI / 2, 0]} textPos={[0, 0, 0]} textRot={[0.4, 0, 0]} />
           </mesh>
         ) : null}
         <Pong stateGame={props.state} setFindOnlineGame={props.setFindOnlineGame} updateSetState={props.updateSetState} formData8={props.formData8} formData4={props.formData4} formData2={props.formData2} winnerTournament={props.winnerTournament} score={props.score} updateSetScore={props.updateSetScore} racketColor={props.racketColor} selectedKeys={props.selectedKeys} findOnlineGame={props.findOnlineGame} newUrl={props.newUrl} username={props.username} userId={props.userId} gameId={props.gameId} position={props.position} rotation={props.rotation} multiple={props.multiple} socketUrl={props.socketUrl}/>
