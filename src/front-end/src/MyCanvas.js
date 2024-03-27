@@ -106,15 +106,9 @@ function MyCanvas( props ) {
 
 
 
-  let initialToken = localStorage.getItem('csrfToken');
-  if (initialToken === null) {
-    initialToken = false
-  }
-  const [csrfToken, setcsrfToken] = useState(JSON.parse(initialToken));
-  const updatecsrfToken = (newValue) => {
-    setcsrfToken(newValue);
-    localStorage.setItem('csrfToken', JSON.stringify(newValue));
-  };
+
+  const [csrfToken, updatecsrfToken] = useState('');
+
 
 
 
