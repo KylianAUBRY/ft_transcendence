@@ -290,21 +290,7 @@ color = racketColor
   //const tokenCookie = getCookie('csrftoken')
   
 
-    fetch(baseUrl + ':8000/' + 'api/GetTokenKey', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    }).then(function(res){
-      console.log(res)
-      updatecsrfToken(res)
-    })
-
+   
 
   client.get("/api/URL42")
   .then(res => {
@@ -1302,29 +1288,50 @@ function affDecompte(){
         setEmail('')
         setUsername('')
         setPassword('')
-        client.get("/api/user")
-        .then(res => {
-            user = res.data.user
-            LongestExchange = user.LongestExchange
-            aceRate = user.aceRate
-            nbAce = user.nbAce
-            nbGameLose = user.nbGameLose
-            nbGamePlayed = user.nbGamePlayed
-            nbGameWin = user.nbGameWin
-            nbPointLose = user.nbPointLose
-            nbPointMarked = user.nbPointMarked
-            nbTouchedBall = user.nbTouchedBall
-            name = user.username
-            winRate = user.winRate
-            userId = user.user_id
-            language = user.language
-            color = user.color
-            music = user.music
-            key1 = user.key1
-            key2 = user.key2
-            key3 = user.key3
-            key4 = user.key4
-            //setOptions()
+        fetch(baseUrl + ':8000/' + 'api/GetTokenKey', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        }).then(function(res){
+          console.log(res)
+          updatecsrfToken(res)
+        }).then(function(res){
+          client.get("/api/user")
+          .then(res => {
+              user = res.data.user
+              LongestExchange = user.LongestExchange
+              aceRate = user.aceRate
+              nbAce = user.nbAce
+              nbGameLose = user.nbGameLose
+              nbGamePlayed = user.nbGamePlayed
+              nbGameWin = user.nbGameWin
+              nbPointLose = user.nbPointLose
+              nbPointMarked = user.nbPointMarked
+              nbTouchedBall = user.nbTouchedBall
+              name = user.username
+              winRate = user.winRate
+              userId = user.user_id
+              language = user.language
+              color = user.color
+              music = user.music
+              key1 = user.key1
+              key2 = user.key2
+              key3 = user.key3
+              key4 = user.key4
+              //setOptions()
+
+          }).catch(function(err){
+            console.error(err)
+          })
+        
+        
+
         }).catch(function(err){
           console.error(err)
         })
