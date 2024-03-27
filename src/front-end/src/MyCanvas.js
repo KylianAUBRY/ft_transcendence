@@ -1294,19 +1294,6 @@ function affDecompte(){
         setEmail('')
         setUsername('')
         setPassword('')
-        /*fetch(baseUrl + ':8000/' + 'api/GetTokenKey', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }).then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        }).then(function(res){
-          console.log(res)
-          updatecsrfToken(res)*/
         }).then(function(res){
           client.get("/api/user")
           .then(res => {
@@ -1342,10 +1329,9 @@ function affDecompte(){
           console.error(err)
         })
       })
-    }
-    ).catch(function(err){
-      console.error(err)
-    })
+    
+
+ 
   }
 
 
