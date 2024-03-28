@@ -104,10 +104,27 @@ function MyCanvas( props ) {
     localStorage.setItem('color', JSON.stringify(newValue));
   };
 */
+
+
+
+
+
 const [racketColor, setracketColor] = useState(0xffffff);
 
 
-  const [csrfToken, updatecsrfToken] = useState('');
+
+let initialToken = localStorage.getItem('token');
+  if (initialToken === null) {
+    initialToken = ''
+  }
+  const [token, setToken] = useState(JSON.parse(initialToken));
+  const updateToken = (newValue) => {
+    setToken(newValue);
+    localStorage.setItem('token', JSON.stringify(newValue));
+  };
+
+
+  // const [csrfToken, updatecsrfToken] = useState('');
 
 
 
@@ -539,7 +556,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        "Authorization": "Token " + csrfToken
+        "Authorization": "Token " + token
         },
       body: JSON.stringify({
         userId: userId
@@ -568,7 +585,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              "Authorization": "Token " + csrfToken
+              "Authorization": "Token " + token
           },
             body: JSON.stringify({
               userId: userId
@@ -626,7 +643,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          "Authorization": "Token " + csrfToken
+          "Authorization": "Token " + token
           },
         body: JSON.stringify({
           userId: userId
@@ -1282,11 +1299,11 @@ var debutToken = chaine.indexOf('"token": "') + '"token": "'.length;
 var finToken = chaine.indexOf('"', debutToken);
 
 // Extraire la sous-chaîne correspondant à la valeur du token
-var token = chaine.substring(debutToken, finToken);
+var token1 = chaine.substring(debutToken, finToken);
 
 // Afficher la valeur du token
-console.log(token);
-        updatecsrfToken(token)
+console.log(token1);
+        updateToken(token)
 
         
         updateUser(true)
@@ -1304,12 +1321,12 @@ console.log(token);
         setPassword('')
         }).then(function(res){
 
-          console.log('user token   ', csrfToken)
+          console.log('user token   ', token)
           fetch(baseUrl + ':8000/' + 'api/user', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              "Authorization": "Token " + csrfToken
+              "Authorization": "Token " + token
             }
           }).then(response => {
             if (!response.ok) {
@@ -1499,7 +1516,7 @@ function getChart() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Token " + csrfToken
+            "Authorization": "Token " + token
           },
           body: JSON.stringify({
             userId: userId
@@ -1637,7 +1654,7 @@ function handle42register(){
       </div>
       ) : null}
     { state === 10 ? (
-      <SocialMenu setisSocialMenu={setisSocialMenu} csrfToken={csrfToken} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
+      <SocialMenu setisSocialMenu={setisSocialMenu} csrfToken={token} setracketColor={updateToken} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
     ) : null}
             {isInMatchTournament ? (
       <div className='scoreDirect' id='scoreDirect'>Score</div>
