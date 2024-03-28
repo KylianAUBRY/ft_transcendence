@@ -93,18 +93,18 @@ function MyCanvas( props ) {
     setCurrentUser(newValue);
     localStorage.setItem('currentUser', JSON.stringify(newValue));
   };
-
+/*
   let initialColor = localStorage.getItem('color');
   if (initialColor === null) {
     initialColor = 0xffffff
   }
-  const [racketColor, setracketColor] = useState(JSON.parse(initialColor));
+  
   const updateRacketColor = (newValue) => {
     setracketColor(newValue);
     localStorage.setItem('color', JSON.stringify(newValue));
   };
-
-
+*/
+const [racketColor, setracketColor] = useState(0xffffff);
 
 
   const [csrfToken, updatecsrfToken] = useState('');
