@@ -104,7 +104,7 @@ function handleAddFriend(e){
 }
 
 
-console.log(props.csrfToken, userId)
+console.log(props.csrfToken, props.userId)
     fetch(props.baseUrl + ':8000/' + 'api/GetFriendList', {
         method: 'POST',
         headers: {
