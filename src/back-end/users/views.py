@@ -134,21 +134,21 @@ class UpdateUserOption(APIView):
         data = request.data
 
         userId = data.get('userId')
-        logger.inf('userId: %s', userId)
+        logger.info('\n\n\nuserId: %s', userId)
         language = data.get('language')
-        logger.inf('language: %s', language)
+        logger.info('language: %s', language)
         color = data.get('color')
-        logger.inf('color: %s', color)
+        logger.info('color: %s', color)
         music = data.get('music')
-        logger.inf('music: %s', music)
+        logger.info('music: %s', music)
         key1 = data.get('key1')
-        logger.inf('key1: %s', key1)
+        logger.info('key1: %s', key1)
         key2 = data.get('key2')
-        logger.inf('key2: %s', key2)
+        logger.info('key2: %s', key2)
         key3 = data.get('key3')
-        logger.inf('key3: %s', key3)
+        logger.info('key3: %s', key3)
         key4 = data.get('key4')
-        logger.inf('key4: %s', key4)
+        logger.info('key4: %s', key4)
         
         try:
             from . models import AppUser
@@ -162,8 +162,10 @@ class UpdateUserOption(APIView):
                 user_obj.key3 = key3
                 user_obj.key4 = key4
                 user_obj.save()
+                logger.info("USERSAVED\n\n\n")
             return Response({'message': 'User statistics updated successfully'})
         except Exception as e:
+            logger.info("AAAAAAAAAAAAAAAAAAAAAAA\n\n\n")
             return Response({'message': 'User update failed', 'error': str(e)})
 
 # Get all match history from a user
