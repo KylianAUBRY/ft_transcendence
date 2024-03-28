@@ -68,7 +68,7 @@ let stopDecompte = false
 
 
 
-function MyCanvas( props ) {
+function MyCanvas ( props ) {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -93,42 +93,12 @@ function MyCanvas( props ) {
     setCurrentUser(newValue);
     localStorage.setItem('currentUser', JSON.stringify(newValue));
   };
-/*
-  let initialColor = localStorage.getItem('color');
-  if (initialColor === null) {
-    initialColor = 0xffffff
-  }
+
+
+
+
   
-  const updateRacketColor = (newValue) => {
-    setracketColor(newValue);
-    localStorage.setItem('color', JSON.stringify(newValue));
-  };
-*/
-
-
-
-
-
-const [racketColor, setracketColor] = useState(0xffffff);
-
-/*
-
-let initialToken = localStorage.getItem('token');
-  if (initialToken === null) {
-    initialToken = false
-  }
-  const [token, setToken] = useState(JSON.parse(initialToken));
-  const updateToken = (newValue) => {
-    setToken(newValue);
-    localStorage.setItem('token', JSON.stringify(newValue));
-  };
-*/
-
-  // const [csrfToken, updatecsrfToken] = useState('');
-
-
-
-
+  const [racketColor, setracketColor] = useState(0xffffff);
   const [isTableTournament, setisTableTournament] = useState(false)
   const [isSetterTournament, setisSetterTournament] = useState(false)
   const [isMatchTournament, setisMatchTournament] = useState(false)
@@ -234,6 +204,9 @@ let initialToken = localStorage.getItem('token');
 
   }
 
+
+
+
 useEffect(() => {
  setisTableTournament(false)
   setisSetterTournament(false)
@@ -251,6 +224,8 @@ useEffect(() => {
   setisLoginPage(true)
   stopDecompte = true
 
+
+  console.log(currentUser)
   if (location.pathname !== '/' && currentUser === false){
     navigate('/')
   }
@@ -1312,18 +1287,10 @@ function affDecompte(){
         console.log(res.data)
         var chaine = res.data
 
-// Trouver l'indice du début de la valeur du token
-var debutToken = chaine.indexOf('"token": "') + '"token": "'.length;
-
-// Trouver l'indice de la fin de la valeur du token
-var finToken = chaine.indexOf('"', debutToken);
-
-// Extraire la sous-chaîne correspondant à la valeur du token
-var token1 = chaine.substring(debutToken, finToken);
-
-// Afficher la valeur du token
-console.log(token1);
-        //updateToken(token1)
+        var debutToken = chaine.indexOf('"token": "') + '"token": "'.length;
+        var finToken = chaine.indexOf('"', debutToken);
+        var token1 = chaine.substring(debutToken, finToken);
+        console.log(token1);
         localStorage.setItem('token', token1)
         
         updateUser(true)
@@ -1612,6 +1579,30 @@ function handle42register(){
   if (auth42)
     window.location.href = auth42
 }
+
+
+
+
+useEffect(() => {
+  return () => {
+    // Effectuer des actions de nettoyage ou de démontage ici
+    console.log('Le composant est démonté');
+       if (currentUser === true){
+  client.get(
+    "/api/logout",
+    {withCredentials: true}
+  ).then(function(res){
+    navigate('/lobby')
+    updateUser(false)
+  }).catch(function(error){
+   console.error(error)
+  })
+  }
+  };
+}, []);
+
+
+
 
 
 

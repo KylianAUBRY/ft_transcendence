@@ -1,11 +1,16 @@
 import './Friend.css';
 
 function Friend( props ) {
-    
+    console.log(props.friend)
 
+    let isOnline
+    if (props.friend.isOnline === true)
+        isOnline = props.t('home.online')
+    else    
+        isOnline = props.t('home.offline')
     return (
         <li className='friend'>
-            {props.name}    
+            {props.friend.username}   --   {isOnline}
         </li>
 
     )}

@@ -94,7 +94,7 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
         setGltf2(loaded2Gltf);
         loaderGltf2 = loaded2Gltf
         loaded2Gltf.scene.traverse((child) => {
-          child.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+          child.material = new THREE.MeshBasicMaterial({ color: racketColor });
         if (child.name === 'Player1'){
           racket11 = child
           racket11.position.z = 3   
@@ -287,8 +287,11 @@ function endGame(winner)
     } else if (stateGame === 61){
       winner === 1 ? winnerTournament.player = 'Team 1' : winnerTournament.player = 'Team 2'
       multiple = false
-      racket11.position.z = 100
-      racket22.position.z = 100
+      setTimeout(function() {
+        racket11.visible = false
+        racket22.visible = false
+    }, 2000); 
+      
       updateSetState(32)
     } else if (stateGame === 41){
       winner === 1 ? formData4.player1 = formData8.player1 : formData4.player1 = formData8.player2
@@ -743,6 +746,7 @@ useEffect(() => {
     websocket = new WebSocket(websocketUrl);
     websocket.onopen = function() {
       //intervalSendinfo = setInterval(sendInfo, 1000);
+      console.log('press a key for start')
       isPlayerReady = true
       sendInfo()
     };
@@ -751,6 +755,7 @@ useEffect(() => {
       const messageObj = JSON.parse(event.data); 
       const type = messageObj.type;
       if (type === 'playerId'){
+        console.log('start')
         const messageObj = JSON.parse(event.data)
         playerId = messageObj.playerId
         nameServer = messageObj.name_serv
