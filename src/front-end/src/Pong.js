@@ -390,13 +390,13 @@ function endGame(winner)
   function moov_right(){
     if (racket2.position.z <= (largSize / 2) - (playeurSize / 2)) //droite
           racket2.position.z += deltaTime * speedPaddle;
-    // console.log("moov_right");
+
     }
   
     function moov_left(){
     if (racket2.position.z >= (-largSize / 2) + (playeurSize / 2)) //gauche
           racket2.position.z -= deltaTime * speedPaddle;
-    // console.log("moov_left");
+
     }
 
     function processBotPaddle() {
@@ -444,19 +444,14 @@ function endGame(winner)
       z: tmpBall.position.z,
       Vx: tmpBall.vector.x,
       Vz: tmpBall.vector.z
-      // x: ball.position.x,
-      // z: ball.position.z,
-      // Vx: ball.vector.x,
-      // Vz: ball.vector.z
+
     }
     
   
     let collisionTop = ((longSize / 2) - tmp.x) * (tmp.Vz / tmp.Vx) + tmp.z;
     let collisionBot = (-(longSize / 2) - tmp.x) * (tmp.Vz / tmp.Vx) + tmp.z;
   
-    // console.log("predition top", collisionTop)
-    // console.log("predition bot", collisionBot)
-    // console.log("pz:", tmp.z, "px:", tmp.x , "  vz:", tmp.Vz, "vx:", tmp.Vx)
+
   
     let collisionPosition;
     if(tmp.Vx >	 0)
@@ -484,8 +479,7 @@ function endGame(winner)
       tmp.z = collisionPosition;
     
   
-    // console.log("TMP BALL : ", tmpBall.position.x);
-    // console.log("BALL      : ", ball.position.x);
+
     let tmpValue = racket2.position.z - tmp.z // tmpBall.position.z;
     if (tmpValue === 0 || ((tmpValue < 0 && tmpValue >= -((playeurSize / 2)- 0.3)) || (tmpValue > 0 && tmpValue <= ((playeurSize / 2)- 0.3)))){
       lastDir = 0;
@@ -663,7 +657,7 @@ function endGame(winner)
 
 if (multiple && loaderGltf2 && loaderGltf2.scene){
       if (score.name1 = "Team 1"){
-        //afficher eme raquettes
+
         multiplePlayer = true
         racket11.visible = true
         racket22.visible = true
@@ -677,7 +671,7 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 
 
   if (stateGame === 21 || stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51 || stateGame === 61) {
-    // console.log(stateGame)
+
     if (stateGame !== 61){
       multiple = false
       racket11.visible = false
@@ -725,14 +719,13 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
       }
     }
 	  
-
 	  const data = {
-		"name_serv": nameServer,
-		"idMatch": playerId,
-		"isReady": isPlayerReady,
-		"playerDirection": dir,
-		"playerId": userId,
-		"username": username
+      "name_serv": localStorage.getItem('nameServer'),
+      "idMatch": localStorage.getItem('playerId'),
+      "isReady": isPlayerReady,
+      "playerDirection": dir,
+      "playerId": userId,
+      "username": username
 	  };
 	  websocket.send(JSON.stringify(data));
 	  } else{
@@ -746,7 +739,7 @@ useEffect(() => {
     websocket = new WebSocket(websocketUrl);
     websocket.onopen = function() {
       //intervalSendinfo = setInterval(sendInfo, 1000);
-      console.log('press a key for start')
+
       isPlayerReady = true
       sendInfo()
     };
@@ -755,14 +748,17 @@ useEffect(() => {
       const messageObj = JSON.parse(event.data); 
       const type = messageObj.type;
       if (type === 'playerId'){
-        console.log('start')
+       
         const messageObj = JSON.parse(event.data)
         playerId = messageObj.playerId
+        localStorage.setItem('playerId', messageObj.playerId)
         nameServer = messageObj.name_serv
+        
+        localStorage.setItem('nameServer', messageObj.name_serv)
         side = messageObj.side
       }
       if (type === 'state_update'){
-      if (isUsername === false){
+      if (isUsername === false && messageObj.player_1_username){
         updateSetScore('name1', messageObj.player_1_username)
         updateSetScore('name2', messageObj.player_2_username)
         isUsername = true
@@ -831,6 +827,7 @@ useEffect(() => {
         }
         updateSetState(22)
         playerId = -1
+        localStorage.setItem('playerId','-1')
         setFindOnlineGame(false)
         isUsername = false
         onlineScore1 = 0

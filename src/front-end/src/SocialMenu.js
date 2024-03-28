@@ -42,7 +42,6 @@ function displayList(){
 
 function updateOptions(){
   var lng = 'fr'
-  console.log('icii')
   if (langValue === 'fr'){
     lng = 'French'
   } else if (langValue == 'es'){
@@ -99,14 +98,13 @@ function handleAddFriend(e){
         }
         return response.json();
       }).then(function(data){
-        console.log(data)
+        
       }).catch(function(err){
         console.error(err)
       });
 }
 
 
-console.log(props.csrfToken, props.userId)
     fetch(props.baseUrl + ':8000/' + 'api/GetFriendList', {
         method: 'POST',
         headers: {
@@ -125,7 +123,6 @@ console.log(props.csrfToken, props.userId)
         if (data.friend_list.length !== nb){
           setFriend(data.friend_list)
           setNb(data.friend_list.length)
-          console.log(data.friend_list, props.userId, friend)
         }
           
 
@@ -163,7 +160,6 @@ const handleChangeMusic = event => {
   };
 
   const handleChangeColor = event => {
-    console.log('test1')
     colorValue = event.target.value
     if (colorValue === 'white')
         props.setracketColor(0xffffff)
@@ -216,24 +212,18 @@ const handleChangeMusic = event => {
 
       const formData = new FormData();
       formData.append('file', selectedImage);
-    
+      formData.append('userId', props.userId);
+      formData.append('username', username);
+      formData.append('password', password);
+
 
         if (username !== '')
             setUsername(props.username) 
 
 
-      fetch(props.baseURL + ':8000/' + 'api/UpateUserInfo', {
+      fetch(props.baseURL + ':8080/' + 'api/UpateUserInfo', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": "Token " + props.csrfToken
-          },
-        body: JSON.stringify({
-          userId: props.userId,
-          username: username,
-          password: password,
-          image: formData
-        }),
+        body: formData,
       }).then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -247,10 +237,10 @@ const handleChangeMusic = event => {
 
 
 const handleImageChange = (e) => {
-    const file = e.target.files[0]; // Récupérer le premier fichier sélectionné
-    const imageUrl = URL.createObjectURL(file);
-    setSelectedImage(imageUrl); // Mettre à jour l'état avec l'URL de l'image
-  };
+  const file = e.target.files[0]; // Récupérer le premier fichier sélectionné
+  // const imageUrl = URL.createObjectURL(file);
+  setSelectedImage(file); // Mettre à jour l'état avec l'URL de l'image
+};
 
 
     return (
