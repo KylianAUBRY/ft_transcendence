@@ -1270,9 +1270,6 @@ function affDecompte(){
         }
       ).then(function(res){
 
-        console.log('json parse', JSON.parse(res))
-        console.log('json parse', JSON.parse(res.data))
-
         console.log(res)
         console.log(res.data)
         var chaine = res.data
