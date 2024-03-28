@@ -67,6 +67,7 @@ class UserLogout(APIView):
 
     def get(self, request):
         logout(request)
+        delete_token(request.user)
 
         try:
             email = getattr(request.user, "email", None)
@@ -344,7 +345,7 @@ class GetFriendList(APIView):
                 friend = AppUser.objects.get(pk=friend_id)
                 logger.info('Friend : %s', str(friend_id))
                 if friend :
-                    friend_data.append(FriendListSerializer(user_obj).data)
+                    friend_data.append(FriendListSerializer(friend).data)
                 logger.info('List : %s', str(friend))
             return Response({"friend_list": friend_data}, status=status.HTTP_200_OK)
         else:
