@@ -1333,12 +1333,12 @@ console.log(token1);
               throw new Error('Network response was not ok');
             }
             return response.json();
-          }).then(function(data){
+          }).then(function(res){
 
 /*
           client.get("/api/user")
           .then(res => {*/
-              data = res.data.user
+              user = res.data.user
               LongestExchange = user.LongestExchange
               aceRate = user.aceRate
               nbAce = user.nbAce
