@@ -31,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
     aceRate = serializers.SerializerMethodField()
     
     class Meta:
-        model = UserModel
+        model = AppUser
         fields = ('user_id', 'email', 'username', 'nbGamePlayed', 'nbGameWin', 'nbGameLose', 'winRate', 'image',
                   'nbTouchedBall', 'nbAce', 'aceRate', 'LongestExchange', 'nbPointMarked', 'nbPointLose', 'language', 'color', 'music', 'key1', 'key2', 'key3', 'key4')
     

@@ -16,7 +16,7 @@ class AppUserManager(BaseUserManager):
 		email = self.normalize_email(email)
 		user = self.model(email=email, username=username, password=password)
 		user.set_password(password)
-		user.save(using=self._db)
+		user.save()
 		return user
 	def create_superuser(self, email, username, password):
 		if not email:
@@ -26,13 +26,13 @@ class AppUserManager(BaseUserManager):
 		user = self.create_user(email=self.normalize_email(email), username=username, password=password)
 		user.is_superuser = True
 		user.is_staff = True
-		user.save(using=self._db)
+		user.save()
 		return user
 
 class AppUser(AbstractBaseUser, PermissionsMixin):
 	user_id = models.AutoField(primary_key=True)
 	email = models.EmailField(max_length=50, unique=True)
-	username = models.CharField(max_length=50)
+	username = models.CharField(max_length=50, default="boloss")
 	date_joined = models.DateField(default=django.utils.timezone.now)
 	language = models.CharField(max_length=50, default='English')
 	color = models.CharField(max_length=50, default="white")

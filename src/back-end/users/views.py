@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model, login, logout
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializer import UserRegisterSerializer, UserLoginSerializer, UserSerializer, HistorySerializer, ServerSerializer, FriendListSerializer
@@ -21,6 +21,7 @@ from rest_framework.authtoken.models import Token
 
 # Post request to create a new user
 class UserRegister(APIView):
+    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -35,10 +36,12 @@ class UserRegister(APIView):
 
 # Post request to login user
 class UserLogin(APIView):
+    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         data = request.data
+        logger = logging.getLogger(__name__)
         assert validate_email(data)
         assert validate_password(data)
         serializer = UserLoginSerializer(data=data)
@@ -52,24 +55,11 @@ class UserLogin(APIView):
                     user_obj.isOnline = True
                     user_obj.save()
             except Exception as error:
-                logger = logging.getLogger(__name__)
                 logger.info("Error: %s", error)
 
-            login(request, user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-class GetTokenKey(APIView):
-    permission_classes = [permissions.AllowAny]
-    
-    def get(self, request):
-        logger = logging.getLogger(__name__)
-        try:
-            token = Token.objects.get(user=request.user)
-            logger.info("\n\n\Token : %s\n\n", token.key)
-            return Response({"csrf": token.key}, status=status.HTTP_200_OK)
-        except Token.DoesNotExist:
-            logger.info("Don't have any csrfToken : %s", token.key)
-            return Response("Error: Token.DoesNotExist", status=status.HTTP_400_BAD_REQUEST)
+            # login(request, user)
+            token = create_user_token(user)
+            return Response(json.dumps({"token": token.key}), status=status.HTTP_200_OK)
 
 # Post request to logout user
 class UserLogout(APIView):
@@ -94,8 +84,14 @@ class UserView(APIView):
     permission_classes = [permissions.AllowAny]
     
     def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+        try:
+            logger = logging.getLogger(__name__)
+            logger.info("\n\n USERVIEW %s \n\n", str(request.user))
+            serializer = UserSerializer(request.user)
+            logger.info("\n\n USERVIEW ser : %s\n\n", str(serializer))
+            return Response({'data' : serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            return Response({'user': "You are not connected"}, status=status.HTTP_200_OK)
     
 class UpateUserInfo(APIView):
     permission_classes = [permissions.AllowAny]
@@ -338,8 +334,7 @@ class GetFriendList(APIView):
         from . models import AppUser
         logger = logging.getLogger(__name__)
 
-        data = request.data
-        user_id = data.get("userId")
+        user_id = getattr(request.user, "user_id", None)
         user_obj = AppUser.objects.get(pk=user_id)
         friend_data = []
         if user_obj:
