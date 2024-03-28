@@ -55,7 +55,7 @@ class UserLogin(APIView):
                     user_obj.isOnline = True
                     user_obj.save()
             except Exception as error:
-                logger.info("Error: %s", error)
+                pass
 
             login(request, user)
             token = create_user_token(user)
@@ -87,9 +87,7 @@ class UserView(APIView):
     def get(self, request):
         try:
             logger = logging.getLogger(__name__)
-            logger.info("\n\n USERVIEW %s \n\n", str(request.user))
             serializer = UserSerializer(request.user)
-            logger.info("\n\n USERVIEW ser : %s\n\n", str(serializer))
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as error:
             return Response({'user': "You are not connected"}, status=status.HTTP_200_OK)
@@ -162,10 +160,8 @@ class UpdateUserOption(APIView):
                 user_obj.key3 = key3
                 user_obj.key4 = key4
                 user_obj.save()
-                logger.info("USERSAVED\n\n\n")
             return Response({'message': 'User statistics updated successfully'})
         except Exception as e:
-            logger.info("AAAAAAAAAAAAAAAAAAAAAAA\n\n\n")
             return Response({'message': 'User update failed', 'error': str(e)})
 
 # Get all match history from a user
@@ -202,14 +198,11 @@ class CheckJoinGame(APIView):
         game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id)).first()
         if game_server:
             if (game_server.state == 'full'):
-                logger.info('CJG -> 1')
                 return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
             else:
-                logger.info('CJG -> 2')
                 return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
             # send server name to client to start the game
         else:
-            logger.info('CJG -> 3')
             return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
             # send 'in queue'
 
@@ -351,14 +344,10 @@ class GetFriendList(APIView):
         user_obj = AppUser.objects.get(pk=user_id)
         friend_data = []
         if user_obj:
-            logger.info('ENTER IN IF USER_OBJ')
-            logger.info('---> %s', str(user_obj.friends_list))
             for friend_id in user_obj.friends_list:
                 friend = AppUser.objects.get(pk=friend_id)
-                logger.info('Friend : %s', str(friend_id))
                 if friend :
                     friend_data.append(FriendListSerializer(friend).data)
-                logger.info('List : %s', str(friend))
             return Response({"friend_list": friend_data}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Can't find user in database"})

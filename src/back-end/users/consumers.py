@@ -96,13 +96,15 @@ class GameRoom(AsyncWebsocketConsumer):
         serv_name = None
         for name_serv in self.players.values():
             for player in name_serv.values():
-                logger.info("PLAYER INFO OOOOOOOOOOO: %s", str(player))
-                logger.info("PLAYER INFO OOOOOOOOOOO: %s", self.scope["user"].user_id)
                 if player["idPlayer"] == self.scope["user"].user_id:
+                    logger.info("\n\n\n NAME_SERV : %s", player["serv"])
+                    logger.info("\n\n\n PLAYER_TO_DISCONNECT : %s", player["serv"])
                     serv_name = player["serv"]
                     player_to_disconnect = player["idMatch"]
                     break
 
+        logger.info("\n\n\n NAME_SERV : %s", name_serv)
+        logger.info("\n\n\n PLAYER_TO_DISCONNECT : %s", player_to_disconnect)
         self.players[name_serv][player_to_disconnect]["isDisconnect"] = True
 
         await self.channel_layer.group_discard(
@@ -121,12 +123,6 @@ class GameRoom(AsyncWebsocketConsumer):
             orientation = text_data_json["playerDirection"]
             isReady = text_data_json["isReady"]
             username = text_data_json["username"]
-            logger.info('%s', name_serv)
-            logger.info('%s', idMatch)
-            logger.info('%s', player_id)
-            logger.info('%s', orientation)
-            logger.info('%s', isReady)
-            logger.info('%s', username)
         
             serv = self.players.get(name_serv, None)
             if not serv:
@@ -143,7 +139,7 @@ class GameRoom(AsyncWebsocketConsumer):
             player["isReady"] = isReady
             player["username"] = username
         except Exception as error:
-            logger.info("Error in receive :", error)
+            pass
 
 
     async def state_update(self, event):
@@ -210,26 +206,19 @@ class GameRoom(AsyncWebsocketConsumer):
 
         timePerFrame = 0.0166
 
-        logger.info('Will set player info')
         for player in self.players[serv].values():
-            logger.info('Set player info')
             if player["side"] == "left":
                 player1_id = player["idMatch"]
                 player["x"] = 0 - field_length / 2
                 player["y"] = 0
-                logger.info('%s', player1_id)
-                logger.info('%s', player["username"])
             if player["side"] == "right":
                 player2_id = player["idMatch"]
                 player["x"] = 0 + field_length / 2
                 player["y"] = 0
-                logger.info('%s', player2_id)
-                logger.info('%s', player["username"])
 
         while isStarting==False and self.players[serv][player1_id]["isDisconnect"] == False and self.players[serv][player2_id]["isDisconnect"] == False:
             if len(self.players[serv]) == 2:
                 if (self.players[serv][player1_id]["isReady"] == True and self.players[serv][player2_id]["isReady"] == True):
-                    logger.info('Two player Ready')
                     isStarting = True
                     ball_dx = random.choice([-1, 1])
                     while True:
