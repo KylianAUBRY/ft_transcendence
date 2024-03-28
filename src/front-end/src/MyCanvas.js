@@ -1204,6 +1204,7 @@ function affDecompte(){
             key2 = user.key2
             key3 = user.key3
             key4 = user.key4
+            console.log(user)
             //setOptions()
         }).catch(function(err){
           console.error(err)
@@ -1325,7 +1326,7 @@ console.log(token);
               key3 = user.key3
               key4 = user.key4
               //setOptions()
-
+              console.log(user)
           }).catch(function(err){
             console.error(err)
           })
@@ -1413,6 +1414,7 @@ function getChart() {
         key3 = user.key3
         key4 = user.key4
         console.log(res)
+        console.log(user)
     }).then(function(res){
 
 
