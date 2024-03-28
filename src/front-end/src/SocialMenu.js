@@ -13,6 +13,8 @@ function SocialMenu( props ) {
     const [play3, { stop: stop3 }] = useSound('music3.mp3', { loop: true, volume: 0.5 })
     const [inPlay, setInPlay] = useState(0)
     const [add, setAdd] = useState('')
+    const [friend, setFriend] = useState([])
+    const [nb, setNb] = useState(0)
 
 function displayList(){
     var list = document.getElementById("container")
@@ -120,7 +122,13 @@ console.log(props.csrfToken, props.userId)
         }
         return response.json();
       }).then(function(data){
-        console.log(data)
+        if (data.friend_list.length !== nb){
+          setFriend(data.friend_list)
+          setNb(data.friend_list.length)
+          console.log(data.friend_list, props.userId, friend)
+        }
+          
+
       }).catch(function(err){
         console.error(err)
       });
@@ -263,13 +271,9 @@ const handleImageChange = (e) => {
                     <button className='btnFriend' type='submit'>+</button>
                 </form>
                 <ul className='list'>
-                    <Friend name={"Friend 1"}/>
-                    <Friend name={"Friend 2"}/>
-                    <Friend name={"Friend 3"}/>
-                    <Friend name={"Friend 4"}/>
-                    <Friend name={"Friend 5"}/>
-                    <Friend name={"Friend 6"}/>
-                    <Friend name={"Friend 7"}/>
+                  {friend.map((fr, index) => (
+                          <Friend key={index} friend={fr} t={props.t}/>
+                      ))}
                 </ul>
                 <div className='customize'>
                 <p>{props.t("social.customize")}</p>

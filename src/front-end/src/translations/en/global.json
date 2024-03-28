@@ -22,7 +22,9 @@
         "imposible": "Unable to register",
         "logout": "Log out",
         "id": "My id : ",
-        "change": "Change !"
+        "change": "Change !",
+        "online": "Online",
+        "offline": "Offline"
     },
     "game":{
         "online": "Play online",

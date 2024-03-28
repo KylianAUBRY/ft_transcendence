@@ -22,7 +22,9 @@
         "imposible": "registro imposible",
         "logout": "cerrar sesión",
         "id": "Mi id : ",
-        "change": "Cambiar !"
+        "change": "Cambiar !",
+        "online": "en línea",
+        "offline": "desconectado"
     },
     "game":{
         "online": "Jugar en línea",

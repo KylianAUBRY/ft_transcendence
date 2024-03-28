@@ -212,7 +212,6 @@ document.addEventListener('keydown', function(event) {
 // Touche apuyee
   const onKeyDown = function (event) {
   if (loaderGltf && loaderGltf.scene && stateG === 1 && props.isSocialMenu === false && props.state < 20){
-    console.log('test rota', props.state)
     switch (event.code) {
       case "ArrowRight":
       case "KeyD":
