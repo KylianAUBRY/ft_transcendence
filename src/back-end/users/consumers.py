@@ -96,10 +96,10 @@ class GameRoom(AsyncWebsocketConsumer):
         serv_name = None
         for name_serv, playerr in self.players.items():
             for player in playerr.items():
-                if player["idPlayer"] == self.scope["user"].user_id:
-                    serv_name = player["serv"]
-                    player_to_disconnect = player["idMatch"]
-                    player["isDisconnect"] = True
+                logger.info("\n\n\n PLAYER INFO : %s ", str(player[1]))
+                if player[1] == self.scope["user"].user_id:
+                    serv_name = player[15]
+                    player_to_disconnect = player[0]
                     break
 
         logger.info("\n\n\n NAME_SERV : %s", name_serv)
