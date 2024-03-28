@@ -1305,7 +1305,7 @@ console.log(token);
         }).then(function(res){
 
           fetch(baseUrl + ':8000/' + 'api/user', {
-            method: 'GET',
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               "Authorization": "Token " + csrfToken
