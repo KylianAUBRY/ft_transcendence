@@ -91,19 +91,18 @@ class GameRoom(AsyncWebsocketConsumer):
     async def disconnect(self, close_code): 
         logger = logging.getLogger(__name__)
 
-        logger.info("\n\nSCOPE : %s", str(self.scope))
-        logger.info("\n\nSCOPE USER : %s", str(self.scope["user"]))
-        logger.info("\n\nSCOPE USER ID: %s", str(self.scope["user"]))
-
         player_to_disconnect = None
         serv_name = None
-        for name_serv, players in self.players.items():
-            if players["idPlayer"] == self.scope["user"].user_id:
-                serv_name = name_serv
-                player_to_disconnect = players["idMatch"]
-                break
+        for name_serv in self.players.values():
+            for player in name_serv.values():
+                logger.info("PLAYER INFO OOOOOOOOOOO: %s", str(player))
+                logger.info("PLAYER INFO OOOOOOOOOOO: %s", self.scope["user"].user_id)
+                if player["idPlayer"] == self.scope["user"].user_id:
+                    serv_name = name_serv
+                    player_to_disconnect = player["idMatch"]
+                    break
 
-        players[name_serv][player_to_disconnect]["isDisconnect"] = True
+        self.players[name_serv][player_to_disconnect]["isDisconnect"] = True
 
         await self.channel_layer.group_discard(
             self.game_group_name, self.channel_name
