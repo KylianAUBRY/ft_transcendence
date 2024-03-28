@@ -225,7 +225,7 @@ useEffect(() => {
   stopDecompte = true
 
 
-  console.log(currentUser)
+
   if (location.pathname !== '/' && currentUser === false){
     navigate('/')
   }
@@ -247,7 +247,6 @@ color = racketColor
             name = user.username
             winRate = user.winRate
             userId = user.user_id
-            localStorage.setItem('userId', user.userId)
             language = user.language
             color = user.color
             music = user.music
@@ -263,11 +262,13 @@ color = racketColor
 
   if (location.pathname === '/' && props.isSize){
     if (currentUser === true){
+
     client.get(
       "/api/logout",
       {withCredentials: true}
     ).then(function(res){
       updateUser(false)
+      localStorage.setItem('token', '')
     }).catch(function(error){
      console.error(error)
     })
@@ -529,7 +530,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         key3 = user.key3
         key4 = user.key4
     }).then(function(res){
-      console.log( localStorage.getItem("token"), localStorage.getItem("userID"))
+  
     fetch(baseUrl + ':8000/' + 'api/JoinQueue', {
       method: 'POST',
       headers: {
@@ -549,6 +550,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         const data = await checkJoinGame();
         if (data.hasOwnProperty('gameId')) {
           gameId = data.gameId
+          localStorage.setItem("gameId", data.gameId)
         }
     
  
@@ -1103,7 +1105,7 @@ function affDecompte(){
   function setOptions(){
     try{
       setracketColor(color)
-      console.log(language)
+
       if (language === 'French')
         i18n.changeLanguage('fr')
       if (language === 'English')
@@ -1158,7 +1160,13 @@ function affDecompte(){
       }
     ).then(function(res){
 
+      var chaine = res.data
 
+      var debutToken = chaine.indexOf('"token": "') + '"token": "'.length;
+      var finToken = chaine.indexOf('"', debutToken);
+      var token1 = chaine.substring(debutToken, finToken);
+
+      localStorage.setItem('token', token1)
     
 
       updateUser(true)
@@ -1190,10 +1198,7 @@ function affDecompte(){
           return response.json();
         }).then(res =>{
 
-/*
-        client.get("/api/user")
-        .then(res => {*/
-          console.log('api/user', res)
+
         
             user = res
             LongestExchange = user.LongestExchange
@@ -1206,6 +1211,7 @@ function affDecompte(){
             nbPointMarked = user.nbPointMarked
             nbTouchedBall = user.nbTouchedBall
             name = user.username
+            localStorage.setItem("username", user.username)
             winRate = user.winRate
             userId = user.user_id
             localStorage.setItem('userId', user.user_id)
@@ -1216,8 +1222,7 @@ function affDecompte(){
             key2 = user.key2
             key3 = user.key3
             key4 = user.key4
-            //setOptions()
-            console.log(user)
+ 
         }).catch(function(err){
           console.error(err)
         })
@@ -1283,14 +1288,12 @@ function affDecompte(){
         }
       ).then(function(res){
 
-        console.log(res)
-        console.log(res.data)
         var chaine = res.data
 
         var debutToken = chaine.indexOf('"token": "') + '"token": "'.length;
         var finToken = chaine.indexOf('"', debutToken);
         var token1 = chaine.substring(debutToken, finToken);
-        console.log(token1);
+
         localStorage.setItem('token', token1)
         
         updateUser(true)
@@ -1308,7 +1311,7 @@ function affDecompte(){
         setPassword('')
         }).then(function(res){
 
-          console.log('user token   ', localStorage.getItem("token"))
+
           fetch(baseUrl + ':8000/' + 'api/user', {
             method: 'GET',
             headers: {
@@ -1322,10 +1325,6 @@ function affDecompte(){
             return response.json();
           }).then(res =>{
 
-/*
-          client.get("/api/user")
-          .then(res => {*/
-            console.log('api/user', res)
           
               user = res
               LongestExchange = user.LongestExchange
@@ -1338,6 +1337,7 @@ function affDecompte(){
               nbPointMarked = user.nbPointMarked
               nbTouchedBall = user.nbTouchedBall
               name = user.username
+              localStorage.setItem("username", user.username)
               winRate = user.winRate
               userId = user.user_id
               localStorage.setItem("userID", user.user_id)
@@ -1348,8 +1348,7 @@ function affDecompte(){
               key2 = user.key2
               key3 = user.key3
               key4 = user.key4
-              //setOptions()
-              console.log(user)
+
           }).catch(function(err){
             console.error(err)
           })
@@ -1368,12 +1367,17 @@ function affDecompte(){
 
   function handleLogout (event){
     event.preventDefault()
+
+
+    
     client.get(
       "/api/logout",
-      {withCredentials: true}
+      
     ).then(function(res){
       updateUser(false)
+      localStorage.setItem('token', '')
       navigate('/')
+     
       //setOptionsDefault()
     }).catch(function(error){
      console.error(error)
@@ -1427,10 +1431,8 @@ function getChart() {
       return response.json();
     }).then(res =>{
 
-/*
-    client.get("/api/user")
-    .then(res => {*/
-      console.log('api/user', res)
+
+    
     
         user = res
         LongestExchange = user.LongestExchange
@@ -1453,8 +1455,7 @@ function getChart() {
         key2 = user.key2
         key3 = user.key3
         key4 = user.key4
-        //setOptions()
-        console.log(user)
+
     }).catch(function(err){
       console.error(err)
     }).then(function(res){
@@ -1594,6 +1595,7 @@ useEffect(() => {
   ).then(function(res){
     navigate('/lobby')
     updateUser(false)
+    localStorage.setItem('token', '')
   }).catch(function(error){
    console.error(error)
   })
@@ -1681,13 +1683,11 @@ useEffect(() => {
           </div>
         </form>
         </div>
-        <div className='btn42'>
-            <button className='btnlogin' onClick={handle42register}>Login with 42</button>      
-          </div>
+   
       </div>
       ) : null}
     { state === 10 ? (
-      <SocialMenu setisSocialMenu={setisSocialMenu} csrfToken={localStorage.getItem("token")} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={localStorage.getItem("userID")} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
+      <SocialMenu setisSocialMenu={setisSocialMenu} csrfToken={localStorage.getItem("token")} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={localStorage.getItem("username")} userId={localStorage.getItem("userID")} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
     ) : null}
             {isInMatchTournament ? (
       <div className='scoreDirect' id='scoreDirect'>Score</div>
@@ -1848,7 +1848,7 @@ useEffect(() => {
   
           <Environment files="fond.hdr" background blur={0.5}/>
           <Suspense fallback={null}>
-            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} setFindOnlineGame={setFindOnlineGame} newUrl={newUrl} username={name} userId={localStorage.getItem("userID")} gameId={gameId} position={props.position} rotation={props.rotation} multiple={multiple} socketUrl={socketUrl} t={t}/>
+            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} setFindOnlineGame={setFindOnlineGame} newUrl={newUrl} username={localStorage.getItem("username")} userId={localStorage.getItem("userID")} gameId={localStorage.getItem("gameId")} position={props.position} rotation={props.rotation} multiple={multiple} socketUrl={socketUrl} t={t}/>
             <Stade/>
           </Suspense>
           <Stars

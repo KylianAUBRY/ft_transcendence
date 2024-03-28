@@ -1,7 +1,6 @@
 import './Friend.css';
 
 function Friend( props ) {
-    console.log(props.friend)
 
     let isOnline
     if (props.friend.isOnline === true)
