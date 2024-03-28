@@ -381,10 +381,10 @@ class GameRoom(AsyncWebsocketConsumer):
 
             await asyncio.sleep(timePerFrame)
 
-        if (self.players[serv][player1_id]["isDisconnect"] == True):
+        if (self.players[serv][player1_id]["isDisconnect"] == True and gameIsFinished == False):
             self.players[serv][player2_id]["isWin"] = True
             self.players[serv][player1_id]["isWin"] = False
-        if (self.players[serv][player2_id]["isDisconnect"] == True):
+        if (self.players[serv][player2_id]["isDisconnect"] == True and gameIsFinished == False):
             self.players[serv][player1_id]["isWin"] = True
             self.players[serv][player2_id]["isWin"] = False
 
