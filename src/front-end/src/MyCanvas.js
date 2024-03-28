@@ -1107,7 +1107,7 @@ function affDecompte(){
 
   function setOptions(){
     try{
-      updateRacketColor(color)
+      setracketColor(color)
       console.log(language)
       if (language === 'French')
         i18n.changeLanguage('fr')
@@ -1126,7 +1126,7 @@ function affDecompte(){
 
   function setOptionsDefault(){
     try{
-      updateRacketColor(color)
+      setracketColor(color)
       i18n.changeLanguage('en')
 
 
@@ -1606,7 +1606,7 @@ function handle42register(){
       </div>
       ) : null}
     { state === 10 ? (
-      <SocialMenu setisSocialMenu={setisSocialMenu} csrfToken={csrfToken} setracketColor={updateRacketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
+      <SocialMenu setisSocialMenu={setisSocialMenu} csrfToken={csrfToken} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
     ) : null}
             {isInMatchTournament ? (
       <div className='scoreDirect' id='scoreDirect'>Score</div>
