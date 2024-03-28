@@ -1339,7 +1339,9 @@ console.log(token1);
           client.get("/api/user")
           .then(res => {*/
             console.log('api/user', res)
-              user = res.data.user
+            console.log('api/user', res.data)
+            console.log('api/user', res.data.user)
+              user = res.data
               LongestExchange = user.LongestExchange
               aceRate = user.aceRate
               nbAce = user.nbAce
