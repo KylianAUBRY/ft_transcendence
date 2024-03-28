@@ -272,6 +272,7 @@ color = racketColor
             name = user.username
             winRate = user.winRate
             userId = user.user_id
+            localStorage.setItem('userId', user.userId)
             language = user.language
             color = user.color
             music = user.music
@@ -544,6 +545,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         name = user.username
         winRate = user.winRate
         userId = user.user_id
+        localStorage.setItem('userId', user.user_id)
         language = user.language
         color = user.color
         music = user.music
@@ -552,6 +554,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         key3 = user.key3
         key4 = user.key4
     }).then(function(res){
+      console.log( localStorage.getItem("token"), localStorage.getItem("userID"))
     fetch(baseUrl + ':8000/' + 'api/JoinQueue', {
       method: 'POST',
       headers: {
@@ -559,7 +562,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         "Authorization": "Token " + localStorage.getItem("token")
         },
       body: JSON.stringify({
-        userId: userId
+        userId: localStorage.getItem("userID")
       }),
     }).then(response => {
       if (!response.ok) {
@@ -588,7 +591,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
               "Authorization": "Token " + localStorage.getItem("token")
           },
             body: JSON.stringify({
-              userId: userId
+              userId: localStorage.getItem("userID")
             }),
           });
       
@@ -646,7 +649,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
           "Authorization": "Token " + localStorage.getItem("token")
           },
         body: JSON.stringify({
-          userId: userId
+          userId: localStorage.getItem("userID")
         }),
       });
   
@@ -1199,9 +1202,25 @@ function affDecompte(){
         console.error("Erreur lors de la requête de connexion :", error);
         refBadPassword.current.innerText = t("home.WPass")
       }).then(function(res){
+        fetch(baseUrl + ':8000/' + 'api/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Token " + localStorage.getItem("token")
+          }
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        }).then(res =>{
+
+/*
         client.get("/api/user")
-        .then(res => {
-            user = res.data.user
+        .then(res => {*/
+          console.log('api/user', res)
+        
+            user = res
             LongestExchange = user.LongestExchange
             aceRate = user.aceRate
             nbAce = user.nbAce
@@ -1214,6 +1233,7 @@ function affDecompte(){
             name = user.username
             winRate = user.winRate
             userId = user.user_id
+            localStorage.setItem('userId', user.user_id)
             language = user.language
             color = user.color
             music = user.music
@@ -1221,8 +1241,8 @@ function affDecompte(){
             key2 = user.key2
             key3 = user.key3
             key4 = user.key4
-            console.log(user)
             //setOptions()
+            console.log(user)
         }).catch(function(err){
           console.error(err)
         })
@@ -1339,9 +1359,8 @@ console.log(token1);
           client.get("/api/user")
           .then(res => {*/
             console.log('api/user', res)
-            console.log('api/user', res.data)
-            console.log('api/user', res.data.user)
-              user = res.data
+          
+              user = res
               LongestExchange = user.LongestExchange
               aceRate = user.aceRate
               nbAce = user.nbAce
@@ -1354,6 +1373,7 @@ console.log(token1);
               name = user.username
               winRate = user.winRate
               userId = user.user_id
+              localStorage.setItem("userID", user.user_id)
               language = user.language
               color = user.color
               music = user.music
@@ -1427,9 +1447,25 @@ const refBadPassword = useRef(null)
 
 function getChart() {
   if (currentUser === true){
+    fetch(baseUrl + ':8000/' + 'api/user', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": "Token " + localStorage.getItem("token")
+      }
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    }).then(res =>{
+
+/*
     client.get("/api/user")
-      .then(res => {
-        user = res.data.user
+    .then(res => {*/
+      console.log('api/user', res)
+    
+        user = res
         LongestExchange = user.LongestExchange
         aceRate = user.aceRate
         nbAce = user.nbAce
@@ -1442,6 +1478,7 @@ function getChart() {
         name = user.username
         winRate = user.winRate
         userId = user.user_id
+        localStorage.setItem("userID", user.user_id)
         language = user.language
         color = user.color
         music = user.music
@@ -1449,8 +1486,10 @@ function getChart() {
         key2 = user.key2
         key3 = user.key3
         key4 = user.key4
-        console.log(res)
+        //setOptions()
         console.log(user)
+    }).catch(function(err){
+      console.error(err)
     }).then(function(res){
 
 
@@ -1522,7 +1561,7 @@ function getChart() {
             "Authorization": "Token " + localStorage.getItem("token")
           },
           body: JSON.stringify({
-            userId: userId
+            userId: localStorage.getItem("userID")
           }),
         }).then(response => {
           if (!response.ok) {
@@ -1657,7 +1696,7 @@ function handle42register(){
       </div>
       ) : null}
     { state === 10 ? (
-      <SocialMenu setisSocialMenu={setisSocialMenu} csrfToken={localStorage.getItem("token")} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={userId} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
+      <SocialMenu setisSocialMenu={setisSocialMenu} csrfToken={localStorage.getItem("token")} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={username} userId={localStorage.getItem("userID")} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
     ) : null}
             {isInMatchTournament ? (
       <div className='scoreDirect' id='scoreDirect'>Score</div>
@@ -1818,7 +1857,7 @@ function handle42register(){
   
           <Environment files="fond.hdr" background blur={0.5}/>
           <Suspense fallback={null}>
-            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} setFindOnlineGame={setFindOnlineGame} newUrl={newUrl} username={name} userId={userId} gameId={gameId} position={props.position} rotation={props.rotation} multiple={multiple} socketUrl={socketUrl} t={t}/>
+            <Panel state={state} updateSetState={updateSetState} formData8={formData8} formData4={formData4} formData2={formData2} winnerTournament={winnerTournament} score={score} updateSetScore={updateSetScore} isSocialMenu={isSocialMenu} ref={childRef} racketColor={racketColor} selectedKeys={selectedKeys} findOnlineGame={findOnlineGame} setFindOnlineGame={setFindOnlineGame} newUrl={newUrl} username={name} userId={localStorage.getItem("userID")} gameId={gameId} position={props.position} rotation={props.rotation} multiple={multiple} socketUrl={socketUrl} t={t}/>
             <Stade/>
           </Suspense>
           <Stars
