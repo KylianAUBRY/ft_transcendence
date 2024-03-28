@@ -79,6 +79,7 @@ class GameRoom(AsyncWebsocketConsumer):
             "nbLongestExchange": 0,
             "nbTouchBall": 0,
             "nbAce": 0,
+            "isDisconnect": False,
         }
         
         logger.info('Set : %s', self.player_id)
@@ -89,8 +90,20 @@ class GameRoom(AsyncWebsocketConsumer):
   
     async def disconnect(self, close_code): 
         logger = logging.getLogger(__name__)
-        logger.info('Player disconnect %s', self.players[self.name_serv][self.player_id]["idPlayer"])
-        logger.info('Player disconnect %s', self.players[self.name_serv][self.player_id]["username"])
+
+        logger.info("\n\nSCOPE : %s", str(self.scope))
+        logger.info("\n\nSCOPE USER : %s", str(self.scope["user"]))
+        logger.info("\n\nSCOPE USER ID: %s", str(self.scope["user"]))
+
+        player_to_disconnect = None
+        serv_name = None
+        for name_serv, players in self.players.items():
+            if players["idPlayer"] == self.scope["user"].user_id:
+                serv_name = name_serv
+                player_to_disconnect = players["idMatch"]
+                break
+
+        players[name_serv][player_to_disconnect]["isDisconnect"] = True
 
         await self.channel_layer.group_discard(
             self.game_group_name, self.channel_name
@@ -213,13 +226,8 @@ class GameRoom(AsyncWebsocketConsumer):
                 logger.info('%s', player2_id)
                 logger.info('%s', player["username"])
 
-        while isStarting==False:
+        while isStarting==False and self.players[serv][player1_id]["isDisconnect"] == False and self.players[serv][player2_id]["isDisconnect"] == False:
             if len(self.players[serv]) == 2:
-                logger.info('Two player log')
-                if self.players[serv][player1_id]["isReady"] == True:
-                    logger.info("Player 1 ready")
-                if self.players[serv][player2_id]["isReady"] == True:
-                    logger.info("Player 2 ready")
                 if (self.players[serv][player1_id]["isReady"] == True and self.players[serv][player2_id]["isReady"] == True):
                     logger.info('Two player Ready')
                     isStarting = True
@@ -248,12 +256,12 @@ class GameRoom(AsyncWebsocketConsumer):
 
         await asyncio.sleep(timePerFrame)
 
-        while gameIsFinished==False:
+        while gameIsFinished==False and self.players[serv][player1_id]["isDisconnect"] == False and self.players[serv][player2_id]["isDisconnect"] == False:
             logger.info('Routine start')
             # Update coordinate of all player
             if (isGoal):
 
-                while True:
+                while True and self.players[serv][player1_id]["isDisconnect"] == False and self.players[serv][player2_id]["isDisconnect"] == False:
                     if (self.players[serv][player1_id]["isReady"] == True and self.players[serv][player2_id]["isReady"] == True):
                         break
                     await asyncio.sleep(1)
@@ -383,6 +391,29 @@ class GameRoom(AsyncWebsocketConsumer):
                 countForInfo = 0
 
             await asyncio.sleep(timePerFrame)
+
+        if (self.players[serv][player1_id]["isDisconnect"] == True):
+            self.players[serv][player2_id]["isWin"] = True
+            self.players[serv][player1_id]["isWin"] = False
+        if (self.players[serv][player2_id]["isDisconnect"] == True):
+            self.players[serv][player1_id]["isWin"] = True
+            self.players[serv][player2_id]["isWin"] = False
+
+        if (self.players[serv][player1_id]["isDisconnect"] == True or self.players[serv][player2_id]["isDisconnect"] == True and gameIsFinished == False):
+            gameIsFinished = True
+            await self.channel_layer.group_send(
+                self.game_group_name,
+                {
+                    "type": "state_update",
+                    "player_1": self.players[serv][player1_id],
+                    "player_2": self.players[serv][player2_id],
+                    "ball": {"ball_x": ball_x, "ball_y": ball_y, "ball_dx": ball_dx, "ball_dy": ball_dy, "ball_speed": ball_speed},
+                    "isGoal": isGoal,
+                    "countdown": countdown,
+                    "isStarting": isStarting,
+                    "gameIsFinished": gameIsFinished,
+                },
+            )
 
         timeEndGame = timezone.now()
         timeGame = (timeEndGame - timeStartGame).total_seconds()
