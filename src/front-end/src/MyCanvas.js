@@ -1271,11 +1271,20 @@ function affDecompte(){
       ).then(function(res){
         console.log(res)
         console.log(res.data)
-        var jsonString = res.data
-        var jsonObject = JSON.parse(jsonString);
-        var tokenValue = jsonObject.token;
-        console.log(tokenValue)
-        updatecsrfToken(tokenValue)
+        var chaine = res.data
+
+// Trouver l'indice du début de la valeur du token
+var debutToken = chaine.indexOf('"token": "') + '"token": "'.length;
+
+// Trouver l'indice de la fin de la valeur du token
+var finToken = chaine.indexOf('"', debutToken);
+
+// Extraire la sous-chaîne correspondant à la valeur du token
+var token = chaine.substring(debutToken, finToken);
+
+// Afficher la valeur du token
+console.log(token);
+        updatecsrfToken(token)
 
         
         updateUser(true)
