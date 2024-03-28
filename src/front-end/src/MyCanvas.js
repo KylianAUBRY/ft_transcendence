@@ -1332,8 +1332,8 @@ console.log(token1);
             if (!response.ok) {
               throw new Error('Network response was not ok');
             }
-            return response;
-          }).then(function(res){
+            return response.json();
+          }).then(res =>{
 
 /*
           client.get("/api/user")
