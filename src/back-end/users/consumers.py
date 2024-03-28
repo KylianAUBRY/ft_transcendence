@@ -96,25 +96,15 @@ class GameRoom(AsyncWebsocketConsumer):
         serv_name = None
         for name_serv, playerr in self.players.items():
             for id, info in playerr.items():
-                logger.info("\n\n\n PLAYER INFO : %s ", str(info["idPlayer"]))
-                logger.info("\n\n\n SCOPE INFO : %s ", self.scope["user"].user_id)
-                if str(info["idPlayer"]) == str(self.scope["user"].user_id):
-                    logger.info("--------- STR_STR ---------")
                 if int(info["idPlayer"]) == int(self.scope["user"].user_id):
-                    logger.info("--------- INT INT ---------")
-                if int(info["idPlayer"]) == str(self.scope["user"].user_id):
-                    logger.info("--------- INT STR ---------")
-                if str(info["idPlayer"]) == int(self.scope["user"].user_id):
-                    logger.info("--------- STR INT ---------")
                     serv_name = info["serv"]
                     player_to_disconnect = info["idMatch"]
                     info["isDisconnect"] = True
-                    logger.info("PLAYER INFO 22222222222222222 : %s ", str(info["serv"]))
-                    logger.info("PLAYER INFO 33333333333333333: %s ", info["idMatch"])
                     break
 
         logger.info("\n\n\n NAME_SERV : %s", serv_name)
-        logger.info("\n\n\n PLAYER_TO_DISCONNECT : %s", player_to_disconnect)
+        logger.info("PLAYER_TO_DISCONNECT : %s", player_to_disconnect)
+        logger.info("%s\n\n", self.players[name_serv][player_to_disconnect]["isDisconnect"])
         self.players[name_serv][player_to_disconnect]["isDisconnect"] = True
 
         await self.channel_layer.group_discard(
