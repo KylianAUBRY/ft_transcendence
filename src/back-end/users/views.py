@@ -57,17 +57,17 @@ class UserLogin(APIView):
             except Exception as error:
                 logger.info("Error: %s", error)
 
-            # login(request, user)
+            login(request, user)
             token = create_user_token(user)
             return Response(json.dumps({"token": token.key}), status=status.HTTP_200_OK)
 
 # Post request to logout user
 class UserLogout(APIView):
+    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         logout(request)
-        delete_token(request.user)
 
         try:
             email = getattr(request.user, "email", None)
@@ -129,16 +129,26 @@ class UpdateUserOption(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        logger = logging.getLogger(__name__)
+
         data = request.data
 
         userId = data.get('userId')
+        logger.inf('userId: %s', userId)
         language = data.get('language')
+        logger.inf('language: %s', language)
         color = data.get('color')
+        logger.inf('color: %s', color)
         music = data.get('music')
+        logger.inf('music: %s', music)
         key1 = data.get('key1')
+        logger.inf('key1: %s', key1)
         key2 = data.get('key2')
+        logger.inf('key2: %s', key2)
         key3 = data.get('key3')
+        logger.inf('key3: %s', key3)
         key4 = data.get('key4')
+        logger.inf('key4: %s', key4)
         
         try:
             from . models import AppUser

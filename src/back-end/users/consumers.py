@@ -90,6 +90,7 @@ class GameRoom(AsyncWebsocketConsumer):
     async def disconnect(self, close_code): 
         logger = logging.getLogger(__name__)
         logger.info('Player disconnect %s', self.players[self.name_serv][self.player_id]["idPlayer"])
+        logger.info('Player disconnect %s', self.players[self.name_serv][self.player_id]["username"])
 
         await self.channel_layer.group_discard(
             self.game_group_name, self.channel_name
