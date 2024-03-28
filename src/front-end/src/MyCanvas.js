@@ -115,7 +115,7 @@ const [racketColor, setracketColor] = useState(0xffffff);
 
 let initialToken = localStorage.getItem('token');
   if (initialToken === null) {
-    initialToken = ''
+    initialToken = false
   }
   const [token, setToken] = useState(JSON.parse(initialToken));
   const updateToken = (newValue) => {
