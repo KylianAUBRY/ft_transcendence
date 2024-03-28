@@ -80,6 +80,7 @@ class GameRoom(AsyncWebsocketConsumer):
             "nbTouchBall": 0,
             "nbAce": 0,
             "isDisconnect": False,
+            "serv": serv,
         }
         
         logger.info('Set : %s', self.player_id)
@@ -98,7 +99,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 logger.info("PLAYER INFO OOOOOOOOOOO: %s", str(player))
                 logger.info("PLAYER INFO OOOOOOOOOOO: %s", self.scope["user"].user_id)
                 if player["idPlayer"] == self.scope["user"].user_id:
-                    serv_name = name_serv
+                    serv_name = player["serv"]
                     player_to_disconnect = player["idMatch"]
                     break
 
