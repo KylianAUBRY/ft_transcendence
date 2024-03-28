@@ -262,7 +262,7 @@ color = racketColor
             key2 = user.key2
             key3 = user.key3
             key4 = user.key4
-            setOptions()
+            //setOptions()
         }).catch(function(err){
           console.error(err)
         })
