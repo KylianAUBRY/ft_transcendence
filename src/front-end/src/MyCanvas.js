@@ -1304,6 +1304,7 @@ console.log(token);
         setPassword('')
         }).then(function(res){
 
+          console.log('user token   ', csrfToken)
           fetch(baseUrl + ':8000/' + 'api/user', {
             method: 'POST',
             headers: {
