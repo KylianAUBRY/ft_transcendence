@@ -7,6 +7,9 @@ build:
 dev:
 	cd src/ && docker compose -f docker-compose-dev.yml up -d --build
 
+dev2:
+	cd src/ && docker compose -f docker-compose-dev2.yml up -d --build
+
 up:
 	cd src/ && docker-compose -f docker-compose.yml up -d
 	
