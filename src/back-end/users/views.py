@@ -89,7 +89,7 @@ class UserView(APIView):
             logger.info("\n\n USERVIEW %s \n\n", str(request.user))
             serializer = UserSerializer(request.user)
             logger.info("\n\n USERVIEW ser : %s\n\n", str(serializer))
-            return Response({'data' : serializer.data}, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as error:
             return Response({'user': "You are not connected"}, status=status.HTTP_200_OK)
     
