@@ -1338,6 +1338,7 @@ console.log(token1);
 /*
           client.get("/api/user")
           .then(res => {*/
+            console.log('api/user', res)
               user = res.data.user
               LongestExchange = user.LongestExchange
               aceRate = user.aceRate
