@@ -1323,7 +1323,7 @@ console.log(token1);
 
           console.log('user token   ', localStorage.getItem("token"))
           fetch(baseUrl + ':8000/' + 'api/user', {
-            method: 'POST',
+            method: 'GET',
             headers: {
               'Content-Type': 'application/json',
               "Authorization": "Token " + localStorage.getItem("token")
