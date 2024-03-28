@@ -1303,8 +1303,23 @@ console.log(token);
         setUsername('')
         setPassword('')
         }).then(function(res){
+
+          fetch(baseUrl + ':8000/' + 'api/user', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Token " + csrfToken
+            }
+          }).then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          }).then(function(data){
+
+/*
           client.get("/api/user")
-          .then(res => {
+          .then(res => {*/
               user = res.data.user
               LongestExchange = user.LongestExchange
               aceRate = user.aceRate
