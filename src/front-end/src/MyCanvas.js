@@ -1459,6 +1459,10 @@ function getChart() {
         image = user.image
         console.log(image)
 
+
+        const pp = document.getElementById('profil')
+        pp.src = baseUrl + ':8000' + image
+
     }).catch(function(err){
       console.error(err)
     }).then(function(res){
@@ -1619,7 +1623,6 @@ useEffect(() => {
             ) : null}
             {isProfilView ? (
               <div className='profilView'>Your Profile
-              <img src='profil.png' alt='profil picture' id='proflPicture'/>
                 <div className="stats">
                   <div className='graph1'><canvas className='canv1' id='chart1' ref={chartRef1} aria-label='chart' role='img'></canvas></div>
                   <div className='graph2'><canvas className='canv2' id='chart2' aria-label='chart' role='img'></canvas></div>
@@ -1637,7 +1640,7 @@ useEffect(() => {
                   </div>
                   <div className='history'>
                   {matchArray.map((matchObject, index) => (
-                        <Match key={index} matchObject={matchObject} />
+                        <Match key={index} matchObject={matchObject} style={matchObject.matchObject.isWin ? { color: 'green' } : { color: 'green' }}/>
                     ))}
     
                   </div>
@@ -1687,7 +1690,9 @@ useEffect(() => {
           </div>
         </form>
         </div>
-   
+        <div className='btn42'>
+            <button className='btnlogin' onClick={handle42register}>Login with 42</button>      
+          </div>
       </div>
       ) : null}
     { state === 10 ? (
