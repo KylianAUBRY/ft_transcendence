@@ -123,7 +123,7 @@ function handleAddFriend(e){
         if (data.friend_list.length !== nb){
           setFriend(data.friend_list)
           setNb(data.friend_list.length)
-          console.log(friend)
+          console.log(data.friend_list)
         }
           
 
@@ -224,6 +224,9 @@ const handleChangeMusic = event => {
 
       fetch(props.baseUrl + ':8080/' + 'api/UpateUserInfo', {
         method: 'POST',
+        headers: {
+          "Authorization": "Token " + props.csrfToken
+          },
         body: formData,
       }).then(response => {
         if (!response.ok) {
