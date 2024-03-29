@@ -98,13 +98,40 @@ function handleAddFriend(e){
         }
         return response.json();
       }).then(function(data){
-        setNb(nb)
+      
+        fetch(props.baseUrl + ':8000/' + 'api/GetFriendList', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Token " + props.csrfToken
+            },
+          body: JSON.stringify({
+            userId: props.userId
+          }),
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        }).then(function(data){
+          if (data.friend_list.length !== nb){
+            setFriend(data.friend_list)
+            setNb(data.friend_list.length)
+            console.log(data.friend_list)
+          }
+            
+  
+        }).catch(function(err){
+          console.error(err)
+        });
+
+
       }).catch(function(err){
         console.error(err)
       });
 }
 
-
+if (props.currentUser !== true){
     fetch(props.baseUrl + ':8000/' + 'api/GetFriendList', {
         method: 'POST',
         headers: {
@@ -130,6 +157,8 @@ function handleAddFriend(e){
       }).catch(function(err){
         console.error(err)
       });
+}
+
         
 
 const handleChangeLang = event => {
@@ -225,6 +254,7 @@ const handleChangeMusic = event => {
       fetch(props.baseUrl + ':8080/' + 'api/UpateUserInfo', {
         method: 'POST',
         headers: {
+          'Content-Type': 'multipart/form-data',
           "Authorization": "Token " + props.csrfToken
           },
         body: formData,
@@ -266,7 +296,7 @@ const handleImageChange = (e) => {
                 </form>
                 <ul className='list'>
                   {friend.map((fr, index) => (
-                          <Friend key={index} friend={fr} t={props.t} baseUrl={props.baseUrl}/>
+                          <Friend key={index} friend={fr} t={props.t} baseUrl={props.baseUrl} setNb={setNb} setFriend={setFriend} nb={nb} csrfToken={props.csrfToken}/>
                       ))}
                 </ul>
                 <div className='customize'>
