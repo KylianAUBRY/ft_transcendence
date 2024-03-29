@@ -283,6 +283,7 @@ class RemoveFriend(APIView):
             logger.info("list friend : %s", str(user_obj.friends_list))
             if friend_id in user_obj.friends_list:
                 user_obj.friends_list.remove(friend_id)
+            user_obj.save()
             logger.info("list friend after remove : %s\n\n", str(user_obj.friends_list))
             return Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
         else:
