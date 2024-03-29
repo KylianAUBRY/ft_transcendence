@@ -230,7 +230,6 @@ class ExitQueue(APIView):
                 game_server.secondPlayerId = -1
             game_server.state = 'waiting'
             game_server.save()
-            logger.info("SAVED\n\n")
         return Response({"message": 'You left the queue'}, status=status.HTTP_200_OK)
     
 class AddFriend(APIView):
@@ -248,8 +247,10 @@ class AddFriend(APIView):
             if friend_obj:
                 user_id = data.get("userId")
                 user_obj = AppUser.objects.get(pk=user_id)
-                if user_obj and friend_id not in user_obj.friends_list and friend_id != user_obj.user_id:
-                    user_obj.friends_list.append(friend_id)
+                if user_obj:
+                    if int(user_id) != int(friend_id):
+                        if int(friend_id) not in user_id.friend_list:
+                            user_obj.friends_list.append(friend_id)
                     user_obj.save()
                 else:
                     return Response({"message": "Friend already added"}, status=status.HTTP_200_OK)
@@ -268,7 +269,6 @@ class RemoveFriend(APIView):
         data = request.data
         user_id = data.get("userId")
         friend_id = data.get("friendId")
-        logger.info("friend_id: %s", friend_id)
         user_obj = AppUser.objects.get(pk=user_id)
         if user_obj:
             user_obj.friends_list.remove(friend_id)
