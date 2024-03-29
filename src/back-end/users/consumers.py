@@ -10,29 +10,6 @@ from django.utils import timezone
 from datetime import date
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
-  
-async def updateUserStatistic(user_id, isWin, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose):
-    from . models import AppUser
-    user = await AppUser.objects.get(pk=user_id)
-
-    # Update nbGamePlayed, nbGameWin/nbGameLose, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose
-    user.nbGamePlayed += 1
-
-    if (isWin):
-        user.nbGameWin += 1
-    else:
-        user.nbGameLose += 1
-
-    user.nbTouchedBall += int(nbTouchedBall)
-    user.nbAce += int(nbAce)
-    
-    if (int(nbLongestExchange) > user.LongestExchange):
-        user.LongestExchange = int(nbLongestExchange)
-    
-    user.nbPointMarked += int(nbPointMarked)
-    user.nbPointLose += int(nbPointLose)
-
-    user.save()
 
 class GameRoom(AsyncWebsocketConsumer):
     players = {}
@@ -43,10 +20,8 @@ class GameRoom(AsyncWebsocketConsumer):
         self.game_group_name = "game_%s" % serv
         self.player_id = str(uuid.uuid4())
         logger = logging.getLogger(__name__)
-        logger.info('accept %s', self.player_id)
         await self.accept()
         
-        logger.info('group add %s', self.player_id)
         await self.channel_layer.group_add(
             self.game_group_name, self.channel_name
         )
@@ -58,12 +33,10 @@ class GameRoom(AsyncWebsocketConsumer):
         else:
             side = "right"
 
-        logger.info('send %s', self.player_id)
         await self.send(
             text_data=json.dumps({"type": "playerId", "playerId": self.player_id, "name_serv": serv, "side": side})
         )
 
-        logger.info('set %s', self.player_id)
         self.players[serv][self.player_id] = {
             "idMatch": self.player_id,
             "idPlayer": 0,
@@ -79,12 +52,11 @@ class GameRoom(AsyncWebsocketConsumer):
             "nbLongestExchange": 0,
             "nbTouchBall": 0,
             "nbAce": 0,
+            "justMarked": False,
             "isDisconnect": False,
             "serv": serv,
         }
         
-        logger.info('Set : %s', self.player_id)
-        logger.info('Length : %s', len(self.players[serv]))
         if len(self.players[serv]) == 2:
             logger.info('launch game')
             asyncio.create_task(self.game_loop(serv))
@@ -102,9 +74,6 @@ class GameRoom(AsyncWebsocketConsumer):
                     info["isDisconnect"] = True
                     break
 
-        logger.info("\n\n\n NAME_SERV : %s", serv_name)
-        logger.info("PLAYER_TO_DISCONNECT : %s", player_to_disconnect)
-        logger.info("%s\n\n", self.players[name_serv][player_to_disconnect]["isDisconnect"])
         self.players[name_serv][player_to_disconnect]["isDisconnect"] = True
 
         await self.channel_layer.group_discard(
@@ -152,9 +121,6 @@ class GameRoom(AsyncWebsocketConsumer):
         is_starting = event["isStarting"]
         game_is_finished = event["gameIsFinished"]
 
-        # Handle the state update message as needed
-        # You can update the state of your WebSocket connection, send messages to clients, etc.
-        # For example, you might send the updated state to the client:
         await self.send(text_data=json.dumps({
             'type': 'state_update',
             'player_1_idMatch': player_1['idMatch'],
@@ -180,7 +146,6 @@ class GameRoom(AsyncWebsocketConsumer):
 
     async def game_loop(self, serv):
         logger = logging.getLogger(__name__)
-        logger.info('innit info')
         field_high = 15.4
         field_length = 22
         player_speed = 7.5
@@ -206,6 +171,7 @@ class GameRoom(AsyncWebsocketConsumer):
 
         timePerFrame = 0.0166
 
+        # Place player in field dependent of player order of connection
         for player in self.players[serv].values():
             if player["side"] == "left":
                 player1_id = player["idMatch"]
@@ -216,6 +182,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 player["x"] = 0 + field_length / 2
                 player["y"] = 0
 
+        # Wait player to be ready to start the game
         while isStarting==False and self.players[serv][player1_id]["isDisconnect"] == False and self.players[serv][player2_id]["isDisconnect"] == False:
             if len(self.players[serv]) == 2:
                 if (self.players[serv][player1_id]["isReady"] == True and self.players[serv][player2_id]["isReady"] == True):
@@ -228,7 +195,6 @@ class GameRoom(AsyncWebsocketConsumer):
                     timeStartGame = timezone.now()
             await asyncio.sleep(1)
 
-        logger.info('First send')
         await self.channel_layer.group_send(
             self.game_group_name,
             {
@@ -246,15 +212,14 @@ class GameRoom(AsyncWebsocketConsumer):
         await asyncio.sleep(timePerFrame)
 
         while gameIsFinished==False and self.players[serv][player1_id]["isDisconnect"] == False and self.players[serv][player2_id]["isDisconnect"] == False:
-            logger.info('Routine start')
-            # Update coordinate of all player
             if (isGoal):
-
+                # Wait for the player to be ready to start the new round
                 while True and self.players[serv][player1_id]["isDisconnect"] == False and self.players[serv][player2_id]["isDisconnect"] == False:
                     if (self.players[serv][player1_id]["isReady"] == True and self.players[serv][player2_id]["isReady"] == True):
                         break
                     await asyncio.sleep(1)
 
+                # Reset position of player and position/direction of the ball
                 self.players[serv][player1_id]["x"] = 0 - field_length / 2
                 self.players[serv][player1_id]["y"] = 0
                 self.players[serv][player1_id]["move"] = "none"
@@ -268,6 +233,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 ball_speed = 5
                 isGoal = False
 
+                # Randomize ball direction for start of round
                 await self.channel_layer.group_send(
                 self.game_group_name,
                 {
@@ -283,6 +249,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 )
                 await asyncio.sleep(1)
 
+                # Randomize ball direction for start of round
                 ball_dx = random.choice([-1, 1])
                 while True:
                     ball_dy = random.uniform(-0.5, 0.5)
@@ -290,6 +257,7 @@ class GameRoom(AsyncWebsocketConsumer):
                         break
                 isGoal = False
                 
+                # Send info to all player
                 await self.channel_layer.group_send(
                 self.game_group_name,
                 {
@@ -305,7 +273,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 )
 
             elif (isGoal==False):
-                logger.info('Not goal')
+                # Update players value
                 for player in self.players[serv].values():
                     if player["move"] == "up":
                         player["y"] -= player_speed * timePerFrame
@@ -319,8 +287,8 @@ class GameRoom(AsyncWebsocketConsumer):
                 # Update coordinate of the ball
                 ball_x += ball_speed * ball_dx * timePerFrame
                 ball_y += ball_speed * ball_dy * timePerFrame
-                # Check collision
 
+                # Check collision
                 # Ball collision with upper wall or down wall
                 if ((ball_y - ball_size) <= -field_high/2 or (ball_y + ball_size) >= +field_high/2): 
                     ball_dy *= -1
@@ -328,32 +296,55 @@ class GameRoom(AsyncWebsocketConsumer):
                 # Ball collision with left/right wall (Goal)
                 if ((ball_x - ball_size) <= (-field_length/2) - 1): # collision with left wall detected, player_2 score a goal
                     self.players[serv][player2_id]["score"] += 1
+                    self.players[serv][player2_id]["justMarked"] = True
                     self.players[serv][player2_id]["isReady"] = False
                     self.players[serv][player1_id]["isReady"] = False
                     isGoal = True
-                    logger.info('GOAL FOR PLAYER 2 :\n\n%s %s ------ %s %s\n\n', ball_x, ball_y, self.players[serv][player1_id]["x"], self.players[serv][player1_id]["y"])
-                if ((ball_x + ball_size) >= (field_length/2) + 1): # collision with right wall detected, player_1 score a goal
+                elif ((ball_x + ball_size) >= (field_length/2) + 1): # collision with right wall detected, player_1 score a goal
                     self.players[serv][player1_id]["score"] += 1
+                    self.players[serv][player1_id]["justMarked"] = True
                     self.players[serv][player2_id]["isReady"] = False
                     self.players[serv][player1_id]["isReady"] = False
                     isGoal = True
-                    logger.info('GOAL FOR PLAYER 1 :\n\n%s %s ------ %s %s\n\n', ball_x, ball_y, self.players[serv][player2_id]["x"], self.players[serv][player2_id]["y"])
-
                 # Ball collision with player
-                if (ball_dx > 0): # Check collision with player_2
+                elif (ball_dx > 0): # Check collision with player_2
                     if (abs((ball_x + ball_size) - self.players[serv][player2_id]["x"]) < 0.2 and abs(ball_y - self.players[serv][player2_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
                         ball_dy = (ball_y - self.players[serv][player2_id]["y"]) / player_size
                         ball_speed += ball_speed_gain_per_hit
-                        logger.info('COLLISION WITH PLAYER 2 :\n\n%s %s ------ %s %s\n\n', ball_x, ball_y, self.players[serv][player2_id]["x"], self.players[serv][player2_id]["y"])
-                if (ball_dx < 0): # Check collision with player_1
+                        self.players[serv][player2_id]["nbTouchBall"] += 1
+                        self.players[serv][player2_id]["nbTouchPerRound"] += 1
+                elif (ball_dx < 0): # Check collision with player_1
                     if (abs((ball_x - ball_size) - self.players[serv][player1_id]["x"]) < 0.2 and abs(ball_y - self.players[serv][player1_id]["y"]) < player_size): # Collision detected
                         ball_dx *= -1
                         ball_dy = (ball_y - self.players[serv][player1_id]["y"]) / player_size
                         ball_speed += ball_speed_gain_per_hit
-                        logger.info('COLLISION WITH PLAYER 1 :\n\n%s %s ------ %s %s\n\n', ball_x, ball_y, self.players[serv][player1_id]["x"], self.players[serv][player1_id]["y"])
-            
-            # Send signal when game is finished
+                        self.players[serv][player1_id]["nbTouchBall"] += 1
+                        self.players[serv][player1_id]["nbTouchPerRound"] += 1
+
+                if (isGoal == True):
+                    # For each game
+                    # Update longest exchange of the game for the two player
+                    if self.players[serv][player1_id]["nbTouchPerRound"] > self.players[serv][player1_id]["nbLongestExchange"]:
+                        self.players[serv][player1_id]["nbLongestExchange"] = self.players[serv][player1_id]["nbTouchPerRound"]
+                    if self.players[serv][player2_id]["nbTouchPerRound"] > self.players[serv][player2_id]["nbLongestExchange"]:
+                        self.players[serv][player2_id]["nbLongestExchange"] = self.players[serv][player2_id]["nbTouchPerRound"]
+
+                    # For player who marked, if opponent didn't touch the ball, nbAce += 1
+                    if self.players[serv][player1_id]["justMarked"] == True:
+                        if self.players[serv][player2_id]["nbTouchPerRound"] == 0:
+                            self.players[serv][player1_id]["nbAce"] += 1
+                    if self.players[serv][player2_id]["justMarked"] == True:
+                        if self.players[serv][player1_id]["nbTouchPerRound"] == 0:
+                            self.players[serv][player2_id]["nbAce"] += 1
+
+                    # Reset stat of the round
+                    self.players[serv][player1_id]["nbTouchPerRound"] = 0
+                    self.players[serv][player2_id]["nbTouchPerRound"] = 0
+                    self.players[serv][player1_id]["justMarked"] = False
+                    self.players[serv][player2_id]["justMarked"] = False
+
+            # If one of the score is 5, end of the game
             if (self.players[serv][player1_id]["score"] == 5 or self.players[serv][player2_id]["score"] == 5):
                 gameIsFinished = True
                 if (self.players[serv][player1_id]["score"] == 5):
@@ -381,6 +372,7 @@ class GameRoom(AsyncWebsocketConsumer):
 
             await asyncio.sleep(timePerFrame)
 
+        # Verifiy if deconnection before end of game, if yes, player disconnected lose by default
         if (self.players[serv][player1_id]["isDisconnect"] == True and gameIsFinished == False):
             self.players[serv][player2_id]["isWin"] = True
             self.players[serv][player1_id]["isWin"] = False
@@ -388,6 +380,7 @@ class GameRoom(AsyncWebsocketConsumer):
             self.players[serv][player1_id]["isWin"] = True
             self.players[serv][player2_id]["isWin"] = False
 
+        # Notify end of game when deconnection of one player
         if (self.players[serv][player1_id]["isDisconnect"] == True or self.players[serv][player2_id]["isDisconnect"] == True and gameIsFinished == False):
             gameIsFinished = True
             await self.channel_layer.group_send(
@@ -408,12 +401,47 @@ class GameRoom(AsyncWebsocketConsumer):
         timeGame = (timeEndGame - timeStartGame).total_seconds()
         player1 = self.players[serv][player1_id]
         player2 = self.players[serv][player2_id]
-        updateUserStatistic(player1["idPlayer"], player1["isWin"], player1["nbTouchBall"], player1["nbAce"], player1["nbLongestExchange"], player1["score"], player2["score"])
-        updateUserStatistic(player2["idPlayer"], player2["isWin"], player2["nbTouchBall"], player2["nbAce"], player2["nbLongestExchange"], player2["score"], player1["score"])
+
+        from . models import HistoryModel, GameServerModel, AppUser
+        # Update nbGamePlayed, nbGameWin/nbGameLose, nbTouchedBall, nbAce, nbLongestExchange, nbPointMarked, nbPointLose
+        try:
+            user = await sync_to_async(AppUser.objects.get)(pk=player1["idPlayer"])
+            user.nbGamePlayed += 1
+            if (player1["isWin"]):
+                user.nbGameWin += 1
+            else:
+                user.nbGameLose += 1
+            user.nbTouchedBall += player1["nbTouchBall"]
+            user.nbAce += player1["nbAce"]
+            if (player1["nbLongestExchange"] > user.LongestExchange):
+                user.LongestExchange = player1["nbLongestExchange"]
+            user.nbPointMarked += player1["score"]
+            user.nbPointLose += player2["score"]
+            await sync_to_async(user.save)()
+        except Exception as error:
+            logger.info("\n\nPLAYER 1 UPDATE FAIL : %s", error)
+        try:
+            user = await sync_to_async(AppUser.objects.get)(pk=player2["idPlayer"])
+            user.nbGamePlayed += 1
+            if (player2["isWin"]):
+                user.nbGameWin += 1
+            else:
+                user.nbGameLose += 1
+            user.nbTouchedBall += player2["nbTouchBall"]
+            user.nbAce += player2["nbAce"]
+            if (player2["nbLongestExchange"] > user.LongestExchange):
+                user.LongestExchange = player2["nbLongestExchange"]
+            user.nbPointMarked += player2["score"]
+            user.nbPointLose += player1["score"]
+            await sync_to_async(user.save)()
+        except Exception as error:
+            logger.info("\n\nPLAYER 2 UPDATE FAIL : %s", error)
         
-        from . models import HistoryModel, GameServerModel
+        # Add game to history for the 2 players
         await sync_to_async(HistoryModel.objects.create)(userId=player1["idPlayer"], userUsername=player1["username"], opponentId=player2["idPlayer"], opponentUsername=player2["username"], userScore=player1["score"], opponentScore=player2["score"], isWin=player1["isWin"], gameDate=date.today(), gameTime=timeGame)
         await sync_to_async(HistoryModel.objects.create)(userId=player2["idPlayer"], userUsername=player2["username"], opponentId=player1["idPlayer"], opponentUsername=player1["username"], userScore=player2["score"], opponentScore=player1["score"], isWin=player2["isWin"], gameDate=date.today(), gameTime=timeGame)
+        
+        # Delete server from list
         try:
             game_server = await sync_to_async(GameServerModel.objects.get)(pk=int(serv))
             if not game_server:
