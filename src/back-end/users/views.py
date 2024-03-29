@@ -63,6 +63,7 @@ class UserLogin(APIView):
 
 # Post request to logout user
 class UserLogout(APIView):
+    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
