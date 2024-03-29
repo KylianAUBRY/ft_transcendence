@@ -216,9 +216,7 @@ class ExitQueue(APIView):
         logger = logging.getLogger(__name__)
         data = request.data
         user_id = data.get("userId")
-        logger.info("\n\nEXITQUEUE")
         game_server = GameServerModel.objects.get(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id))
-        logger.info("EXITQUEUE GAMESERVER : %s", str(game_server))
         try:
             waiting_player = WaitingPlayerModel.objects.get(player_id=user_id)
             if waiting_player:
@@ -226,11 +224,9 @@ class ExitQueue(APIView):
         except:
             pass
         if game_server:
-            logger.info("GS1ID %s : %s USERID", str(game_server.firstPlayerId), str(user_id))
-            if game_server.firstPlayerId == user_id:
+            if int(game_server.firstPlayerId) == int(user_id):
                 game_server.firstPlayerId = -1
-            logger.info("GS1ID %s : %s USERID", str(game_server.secondPlayerId), str(user_id))
-            if game_server.secondPlayerId == user_id:
+            if int(game_server.secondPlayerId) == int(user_id):
                 game_server.secondPlayerId = -1
             game_server.state = 'waiting'
             game_server.save()
@@ -252,7 +248,7 @@ class AddFriend(APIView):
             if friend_obj:
                 user_id = data.get("userId")
                 user_obj = AppUser.objects.get(pk=user_id)
-                if user_obj and friend_id not in user_obj.friends_list:
+                if user_obj and friend_id not in user_obj.friends_list and friend_id != user_obj.user_id:
                     user_obj.friends_list.append(friend_id)
                     user_obj.save()
                 else:
@@ -271,17 +267,14 @@ class RemoveFriend(APIView):
 
         data = request.data
         user_id = data.get("userId")
-        logger.info("\n\n REMOVEFRIEND:\nUSER_ID: %s", user_id)
         friend_id = data.get("friendId")
-        logger.info("REMOVEFRIEND:\friend_id: %s", friend_id)
+        logger.info("friend_id: %s", friend_id)
         user_obj = AppUser.objects.get(pk=user_id)
         if user_obj:
             user_obj.friends_list.remove(friend_id)
-            logger.info("LIST USER FRIEND : %s\n\n", str(user_obj.friends_list))
             return Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
         else:
-            logger.info("USER NOT FOUD\n\n")
-            return Response({"error": "Can't find user in database"}, status=status.HTTP_200_OK)
+            return Response({"error": "Can't find user"}, status=status.HTTP_200_OK)
         
 
 class GetFriendList(APIView):
