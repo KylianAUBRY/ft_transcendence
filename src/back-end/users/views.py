@@ -57,23 +57,23 @@ class UserLogin(APIView):
             except Exception as error:
                 pass
 
-            login(request, user)
             token = create_user_token(user)
             return Response(json.dumps({"token": token.key}), status=status.HTTP_200_OK)
 
 # Post request to logout user
 class UserLogout(APIView):
-    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
 
-    def get(self, request):
+    def post(self, request):
         logger = logging.getLogger(__name__)
-        logout(request)
 
         try:
-            email = getattr(request.user, "email", None)
+            logger.info("\n\nLOGOUT")
+            data = request.data
+            user_id = data.get("userId")
+            logger.info("USER : %s", user_id)
             from . models import AppUser
-            user_obj = AppUser.objects.get(email=email)
+            user_obj = AppUser.objects.get(pk=user_id)
             if user_obj:
                 user_obj.isOnline = False
                 user_obj.save()
@@ -113,7 +113,8 @@ class UpateUserInfo(APIView):
         try:
             user_obj = AppUser.objects.get(pk=user_id)
             if user_obj:
-                user_obj.image.save(image.name, image)
+                if image:
+                    user_obj.image.save(image.name, image)
                 if username != "":
                     user_obj.username = username
                 if (password != ""):
@@ -253,7 +254,7 @@ class AddFriend(APIView):
                     logger.info("USERID %s : %s FRIENDID", user_id, friend_id)
                     if int(user_id) != int(friend_id):
                         logger.info("POURQUOI SALE BATARD")
-                        if not friend_id in user_id.friend_list:
+                        if int(friend_id) not in user_obj.friends_list:
                             logger.info("POURQUOI SALE BATARD 2")
                             user_obj.friends_list.append(friend_id)
                     user_obj.save()
@@ -283,6 +284,7 @@ class RemoveFriend(APIView):
             logger.info("list friend : %s", str(user_obj.friends_list))
             if friend_id in user_obj.friends_list:
                 user_obj.friends_list.remove(friend_id)
+            user_obj.save()
             logger.info("list friend after remove : %s\n\n", str(user_obj.friends_list))
             return Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
         else:

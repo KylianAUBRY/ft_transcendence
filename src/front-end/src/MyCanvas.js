@@ -225,12 +225,45 @@ useEffect(() => {
   setisLoginPage(true)
   stopDecompte = true
 
+  if (location.pathname.includes('/register42')){
+    /*setTimeout(function() {
+      setisLoginPage(false)
+      if (childRef.current) {
+        childRef.current.childFunction(2)
+    }
+    }, 800);
+    updateSetState(10)*/
+    const urlParams = new URLSearchParams(url.split('?')[1]);
+    const code = urlParams.get('code');
+
+    console.log(code);
+  
+    fetch(baseUrl + ':8000/' + 'api/Register42', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        },
+      body: JSON.stringify({
+        code: code
+      }),
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      console.log(response)
+      return response;
+    }).catch(function(err){
+      console.error(err)
+    })
 
 
-  if (location.pathname !== '/' && currentUser === false){
+
+  }
+  else if (location.pathname !== '/' && currentUser === false){
+    console.log('redirectonnnnnnnnnnnnn')
     navigate('/')
   }
-color = racketColor
+    color = racketColor
 
   if (location.pathname !== '/' && props.isSize && currentUser === true){
     client.get("/api/user")
@@ -264,15 +297,44 @@ color = racketColor
   if (location.pathname === '/' && props.isSize){
     if (currentUser === true){
 
+      fetch(baseUrl + ':8000/' + 'api/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Token " + localStorage.getItem("token")
+        },
+        body: JSON.stringify({
+          userId: localStorage.getItem("userID")
+        }),
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response;
+      }).then(function(res){
+        updateUser(false)
+        localStorage.setItem('token', '')
+      }).catch(function(err){
+        console.error(err)
+      })
+
+
+
+
+
+
+
+
+
+/*
     client.get(
       "/api/logout",
-      {withCredentials: true}
     ).then(function(res){
       updateUser(false)
       localStorage.setItem('token', '')
     }).catch(function(error){
      console.error(error)
-    })
+    })*/
     }
 
     
@@ -466,14 +528,6 @@ color = racketColor
   };
   setscore(initialFormDataScore);
     updateSetState(50)
-  } else if (location.pathname === '/register42' && props.isSize){
-    setTimeout(function() {
-      setisLoginPage(false)
-      if (childRef.current) {
-        childRef.current.childFunction(2)
-    }
-    }, 800);
-    updateSetState(10)
   }
 }, [location.pathname, props.isSize]);
 
@@ -1369,11 +1423,30 @@ function affDecompte(){
   function handleLogout (event){
     event.preventDefault()
 
+    fetch(baseUrl + ':8000/' + 'api/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": "Token " + localStorage.getItem("token")
+      },
+      body: JSON.stringify({
+        userId: localStorage.getItem("userID")
+      }),
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      updateUser(false)
+      localStorage.setItem('token', '')
+      navigate('/')
+      return response;
+    }).catch(function(err){
+      console.error(err)
+    })
 
-    
+    /*
     client.get(
       "/api/logout",
-      
     ).then(function(res){
       updateUser(false)
       localStorage.setItem('token', '')
@@ -1382,7 +1455,7 @@ function affDecompte(){
       //setOptionsDefault()
     }).catch(function(error){
      console.error(error)
-    })
+    })*/
   }
 
 
@@ -1596,16 +1669,42 @@ useEffect(() => {
     // Effectuer des actions de nettoyage ou de démontage ici
     console.log('Le composant est démonté');
        if (currentUser === true){
-  client.get(
+
+
+
+
+      fetch(baseUrl + ':8000/' + 'api/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Token " + localStorage.getItem("token")
+        },
+        body: JSON.stringify({
+          userId: localStorage.getItem("userID")
+        }),
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response;
+      }).then(function(res){
+        navigate('/lobby')
+        updateUser(false)
+        localStorage.setItem('token', '')
+      }).catch(function(err){
+        console.error(err)
+      })
+
+
+ /* client.get(
     "/api/logout",
-    {withCredentials: true}
   ).then(function(res){
     navigate('/lobby')
     updateUser(false)
     localStorage.setItem('token', '')
   }).catch(function(error){
    console.error(error)
-  })
+  })*/
   }
   };
 }, []);
@@ -1640,7 +1739,7 @@ useEffect(() => {
                   </div>
                   <div className='history'>
                   {matchArray.map((matchObject, index) => (
-                        <Match key={index} matchObject={matchObject} style={matchObject.matchObject.isWin ? { color: 'green' } : { color: 'green' }}/>
+                        <Match key={index} matchObject={matchObject} style={matchObject.isWin ? { color: 'green' } : { color: 'green' }}/>
                     ))}
     
                   </div>
