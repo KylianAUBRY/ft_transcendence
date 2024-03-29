@@ -2,6 +2,31 @@ import './Friend.css';
 
 function Friend( props ) {
 
+
+    function handleDelete(){
+        console.log('delete', props.friend.user_id)
+        fetch(props.baseUrl + ':8000/' + 'api/RemoveFriend', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Token " + localStorage.getItem("token")
+              },
+            body: JSON.stringify({
+              userId: localStorage.getItem("userID"),
+              friendId: props.friend.user_id
+            }),
+          }).then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          }).catch(err => {
+            console.error(err)
+          })
+    }
+
+
+    console.log('friend', props.friend.username)
     let isOnline
     if (props.friend.isOnline === true)
         isOnline = props.t('home.online')
@@ -10,6 +35,7 @@ function Friend( props ) {
     return (
         <li className='friend'>
             {props.friend.username}   --   {isOnline}
+            <button onClick={handleDelete}>delete</button>
         </li>
 
     )}

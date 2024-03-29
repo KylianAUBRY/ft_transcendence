@@ -56,6 +56,7 @@ let key3
 let key4
 let auth42
 let multiple= false
+let image
 
 const path = baseUrl + ':8000'
 const client = axios.create({
@@ -546,20 +547,20 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
       }
       return response.json();
     }).then(async data => {
+      console.log('search avant boucle ', isSearch)
       while (gameId === null && isSearch === true) {
+        console.log('checkjoingame', isSearch)
         const data = await checkJoinGame();
         if (data.hasOwnProperty('gameId')) {
           gameId = data.gameId
           localStorage.setItem("gameId", data.gameId)
         }
-    
- 
-
 
         // Ajouter une pause (attente) avant de renvoyer la requête
         await new Promise(resolve => setTimeout(resolve, 1000)); // Attendez 1 seconde avant de renvoyer la requête
       }
       if (isSearch === false){
+        console.log('test exit queue')
         try {
           const response = await fetch(baseUrl + ':8000/' + 'api/ExitQueue', {
             method: 'POST',
@@ -575,7 +576,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
-      
+          console.log('tets apres exit')
           const data = await response.json();
           return data;
         } catch (error) {
@@ -1455,6 +1456,8 @@ function getChart() {
         key2 = user.key2
         key3 = user.key3
         key4 = user.key4
+        image = user.image
+        console.log(image)
 
     }).catch(function(err){
       console.error(err)
@@ -1616,6 +1619,7 @@ useEffect(() => {
             ) : null}
             {isProfilView ? (
               <div className='profilView'>Your Profile
+              <img src='profil.png' alt='profil picture' id='proflPicture'/>
                 <div className="stats">
                   <div className='graph1'><canvas className='canv1' id='chart1' ref={chartRef1} aria-label='chart' role='img'></canvas></div>
                   <div className='graph2'><canvas className='canv2' id='chart2' aria-label='chart' role='img'></canvas></div>
@@ -1687,7 +1691,7 @@ useEffect(() => {
       </div>
       ) : null}
     { state === 10 ? (
-      <SocialMenu setisSocialMenu={setisSocialMenu} csrfToken={localStorage.getItem("token")} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} baseURL={baseUrl} username={localStorage.getItem("username")} userId={localStorage.getItem("userID")} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
+      <SocialMenu setisSocialMenu={setisSocialMenu} csrfToken={localStorage.getItem("token")} setracketColor={setracketColor} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} currentUser={currentUser} handleLogout={handleLogout} username={localStorage.getItem("username")} userId={localStorage.getItem("userID")} client={client} baseUrl={baseUrl} t={t} i18n={i18n}/>
     ) : null}
             {isInMatchTournament ? (
       <div className='scoreDirect' id='scoreDirect'>Score</div>

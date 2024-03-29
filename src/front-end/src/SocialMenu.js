@@ -49,7 +49,7 @@ function updateOptions(){
   }else if (langValue === 'en'){
     lng = 'English'
   }
-    fetch(props.baseURL + ':8000/' + 'api/UpdateUserOption', {
+    fetch(props.baseUrl + ':8000/' + 'api/UpdateUserOption', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ function handleAddFriend(e){
         }
         return response.json();
       }).then(function(data){
-        
+        setNb(nb)
       }).catch(function(err){
         console.error(err)
       });
@@ -123,6 +123,7 @@ function handleAddFriend(e){
         if (data.friend_list.length !== nb){
           setFriend(data.friend_list)
           setNb(data.friend_list.length)
+          console.log(friend)
         }
           
 
@@ -221,7 +222,7 @@ const handleChangeMusic = event => {
             setUsername(props.username) 
 
 
-      fetch(props.baseURL + ':8080/' + 'api/UpateUserInfo', {
+      fetch(props.baseUrl + ':8080/' + 'api/UpateUserInfo', {
         method: 'POST',
         body: formData,
       }).then(response => {
@@ -262,7 +263,7 @@ const handleImageChange = (e) => {
                 </form>
                 <ul className='list'>
                   {friend.map((fr, index) => (
-                          <Friend key={index} friend={fr} t={props.t}/>
+                          <Friend key={index} friend={fr} t={props.t} baseUrl={props.baseUrl}/>
                       ))}
                 </ul>
                 <div className='customize'>
