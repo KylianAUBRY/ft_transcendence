@@ -67,6 +67,7 @@ class UserLogout(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
+        logger = logging.getLogger(__name__)
         logout(request)
 
         try:
@@ -76,8 +77,8 @@ class UserLogout(APIView):
             if user_obj:
                 user_obj.isOnline = False
                 user_obj.save()
-        except:
-            pass
+        except Exception as error:
+            logger.info("\n\nLOGOUT : %s", error)
         return Response(status=status.HTTP_200_OK)
 
 # Get info of user connected
@@ -152,6 +153,7 @@ class UpdateUserOption(APIView):
             from . models import AppUser
             user_obj = AppUser.objects.get(pk=userId)
             if user_obj:
+                logger.info('USER_OBJ: %s\n\n\n', str(user_obj))
                 user_obj.language = language
                 user_obj.color = color
                 user_obj.music = music
@@ -162,6 +164,7 @@ class UpdateUserOption(APIView):
                 user_obj.save()
             return Response({'message': 'User statistics updated successfully'})
         except Exception as e:
+            logger.info('ERROR: \n\n\n')
             return Response({'message': 'User update failed', 'error': str(e)})
 
 # Get all match history from a user
@@ -210,10 +213,14 @@ class ExitQueue(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        logger = logging.getLogger(__name__)
         data = request.data
         user_id = data.get("userId")
-        waiting_player = WaitingPlayerModel.objects.filter(player_id=user_id).first()
+        logger.info("\n\n EXITQUEUE:\nUSER_ID: %s", user_id)
+        waiting_player = WaitingPlayerModel.objects.get(player_id=user_id)
+        logger.info("TEST 1")
         game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id)).first()
+        logger.info("TEST 2")
         if waiting_player:
             waiting_player.delete()
         if game_server:
@@ -224,6 +231,72 @@ class ExitQueue(APIView):
             game_server.state = 'waiting'
             game_server.save()
         return Response({"message": 'You left the queue'}, status=status.HTTP_200_OK)
+    
+class AddFriend(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        from . models import AppUser
+
+        try:
+            data = request.data
+            friend_id = data.get("friendId")
+            friend_obj = AppUser.objects.get(pk=friend_id)
+            if not friend_obj:
+                return Response({"error": "User doesn't exist"}, status=status.HTTP_200_OK)
+            if friend_obj:
+                user_id = data.get("userId")
+                user_obj = AppUser.objects.get(pk=user_id)
+                if user_obj and friend_id not in user_obj.friends_list:
+                    user_obj.friends_list.append(friend_id)
+                    user_obj.save()
+                else:
+                    return Response({"message": "Friend already added"}, status=status.HTTP_200_OK)
+                return Response({"message": "'" + friend_obj.username + "#" + str(friend_obj.user_id) + "' added to friend list"}, status=status.HTTP_200_OK)
+        except Exception as error:
+                return Response({"message": "User doesn't exist"}, status=status.HTTP_200_OK)
+        
+
+class RemoveFriend(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        from . models import AppUser
+        logger = logging.getLogger(__name__)
+
+        data = request.data
+        user_id = data.get("userId")
+        logger.info("\n\n REMOVEFRIEND:\nUSER_ID: %s", user_id)
+        friend_id = data.get("friendId")
+        logger.info("\n\n REMOVEFRIEND:\nUSER_ID: %s", friend_id)
+        user_obj = AppUser.objects.get(pk=user_id)
+        if user_obj:
+            user_obj.friends_list.remove(friend_id)
+            return Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Can't find user in database"}, status=status.HTTP_200_OK)
+        
+
+class GetFriendList(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        from . models import AppUser
+        logger = logging.getLogger(__name__)
+
+        data = request.data
+        user_id = data.get("userId")
+        user_obj = AppUser.objects.get(pk=user_id)
+        friend_data = []
+        if user_obj:
+            for friend_id in user_obj.friends_list:
+                friend = AppUser.objects.get(pk=friend_id)
+                if friend :
+                    friend_data.append(FriendListSerializer(friend).data)
+            return Response({"friend_list": friend_data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Can't find user in database"})
+        
 
 class Register42(APIView):
     permission_classes = [permissions.AllowAny]
@@ -292,62 +365,3 @@ class URL42(APIView):
     def get(self, request):
         lien = settings.API_CONNECT_URL
         return Response({"URL42": lien}, status=status.HTTP_200_OK)
-    
-class AddFriend(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        from . models import AppUser
-
-        try:
-            data = request.data
-            friend_id = data.get("friendId")
-            friend_obj = AppUser.objects.get(pk=friend_id)
-            if not friend_obj:
-                return Response({"error": "User doesn't exist"}, status=status.HTTP_200_OK)
-            if friend_obj:
-                user_id = data.get("userId")
-                user_obj = AppUser.objects.get(pk=user_id)
-                if user_obj:
-                    user_obj.friends_list.append(friend_id)
-                user_obj.save()
-                return Response({"message": "'" + friend_obj.username + "#" + str(friend_obj.user_id) + "' added to friend list"}, status=status.HTTP_200_OK)
-        except Exception as error:
-                return Response({"message": "User doesn't exist"}, status=status.HTTP_200_OK)
-        
-
-class RemoveFriend(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        from . models import AppUser
-
-        data = request.data
-        user_id = data.get("userId")
-        friend_id = data.get("friendId")
-        user_obj = AppUser.objects.get(pk=user_id)
-        if user_obj:
-            user_obj.friends_list.remove(friend_id)
-            return Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "Can't find user in database"}, status=status.HTTP_200_OK)
-        
-
-class GetFriendList(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        from . models import AppUser
-        logger = logging.getLogger(__name__)
-
-        user_id = getattr(request.user, "user_id", None)
-        user_obj = AppUser.objects.get(pk=user_id)
-        friend_data = []
-        if user_obj:
-            for friend_id in user_obj.friends_list:
-                friend = AppUser.objects.get(pk=friend_id)
-                if friend :
-                    friend_data.append(FriendListSerializer(friend).data)
-            return Response({"friend_list": friend_data}, status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "Can't find user in database"})

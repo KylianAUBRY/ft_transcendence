@@ -19,14 +19,13 @@ import dotenv
 
 dotenv.load_dotenv()
 
-REQUIRED_ENV_VARIABLES = ['DEFAULT_PASSWORD','POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'DATABASE_HOST_NAME', 'DATABASE_PORT', 'API_CLIENT_ID', 'API_CLIENT_SECRET', 'API_CONNECT_URL', 'API_TOKEN_URL', 'API_INFO_URL']
+REQUIRED_ENV_VARIABLES = ['POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'DATABASE_HOST_NAME', 'DATABASE_PORT', 'API_CLIENT_ID', 'API_CLIENT_SECRET', 'API_CONNECT_URL', 'API_TOKEN_URL', 'API_INFO_URL', 'API_KEY']
 
 # Checking for the existence of environment variables.
 for env_variable in REQUIRED_ENV_VARIABLES:
     if env_variable not in os.environ:
         raise Exception(f"The environment variable {env_variable} is missing. Make sure to define it in your .env file.")
 
-DEFAULT_PASSWORD = os.environ['DEFAULT_PASSWORD']
 POSTGRES_DB = os.environ['POSTGRES_DB']
 POSTGRES_USER = os.environ['POSTGRES_USER']
 POSTGRES_PASSWORD = os.environ['POSTGRES_PASSWORD']
@@ -37,6 +36,7 @@ API_CLIENT_SECRET = os.environ['API_CLIENT_SECRET']
 API_CONNECT_URL = os.environ['API_CONNECT_URL']
 API_TOKEN_URL = os.environ['API_TOKEN_URL']
 API_INFO_URL = os.environ['API_INFO_URL']
+SECRET_KEY = os.environ['API_KEY']
 
 # -------------------------- #
 
@@ -73,7 +73,6 @@ LOGGING = {
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w&_9mvz-c1j$w_#z9(e_pd*@dsvpw)&1do9_#9@@2z(xmjehur'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
