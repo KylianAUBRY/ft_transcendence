@@ -253,7 +253,7 @@ class AddFriend(APIView):
                     logger.info("USERID %s : %s FRIENDID", user_id, friend_id)
                     if int(user_id) != int(friend_id):
                         logger.info("POURQUOI SALE BATARD")
-                        if not friend_id in user_obj.friends_list:
+                        if int(friend_id) not in user_obj.friends_list:
                             logger.info("POURQUOI SALE BATARD 2")
                             user_obj.friends_list.append(friend_id)
                     user_obj.save()
