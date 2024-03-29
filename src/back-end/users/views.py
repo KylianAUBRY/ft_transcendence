@@ -63,7 +63,6 @@ class UserLogin(APIView):
 
 # Post request to logout user
 class UserLogout(APIView):
-    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
@@ -71,7 +70,11 @@ class UserLogout(APIView):
         logout(request)
 
         try:
+            logger.info("\n\nLOGOUT")
+            logger.info("USER : %s", str(request.user))
             email = getattr(request.user, "email", None)
+            logger.info("email : %s\n\n", email)
+            logger.info("id : %s\n\n", getattr(request.user, "user_id", None))
             from . models import AppUser
             user_obj = AppUser.objects.get(email=email)
             if user_obj:
