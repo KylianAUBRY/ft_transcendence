@@ -57,27 +57,23 @@ class UserLogin(APIView):
             except Exception as error:
                 pass
 
-            login(request, user)
             token = create_user_token(user)
             return Response(json.dumps({"token": token.key}), status=status.HTTP_200_OK)
 
 # Post request to logout user
 class UserLogout(APIView):
-    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
 
-    def get(self, request):
+    def post(self, request):
         logger = logging.getLogger(__name__)
-        logout(request)
 
         try:
             logger.info("\n\nLOGOUT")
-            logger.info("USER : %s", str(request.user))
-            email = getattr(request.user, "email", None)
-            logger.info("email : %s\n\n", email)
-            logger.info("id : %s\n\n", getattr(request.user, "user_id", None))
+            data = request.data
+            user_id = data.get("userId")
+            logger.info("USER : %s", user_id)
             from . models import AppUser
-            user_obj = AppUser.objects.get(email=email)
+            user_obj = AppUser.objects.get(pk=user_id)
             if user_obj:
                 user_obj.isOnline = False
                 user_obj.save()
