@@ -295,7 +295,6 @@ class GetFriendList(APIView):
     def post(self, request):
         from . models import AppUser
         logger = logging.getLogger(__name__)
-
         data = request.data
         user_id = data.get("userId")
         user_obj = AppUser.objects.get(pk=user_id)
@@ -311,15 +310,19 @@ class GetFriendList(APIView):
         
 
 class Register42(APIView):
+    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
 
-    def get(self, request):
+    def post(self, request):
+        from django.shortcuts import redirect
         from django.contrib.auth import login as django_login
         # Traitez les informations reçues ici
         # Par exemple, récupérez des données de la requête
         code_value = request.GET.get('code')
+        token = "qbcdef"
+        print("\n\n\n\n", file=sys.stderr)
         print(request.GET,file=sys.stderr)
-
+        print("\n\ncode_value\n\n", file=sys.stderr)
         # server_url = request.build_absolute_uri('/register42')
         host_without_port = request.get_host().split(':')[0]
         
