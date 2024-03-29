@@ -80,7 +80,7 @@ class GameServerModel(models.Model):
 	secondPlayerId = models.IntegerField(default=-1)
 	state = models.CharField(max_length=10, default="waiting")
 	def __str__(self):
-		return f"{self.serverId} : {self.serverAddr}"
+		return f"{self.serverId}"
 
 class WaitingPlayerModel(models.Model):
 	player_id = models.IntegerField()
