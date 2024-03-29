@@ -216,13 +216,15 @@ class ExitQueue(APIView):
         logger = logging.getLogger(__name__)
         data = request.data
         user_id = data.get("userId")
-        logger.info("\n\n EXITQUEUE:\nUSER_ID: %s", user_id)
-        waiting_player = WaitingPlayerModel.objects.get(player_id=user_id)
-        logger.info("TEST 1")
+        logger.info("\n\nEXITQUEUE")
         game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id)).first()
-        logger.info("TEST 2")
-        if waiting_player:
-            waiting_player.delete()
+        logger.info("\n\nEXITQUEUE GAMESERVER : %s", str(game_server))
+        try:
+            waiting_player = WaitingPlayerModel.objects.get(player_id=user_id)
+            if waiting_player:
+                waiting_player.delete()
+        except:
+            pass
         if game_server:
             if game_server.firstPlayerId == user_id:
                 game_server.firstPlayerId = -1
