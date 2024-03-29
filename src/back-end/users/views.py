@@ -237,8 +237,10 @@ class AddFriend(APIView):
 
     def post(self, request):
         from . models import AppUser
+        logger = logging.getLogger(__name__)
 
         try:
+            logger.info("\n\nADD FRIEND")
             data = request.data
             friend_id = data.get("friendId")
             friend_obj = AppUser.objects.get(pk=friend_id)
@@ -248,7 +250,9 @@ class AddFriend(APIView):
                 user_id = data.get("userId")
                 user_obj = AppUser.objects.get(pk=user_id)
                 if user_obj:
+                    logger.info("USERID %s : %s FRIENDID", user_id, friend_id)
                     if int(user_id) != int(friend_id):
+                        logger.info("POURQUOI SALE BATARD")
                         if int(friend_id) not in user_id.friend_list:
                             user_obj.friends_list.append(friend_id)
                     user_obj.save()
@@ -256,7 +260,8 @@ class AddFriend(APIView):
                     return Response({"message": "Friend already added"}, status=status.HTTP_200_OK)
                 return Response({"message": "'" + friend_obj.username + "#" + str(friend_obj.user_id) + "' added to friend list"}, status=status.HTTP_200_OK)
         except Exception as error:
-                return Response({"message": "User doesn't exist"}, status=status.HTTP_200_OK)
+            logger.info("\n\nERROR IN ADDFRIEND : %s", error)
+            return Response({"message": "User doesn't exist"}, status=status.HTTP_200_OK)
         
 
 class RemoveFriend(APIView):
@@ -267,11 +272,17 @@ class RemoveFriend(APIView):
         logger = logging.getLogger(__name__)
 
         data = request.data
+        logger.info("\n\nREMOVE FRIEND")
         user_id = data.get("userId")
+        logger.info("user_id : %s", user_id)
         friend_id = data.get("friendId")
+        logger.info("friend_id : %s", friend_id)
         user_obj = AppUser.objects.get(pk=user_id)
         if user_obj:
-            user_obj.friends_list.remove(friend_id)
+            logger.info("list friend : %s", str(user_obj.friends_list))
+            if friend_id in user_obj.friends_list:
+                user_obj.friends_list.remove(friend_id)
+            logger.info("list friend after remove : %s\n\n", str(user_obj.friends_list))
             return Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Can't find user"}, status=status.HTTP_200_OK)
