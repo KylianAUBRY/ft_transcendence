@@ -421,19 +421,19 @@ class GameRoom(AsyncWebsocketConsumer):
         except Exception as error:
             logger.info("\n\nPLAYER 1 UPDATE FAIL : %s", error)
         try:
-            user = await sync_to_async(AppUser.objects.get)(pk=player2["idPlayer"])
-            user.nbGamePlayed += 1
+            user2 = await sync_to_async(AppUser.objects.get)(pk=player2["idPlayer"])
+            user2.nbGamePlayed += 1
             if (player2["isWin"]):
-                user.nbGameWin += 1
+                user2.nbGameWin += 1
             else:
-                user.nbGameLose += 1
-            user.nbTouchedBall += player2["nbTouchBall"]
-            user.nbAce += player2["nbAce"]
-            if (player2["nbLongestExchange"] > user.LongestExchange):
-                user.LongestExchange = player2["nbLongestExchange"]
-            user.nbPointMarked += player2["score"]
-            user.nbPointLose += player1["score"]
-            await sync_to_async(user.save)()
+                user2.nbGameLose += 1
+            user2.nbTouchedBall += player2["nbTouchBall"]
+            user2.nbAce += player2["nbAce"]
+            if (player2["nbLongestExchange"] > user2.LongestExchange):
+                user2.LongestExchange = player2["nbLongestExchange"]
+            user2.nbPointMarked += player2["score"]
+            user2.nbPointLose += player1["score"]
+            await sync_to_async(user2.save)()
         except Exception as error:
             logger.info("\n\nPLAYER 2 UPDATE FAIL : %s", error)
         
