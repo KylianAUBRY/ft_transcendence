@@ -116,7 +116,8 @@ class UpateUserInfo(APIView):
         try:
             user_obj = AppUser.objects.get(pk=user_id)
             if user_obj:
-                user_obj.image.save(image.name, image)
+                if image:
+                    user_obj.image.save(image.name, image)
                 if username != "":
                     user_obj.username = username
                 if (password != ""):
