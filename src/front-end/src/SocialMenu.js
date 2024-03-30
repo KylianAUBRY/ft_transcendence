@@ -36,6 +36,27 @@ function displayList(){
         lineTwo.classList.toggle('line-fade-out');
         lineThree.classList.toggle('line-cross');
         props.setisSocialMenu(true)
+
+        fetch(props.baseUrl + ':8000/' + 'api/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Token " + localStorage.getItem("token")
+          }
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        }).then(res =>{
+            const user = res
+            localStorage.setItem("userID", user.user_id)
+            props.userId = localStorage.getItem('userID')
+          console.log(localStorage.getItem('userID'))
+        }).catch(function(err){
+          console.error(err)
+        })
+
     }
         
 }
@@ -49,6 +70,10 @@ function updateOptions(){
   }else if (langValue === 'en'){
     lng = 'English'
   }
+  if (!musicValue)
+    musicValue = 0
+  if (!colorValue)
+    colorValue  = 'white'
   console.log(colorValue, musicValue)
     fetch(props.baseUrl + ':8000/' + 'api/UpdateUserOption', {
         method: 'POST',
@@ -251,11 +276,10 @@ const handleChangeMusic = event => {
         if (username !== '')
             setUsername(props.username) 
 
-
+console.log(formData, props.userId, username, password)
       fetch(props.baseUrl + ':8000/' + 'api/UpateUserInfo', {
         method: 'POST',
         headers: {
-          'Content-Type': 'multipart/form-data',
           "Authorization": "Token " + props.csrfToken
           },
         body: formData,
@@ -263,10 +287,43 @@ const handleChangeMusic = event => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
+        
+        fetch(props.baseUrl + ':8000/' + 'api/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Token " + localStorage.getItem("token")
+          }
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        }).then(res =>{
+
+            const user = res
+            localStorage.setItem("userID", user.user_id)
+            const image = user.image
+            console.log(image)
+
+            const pp = document.getElementById('profil')
+            pp.src = props.baseUrl + ':8000' + image
+    
+        }).catch(function(err){
+          console.error(err)
+        })
+
+
+
+
+
         return response.json();
       }).catch(function(error){
         console.error(error)
         })
+
+
+        
 }
 
 

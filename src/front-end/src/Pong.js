@@ -738,7 +738,6 @@ useEffect(() => {
   if (findOnlineGame === true) {
     websocket = new WebSocket(websocketUrl);
     websocket.onopen = function() {
-      //intervalSendinfo = setInterval(sendInfo, 1000);
 
       isPlayerReady = true
       sendInfo()
@@ -748,10 +747,38 @@ useEffect(() => {
       const messageObj = JSON.parse(event.data); 
       const type = messageObj.type;
 
+      console.log('test', location.pathname)
       if (location.pathname !== '/online'){
+        console.log('bugggggg')
         websocket.close();
         websocket = null
+        updateSetState(22)
+        playerId = -1
+        localStorage.setItem('playerId','-1')
+        setFindOnlineGame(false)
+        isUsername = false
+        onlineScore1 = 0
+        onlineScore2 = 0
+        return
       }
+
+
+      if (type === 'gameCanceled'){
+        websocket.close();
+        websocket = null
+        
+        winnerTournament.player = 'game canceled'
+  
+        updateSetState(22)
+        playerId = -1
+        localStorage.setItem('playerId','-1')
+        setFindOnlineGame(false)
+        isUsername = false
+        onlineScore1 = 0
+        onlineScore2 = 0
+        
+      }
+
 
 
       if (type === 'playerId'){
@@ -886,12 +913,17 @@ useEffect(() => {
   
   
   
-  }, [findOnlineGame]);
+  }, [findOnlineGame, location.pathname]);
 
 
 
 
 useEffect(() => {
+
+
+
+
+
   if (location.pathname === '/lobby'){
 
 	if (running === true){
