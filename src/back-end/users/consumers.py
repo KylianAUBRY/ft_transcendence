@@ -11,8 +11,21 @@ from datetime import date
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
 
+
 class GameRoom(AsyncWebsocketConsumer):
     players = {}
+
+    async def CheckCancelGame(self, serv, timeFirstConnection):
+        while True:
+            if len(self.players[serv]) < 2:
+                time_now = timezone.now()
+                if (time_now - timeFirstConnection).total_seconds() > 5:
+                    await self.send(
+                        text_data=json.dumps({"type": "gameCanceled", "value": True})
+                    )
+            else:
+                break
+            
 
     async def connect(self): 
         self.name_serv = self.scope['url_route']['kwargs']['room_name']
@@ -56,7 +69,8 @@ class GameRoom(AsyncWebsocketConsumer):
             "isDisconnect": False,
             "serv": serv,
         }
-        
+        if len(self.players[serv]) == 1:
+            asyncio.create_task(self.CheckCancelGame(serv, timezone.now()))
         if len(self.players[serv]) == 2:
             logger.info('launch game')
             asyncio.create_task(self.game_loop(serv))
