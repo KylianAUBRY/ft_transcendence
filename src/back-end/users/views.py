@@ -319,17 +319,15 @@ class Register42(APIView):
         from django.shortcuts import redirect
         from django.contrib.auth import login as django_login
         # Traitez les informations reçues ici
-        # Par exemple, récupérez des données de la requête
-        code_value = request.GET.get('code')
-        token = "qbcdef"
-        print("\n\n\n\n", file=sys.stderr)
-        print(request.GET,file=sys.stderr)
-        print("\n\ncode_value\n\n", file=sys.stderr)
+        data = request.data
+
+        code_value = data.get('code')
+        print("\n\ncode_value :", code_value,file=sys.stderr)
         # server_url = request.build_absolute_uri('/register42')
         host_without_port = request.get_host().split(':')[0]
         
         # Génération de l'URL avec le port 8000
-        server_url = request.scheme + '://' + host_without_port + ':8000/register42'
+        server_url = 'https://' + host_without_port + ':8000/register42'
         
         # Faire ce que vous voulez avec l'URL du serveur
         print("\n\n\nURL du serveur :", server_url,file=sys.stderr)
@@ -345,32 +343,54 @@ class Register42(APIView):
         }
 
         print("\n\n", files, file=sys.stderr)
-        print("\n \n")
+        print("\n\n", file=sys.stderr)
         response = requests.post(settings.API_TOKEN_URL, data=files)
+        print("response: ",response, file=sys.stderr)
         if (response.status_code != status.HTTP_200_OK):
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response.json())
+       
         access_token = response.json().get('access_token')
+        print("\n",access_token, '\n', file=sys.stderr)
         if (access_token is not None):
             inf = requests.get(settings.API_INFO_URL, params={'access_token': access_token})
             if (inf.status_code == status.HTTP_200_OK):
                 login = inf.json().get('login')
-                email = inf.json().get('email')
-                print("\n\n login ", login, " email ", email, file=sys.stderr)
+                mail = inf.json().get('email')
+                print("\n\n login ", login, " email ", mail, file=sys.stderr)
 
-                user_exists = AppUser.objects.filter(email=email).exists()
+                user_exists = AppUser.objects.filter(email=mail).exists()
+                print("\nuser_exists:",user_exists, '\n', file=sys.stderr)
                 if not user_exists:
                     # Créer un nouvel utilisateur
-                    user = AppUser.objects.create(username=login, email=email, password=code_value)
-                    login(request, user)
-                    return Response(status=status.HTTP_201_CREATED)
+                    user = AppUser.objects.create(username=login, email=mail, password=settings.API_DEFAULT_PASSWORD)
+                    serializer = UserLoginSerializer(user)
+                    user = serializer.check_user(data)
+                    try:
+                        user_obj = AppUser.objects.get(email=data.get("email"))
+                        if user_obj:
+                            user_obj.isOnline = True
+                            user_obj.save()
+                    except Exception as error:
+                        pass
+                    token = create_user_token(user)
+
+                    return Response(json.dumps({"token": token.key}), status=status.HTTP_200_OK)
                 else:
                     # Récupérer l'utilisateur existant
                     
-                    user = AppUser.objects.get(email=email)
+                    user = AppUser.objects.get(email=mail)
                     serializer = UserLoginSerializer(user)
+                    user = serializer.check_user(data)
+                    try:
+                        user_obj = AppUser.objects.get(email=data.get("email"))
+                        if user_obj:
+                            user_obj.isOnline = True
+                            user_obj.save()
+                    except Exception as error:
+                        pass
+                    token = create_user_token(user)
 
-                    login(request, user)
-                    return Response(serializer.data, status=status.HTTP_200_OK)
+                    return Response(json.dumps({"token": token.key}), status=status.HTTP_200_OK)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data=inf.json())
 
