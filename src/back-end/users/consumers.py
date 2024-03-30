@@ -25,6 +25,15 @@ class GameRoom(AsyncWebsocketConsumer):
                     await self.send(
                         text_data=json.dumps({"type": "gameCanceled", "value": True})
                     )
+                    # Delete server from list
+                    try:
+                        from . models import GameServerModel
+                        game_server = await sync_to_async(GameServerModel.objects.get)(pk=int(serv))
+                        if not game_server:
+                            logger.info('GameServerModel CANCEL Not Found : %s', error)
+                        await sync_to_async(game_server.delete)()
+                    except Exception as error:
+                        logger.info("Error CANCEL in GameServerModel--------------- : %s", error)
                     break
             else:
                 logger.info("\n\nBREAK BREAK BREAK BREKA BREAK BREAK BREAK\n\n")
