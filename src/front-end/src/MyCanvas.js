@@ -55,8 +55,9 @@ let key2
 let key3
 let key4
 let auth42
-let multiple= false
+let multiple = false
 let image
+let oneTime = 0
 
 const path = baseUrl + ':8000'
 const client = axios.create({
@@ -233,11 +234,13 @@ useEffect(() => {
     }
     }, 800);
     updateSetState(10)*/
+    if (oneTime === 0){
     const urlParams = new URLSearchParams(url.split('?')[1]);
     const code = urlParams.get('code');
 
     console.log(code);
   
+
     fetch(baseUrl + ':8000/' + 'api/Register42', {
       method: 'POST',
       headers: {
@@ -255,12 +258,11 @@ useEffect(() => {
     }).catch(function(err){
       console.error(err)
     })
-
-
+    oneTime++
+}
 
   }
   else if (location.pathname !== '/' && currentUser === false){
-    console.log('redirectonnnnnnnnnnnnn')
     navigate('/')
   }
     color = racketColor

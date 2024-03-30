@@ -49,6 +49,7 @@ function updateOptions(){
   }else if (langValue === 'en'){
     lng = 'English'
   }
+  console.log(colorValue, musicValue)
     fetch(props.baseUrl + ':8000/' + 'api/UpdateUserOption', {
         method: 'POST',
         headers: {
@@ -164,7 +165,7 @@ if (props.currentUser !== true){
 const handleChangeLang = event => {
     langValue = event.target.value
     props.i18n.changeLanguage(langValue)
-    //updateOptions()
+    updateOptions()
   };
   
 const handleChangeMusic = event => {
@@ -186,7 +187,7 @@ const handleChangeMusic = event => {
         play3()
         setInPlay(3)
     }
-    //updateOptions()
+    updateOptions()
   };
 
   const handleChangeColor = event => {
@@ -201,7 +202,7 @@ const handleChangeMusic = event => {
         props.setracketColor(0x898989)
     else if (colorValue === 'purple')
         props.setracketColor(0x720F8F)
-    //updateOptions()
+    updateOptions()
   };
 
  
@@ -251,7 +252,7 @@ const handleChangeMusic = event => {
             setUsername(props.username) 
 
 
-      fetch(props.baseUrl + ':8080/' + 'api/UpateUserInfo', {
+      fetch(props.baseUrl + ':8000/' + 'api/UpateUserInfo', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',

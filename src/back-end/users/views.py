@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializer import UserRegisterSerializer, UserLoginSerializer, UserSerializer, HistorySerializer, ServerSerializer, FriendListSerializer
 from rest_framework import permissions, status
+from rest_framework.decorators import authentication_classes
 from .validations import custom_validation, validate_email, validate_password
 from . models import HistoryModel, GameServerModel, WaitingPlayerModel
 from django.db.models import Q
@@ -20,8 +21,8 @@ from rest_framework.authtoken.models import Token
 # Create your views here.
 
 # Post request to create a new user
+@authentication_classes([])
 class UserRegister(APIView):
-    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -35,8 +36,8 @@ class UserRegister(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 # Post request to login user
+@authentication_classes([])
 class UserLogin(APIView):
-    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -68,17 +69,22 @@ class UserLogout(APIView):
         logger = logging.getLogger(__name__)
 
         try:
-            logger.info("\n\nLOGOUT")
             data = request.data
             user_id = data.get("userId")
-            logger.info("USER : %s", user_id)
             from . models import AppUser
             user_obj = AppUser.objects.get(pk=user_id)
             if user_obj:
                 user_obj.isOnline = False
                 user_obj.save()
         except Exception as error:
-            logger.info("\n\nLOGOUT : %s", error)
+            pass
+        
+        try:
+            request.user.auth_token.delete()
+        except Exception as error:
+            logger.info("LOGOUT ERRRO : %s", error)
+
+        logout(request)
         return Response(status=status.HTTP_200_OK)
 
 # Get info of user connected
@@ -100,30 +106,35 @@ class UpateUserInfo(APIView):
         from . models import AppUser
         logger = logging.getLogger(__name__)
 
-        logger.info('GROS LOGGER SA MERE : %s ||||| %s', str(request.FILES), str(request.data))
         data = request.data
         user_id = data.get("userId")
-        logger.info('user_id : %s', user_id)
-        username = data.get("username")
-        logger.info('user_id : %s', username)
-        password = data.get("password")
-        logger.info('user_id : %s', password)
-        image = request.FILES['file']
-        logger.info('image : %s', str(image))
-        try:
-            user_obj = AppUser.objects.get(pk=user_id)
-            if user_obj:
-                if image:
-                    user_obj.image.save(image.name, image)
+        user_obj = AppUser.objects.get(pk=user_id)
+        if user_obj:
+            # Update username
+            try:
+                username = data.get("username")
                 if username != "":
                     user_obj.username = username
-                if (password != ""):
+            except:
+                pass
+            # Update password
+            try:
+                password = data.get("password")
+                if password != "" and len(password) >= 8:
                     user_obj.set_password(password)
-                user_obj.save()
-                return Response({"message": "Info updated successfuly"}, status=status.HTTP_200_OK)
+            except:
+                pass
+            # Update image
+            try:
+                image = request.FILES['file']
+                if image:
+                    user_obj.image.save(image.name, image)
+            except:
+                pass
+            user_obj.save()
+            return Response({"message": "Info updated successfuly"}, status=status.HTTP_200_OK)
+        else:
             return Response({"message": "Info update failed"}, status=status.HTTP_200_OK)
-        except Exception as error:
-            return Response({"error": error})
 
 class UpdateUserOption(APIView):
     permission_classes = [permissions.AllowAny]
@@ -165,7 +176,7 @@ class UpdateUserOption(APIView):
                 user_obj.save()
             return Response({'message': 'User statistics updated successfully'})
         except Exception as e:
-            logger.info('ERROR: \n\n\n')
+            logger.info('ERROR: %s\n\n\n', e)
             return Response({'message': 'User update failed', 'error': str(e)})
 
 # Get all match history from a user
@@ -241,7 +252,6 @@ class AddFriend(APIView):
         logger = logging.getLogger(__name__)
 
         try:
-            logger.info("\n\nADD FRIEND")
             data = request.data
             friend_id = data.get("friendId")
             friend_obj = AppUser.objects.get(pk=friend_id)
@@ -251,18 +261,14 @@ class AddFriend(APIView):
                 user_id = data.get("userId")
                 user_obj = AppUser.objects.get(pk=user_id)
                 if user_obj:
-                    logger.info("USERID %s : %s FRIENDID", user_id, friend_id)
                     if int(user_id) != int(friend_id):
-                        logger.info("POURQUOI SALE BATARD")
                         if int(friend_id) not in user_obj.friends_list:
-                            logger.info("POURQUOI SALE BATARD 2")
                             user_obj.friends_list.append(friend_id)
                     user_obj.save()
                 else:
                     return Response({"message": "Friend already added"}, status=status.HTTP_200_OK)
                 return Response({"message": "'" + friend_obj.username + "#" + str(friend_obj.user_id) + "' added to friend list"}, status=status.HTTP_200_OK)
         except Exception as error:
-            logger.info("\n\nERROR IN ADDFRIEND : %s", error)
             return Response({"message": "User doesn't exist"}, status=status.HTTP_200_OK)
         
 
@@ -274,18 +280,13 @@ class RemoveFriend(APIView):
         logger = logging.getLogger(__name__)
 
         data = request.data
-        logger.info("\n\nREMOVE FRIEND")
         user_id = data.get("userId")
-        logger.info("user_id : %s", user_id)
         friend_id = data.get("friendId")
-        logger.info("friend_id : %s", friend_id)
         user_obj = AppUser.objects.get(pk=user_id)
         if user_obj:
-            logger.info("list friend : %s", str(user_obj.friends_list))
             if friend_id in user_obj.friends_list:
                 user_obj.friends_list.remove(friend_id)
             user_obj.save()
-            logger.info("list friend after remove : %s\n\n", str(user_obj.friends_list))
             return Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Can't find user"}, status=status.HTTP_200_OK)
