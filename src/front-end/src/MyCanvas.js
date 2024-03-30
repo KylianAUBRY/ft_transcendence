@@ -56,7 +56,7 @@ let key3
 let key4
 let auth42
 let multiple = false
-let image
+let image = '/media/profil.png'
 let oneTime = 0
 
 const path = baseUrl + ':8000'
@@ -321,22 +321,6 @@ useEffect(() => {
       })
 
 
-
-
-
-
-
-
-
-/*
-    client.get(
-      "/api/logout",
-    ).then(function(res){
-      updateUser(false)
-      localStorage.setItem('token', '')
-    }).catch(function(error){
-     console.error(error)
-    })*/
     }
 
     
@@ -459,6 +443,9 @@ useEffect(() => {
   } else if (location.pathname === '/tournament' && props.isSize){
     updateSetState(40)
   } else if (location.pathname === '/online' && props.isSize){
+    
+
+
     const initialFormData8 = {
       player1: '',
       player2: '',
@@ -1209,6 +1196,7 @@ function affDecompte(){
       document.getElementById('badEmail2').innerText = t("home.badE")
       return
     }
+    console.log('login', email2, password2)
     client.post(
       "/api/login",
       {
@@ -1225,7 +1213,7 @@ function affDecompte(){
 
       localStorage.setItem('token', token1)
     
-
+      console.log('api/api/login', localStorage.getItem("token"))
       updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
@@ -1242,6 +1230,7 @@ function affDecompte(){
         console.error("Erreur lors de la requête de connexion :", error);
         refBadPassword.current.innerText = t("home.WPass")
       }).then(function(res){
+        console.log('api/user', localStorage.getItem("token"))
         fetch(baseUrl + ':8000/' + 'api/user', {
           method: 'GET',
           headers: {
@@ -1271,7 +1260,8 @@ function affDecompte(){
             localStorage.setItem("username", user.username)
             winRate = user.winRate
             userId = user.user_id
-            localStorage.setItem('userId', user.user_id)
+            console.log(user.user_id)
+            localStorage.setItem('userID', user.user_id)
             language = user.language
             color = user.color
             music = user.music
@@ -1279,7 +1269,13 @@ function affDecompte(){
             key2 = user.key2
             key3 = user.key3
             key4 = user.key4
- 
+            image = user.image
+            console.log(image)
+            const pp = document.getElementById('profil')
+            pp.src = baseUrl + ':8000' + image
+
+
+
         }).catch(function(err){
           console.error(err)
         })
@@ -1564,7 +1560,20 @@ function getChart() {
             ],
             hoverOffset: 4
           }]
-        }
+        },
+        options: {
+          plugins: {
+              legend: {
+                  labels: {
+                      color: 'black',
+                      font: {
+                          size: 16,
+                          weight: 'bold'
+                      }
+                  }
+              }
+          }
+      }
       })
   
         let can2 = document.getElementById('chart2')
@@ -1587,7 +1596,20 @@ function getChart() {
             ],
             hoverOffset: 4
           }]
-        }
+        },
+        options: {
+          plugins: {
+              legend: {
+                  labels: {
+                      color: 'black',
+                      font: {
+                          size: 16,
+                          weight: 'bold'
+                      }
+                  }
+              }
+          }
+      }
       })
       }
       ref1.current.innerText = t("home.nbGamePlayed") + nbGamePlayed
@@ -1697,16 +1719,6 @@ useEffect(() => {
         console.error(err)
       })
 
-
- /* client.get(
-    "/api/logout",
-  ).then(function(res){
-    navigate('/lobby')
-    updateUser(false)
-    localStorage.setItem('token', '')
-  }).catch(function(error){
-   console.error(error)
-  })*/
   }
   };
 }, []);
@@ -1720,7 +1732,7 @@ useEffect(() => {
     return (
         <div>
            {currentUser && state === 10 ? (
-            <button onClick={handleProfil} className='btnProfil'><img src='/profil.png' alt='profil' className='profil' id="profil"/></button>
+            <button onClick={handleProfil} className='btnProfil'><img src={baseUrl + ':8000' + image} alt='profil' className='profil' id="profil"/></button>
             ) : null}
             {isProfilView ? (
               <div className='profilView'>Your Profile

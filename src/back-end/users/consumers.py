@@ -11,8 +11,35 @@ from datetime import date
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
 
+
 class GameRoom(AsyncWebsocketConsumer):
     players = {}
+
+    async def CheckCancelGame(self, serv, timeFirstConnection):
+        logger = logging.getLogger(__name__)
+        while True:
+            if len(self.players[serv]) < 2:
+                time_now = timezone.now()
+                if (time_now - timeFirstConnection).total_seconds() > 5:
+                    logger.info("\n\nCANCEL CANCEL CANCEL CANCEL CANCEL CANCEL CANCEL CANCEL\n\n")
+                    await self.send(
+                        text_data=json.dumps({"type": "gameCanceled", "value": True})
+                    )
+                    # Delete server from list
+                    try:
+                        from . models import GameServerModel
+                        game_server = await sync_to_async(GameServerModel.objects.get)(pk=int(serv))
+                        if not game_server:
+                            logger.info('GameServerModel CANCEL Not Found : %s', error)
+                        await sync_to_async(game_server.delete)()
+                    except Exception as error:
+                        logger.info("Error CANCEL in GameServerModel--------------- : %s", error)
+                    break
+            else:
+                logger.info("\n\nBREAK BREAK BREAK BREKA BREAK BREAK BREAK\n\n")
+                break
+            await asyncio.sleep(1)
+            
 
     async def connect(self): 
         self.name_serv = self.scope['url_route']['kwargs']['room_name']
@@ -56,7 +83,8 @@ class GameRoom(AsyncWebsocketConsumer):
             "isDisconnect": False,
             "serv": serv,
         }
-        
+        if len(self.players[serv]) == 1:
+            asyncio.create_task(self.CheckCancelGame(serv, timezone.now()))
         if len(self.players[serv]) == 2:
             logger.info('launch game')
             asyncio.create_task(self.game_loop(serv))
