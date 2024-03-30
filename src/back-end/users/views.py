@@ -323,7 +323,7 @@ class Register42(APIView):
         data = request.data
 
         code_value = data.get('code')
-        print("\n\ncode_value :", code_value,file=sys.stderr)
+        # print("\n\ncode_value :", code_value,file=sys.stderr)
         # server_url = request.build_absolute_uri('/register42')
         host_without_port = request.get_host().split(':')[0]
         
@@ -331,7 +331,7 @@ class Register42(APIView):
         server_url = 'https://' + host_without_port + ':8000/register42'
         
         # Faire ce que vous voulez avec l'URL du serveur
-        print("\n\n\nURL du serveur :", server_url,file=sys.stderr)
+        # print("\n\n\nURL du serveur :", server_url,file=sys.stderr)
         
         import requests
         from . models import AppUser
@@ -343,21 +343,21 @@ class Register42(APIView):
             'redirect_uri': server_url,
         }
 
-        print("\n\n", files, file=sys.stderr)
-        print("\n\n", file=sys.stderr)
+        # print("\n\n", files, file=sys.stderr)
+        # print("\n\n", file=sys.stderr)
         response = requests.post(settings.API_TOKEN_URL, data=files)
-        print("response: ",response, file=sys.stderr)
+        # print("response: ",response, file=sys.stderr)
         if (response.status_code != status.HTTP_200_OK):
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response.json())
        
         access_token = response.json().get('access_token')
-        print("\n",access_token, '\n', file=sys.stderr)
+        # print("\n",access_token, '\n', file=sys.stderr)
         if (access_token is not None):
             inf = requests.get(settings.API_INFO_URL, params={'access_token': access_token})
             if (inf.status_code == status.HTTP_200_OK):
                 login = inf.json().get('login')
                 mail = inf.json().get('email')
-                print("\n\n login ", login, " email ", mail, file=sys.stderr)
+                # print("\n\n login ", login, " email ", mail, file=sys.stderr)
 
                 user_exists = AppUser.objects.filter(email=mail).exists()
                 if not user_exists:
