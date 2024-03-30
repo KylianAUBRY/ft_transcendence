@@ -25,9 +25,11 @@ class GameRoom(AsyncWebsocketConsumer):
                     await self.send(
                         text_data=json.dumps({"type": "gameCanceled", "value": True})
                     )
+                    break
             else:
                 logger.info("\n\nBREAK BREAK BREAK BREKA BREAK BREAK BREAK\n\n")
                 break
+            await asyncio.sleep(1)
             
 
     async def connect(self): 
