@@ -90,10 +90,12 @@ class GameRoom(AsyncWebsocketConsumer):
             asyncio.create_task(self.game_loop(serv))
   
 
-    async def disconnect(self, close_code): 
+    async def disconnect(self, close_code):
         logger = logging.getLogger(__name__)
 
         logger.info("\n\nIS THERE SOMEONE DISCONNECTING THERE AAAAAAAAAAAAAA\n\n")
+        logger.info("SCOPE : %s", self.scope)
+        logger.info("SCOPE USER %s", self.scope["user"])
         player_to_disconnect = None
         serv_name = None
         for name_serv, playerr in self.players.items():
