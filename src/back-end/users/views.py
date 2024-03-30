@@ -360,12 +360,12 @@ class Register42(APIView):
                 print("\n\n login ", login, " email ", mail, file=sys.stderr)
 
                 user_exists = AppUser.objects.filter(email=mail).exists()
-                print("\nuser_exists:",user_exists, '\n', file=sys.stderr)
                 if not user_exists:
+                    from django.contrib.auth import authenticate
                     # Créer un nouvel utilisateur
-                    user = AppUser.objects.create(username=login, email=mail, password=settings.API_DEFAULT_PASSWORD)
-                    serializer = UserLoginSerializer(user)
-                    user = serializer.check_user(data)
+                    user = AppUser.objects.create_user(username=login, email=mail, password=settings.API_DEFAULT_PASSWORD)
+                    
+                    user = authenticate(username=mail, password=settings.API_DEFAULT_PASSWORD)
                     try:
                         user_obj = AppUser.objects.get(email=data.get("email"))
                         if user_obj:
@@ -377,11 +377,12 @@ class Register42(APIView):
 
                     return Response(json.dumps({"token": token.key}), status=status.HTTP_200_OK)
                 else:
+                    from django.contrib.auth import authenticate
                     # Récupérer l'utilisateur existant
                     
                     user = AppUser.objects.get(email=mail)
-                    serializer = UserLoginSerializer(user)
-                    user = serializer.check_user(data)
+                    user = authenticate(username=mail, password=settings.API_DEFAULT_PASSWORD)
+                    
                     try:
                         user_obj = AppUser.objects.get(email=data.get("email"))
                         if user_obj:
