@@ -227,38 +227,25 @@ useEffect(() => {
   stopDecompte = true
 
   if (location.pathname.includes('/register42')){
-    /*setTimeout(function() {
+
+    if (oneTime === 0){
+    const urlParams = new URLSearchParams(url.split('?')[1]);
+    const code = urlParams.get('code');
+
+
+
+
+    localStorage.setItem('token', code)
+    
+    updateUser(true)
+    setTimeout(function() {
       setisLoginPage(false)
       if (childRef.current) {
         childRef.current.childFunction(2)
     }
     }, 800);
-    updateSetState(10)*/
-    if (oneTime === 0){
-    const urlParams = new URLSearchParams(url.split('?')[1]);
-    const code = urlParams.get('code');
-
-    console.log(code);
-  
-
-    fetch(baseUrl + ':8000/' + 'api/Register42', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        },
-      body: JSON.stringify({
-        code: code
-      }),
-    }).then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      console.log(response)
-      return response;
-    }).catch(function(err){
-      console.error(err)
-    })
-    oneTime++
+    updateSetState(10)
+ 
 }
 
   }
