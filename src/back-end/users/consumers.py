@@ -16,14 +16,17 @@ class GameRoom(AsyncWebsocketConsumer):
     players = {}
 
     async def CheckCancelGame(self, serv, timeFirstConnection):
+        logger = logging.getLogger(__name__)
         while True:
             if len(self.players[serv]) < 2:
                 time_now = timezone.now()
                 if (time_now - timeFirstConnection).total_seconds() > 5:
+                    logger.info("\n\nCANCEL CANCEL CANCEL CANCEL CANCEL CANCEL CANCEL CANCEL\n\n")
                     await self.send(
                         text_data=json.dumps({"type": "gameCanceled", "value": True})
                     )
             else:
+                logger.info("\n\nBREAK BREAK BREAK BREKA BREAK BREAK BREAK\n\n")
                 break
             
 
