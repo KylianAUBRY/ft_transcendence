@@ -747,6 +747,13 @@ useEffect(() => {
     websocket.onmessage = function(event) {
       const messageObj = JSON.parse(event.data); 
       const type = messageObj.type;
+
+      if (location.pathname !== '/online'){
+        websocket.close();
+        websocket = null
+      }
+
+
       if (type === 'playerId'){
        
         const messageObj = JSON.parse(event.data)
@@ -816,7 +823,6 @@ useEffect(() => {
   
   
       if (messageObj.gameIsFinished === true){
-        //clearInterval(intervalSendinfo);
         websocket.close();
         websocket = null
         
