@@ -236,7 +236,7 @@ useEffect(() => {
 
 
     localStorage.setItem('token', code)
-    
+    console.log('test')
     updateUser(true)
     setTimeout(function() {
       setisLoginPage(false)
@@ -277,6 +277,26 @@ useEffect(() => {
             key2 = user.key2
             key3 = user.key3
             key4 = user.key4
+
+            if (color === 'white')
+              setracketColor(0xffffff)
+            else if (color === 'dark grey')
+              setracketColor(0x373737)
+            else if (color === 'light blue')
+              setracketColor(0x7FDAD0)
+            else if (color === 'light grey')
+              setracketColor(0x898989)
+            else if (color === 'purple')
+              setracketColor(0x720F8F)
+            if (key1 && key2 && key3 && key4){
+            const newSelectedKeys = [...selectedKeys];
+            newSelectedKeys[0] = key1;
+            newSelectedKeys[1] = key2;
+            newSelectedKeys[2] = key3;
+            newSelectedKeys[3] = key4;
+            setSelectedKeys(newSelectedKeys);
+            }
+
             //setOptions()
         }).catch(function(err){
           console.error(err)
@@ -1144,7 +1164,7 @@ function affDecompte(){
       if (language === 'Spanish')
         i18n.changeLanguage('es')
 
-
+    
     } catch(err){
       console.error(err)
     }
@@ -1257,7 +1277,36 @@ function affDecompte(){
             key3 = user.key3
             key4 = user.key4
             image = user.image
-            console.log(image)
+
+            if (color === 'white')
+              setracketColor(0xffffff)
+            else if (color === 'dark grey')
+              setracketColor(0x373737)
+            else if (color === 'light blue')
+              setracketColor(0x7FDAD0)
+            else if (color === 'light grey')
+              setracketColor(0x898989)
+            else if (color === 'purple')
+              setracketColor(0x720F8F)
+
+              if (language === 'French'){
+                i18n.changeLanguage('fr')
+              } else if (language == 'Spanish'){
+                i18n.changeLanguage('es')
+              }else if (language === 'English'){
+                i18n.changeLanguage('en')
+              }
+          
+
+            if (key1 && key2 && key3 && key4){
+              const newSelectedKeys = [...selectedKeys];
+              newSelectedKeys[0] = key1;
+              newSelectedKeys[1] = key2;
+              newSelectedKeys[2] = key3;
+              newSelectedKeys[3] = key4;
+              setSelectedKeys(newSelectedKeys);
+            }
+            console.log(user)
             const pp = document.getElementById('profil')
             pp.src = baseUrl + ':8000' + image
 
@@ -1388,6 +1437,7 @@ function affDecompte(){
               key2 = user.key2
               key3 = user.key3
               key4 = user.key4
+       
 
           }).catch(function(err){
             console.error(err)
@@ -1428,19 +1478,6 @@ function affDecompte(){
     }).catch(function(err){
       console.error(err)
     })
-
-    /*
-    client.get(
-      "/api/logout",
-    ).then(function(res){
-      updateUser(false)
-      localStorage.setItem('token', '')
-      navigate('/')
-     
-      //setOptionsDefault()
-    }).catch(function(error){
-     console.error(error)
-    })*/
   }
 
 
@@ -1515,6 +1552,30 @@ function getChart() {
         key3 = user.key3
         key4 = user.key4
         image = user.image
+        if (color === 'white')
+        setracketColor(0xffffff)
+      else if (color === 'dark grey')
+        setracketColor(0x373737)
+      else if (color === 'light blue')
+        setracketColor(0x7FDAD0)
+      else if (color === 'light grey')
+        setracketColor(0x898989)
+      else if (color === 'purple')
+        setracketColor(0x720F8F)
+
+        if (language === 'French'){
+          i18n.changeLanguage('fr')
+        } else if (language == 'Spanish'){
+          i18n.changeLanguage('es')
+        }else if (language === 'English'){
+          i18n.changeLanguage('en')
+        }
+        const newSelectedKeys = [...selectedKeys];
+        newSelectedKeys[0] = key1;
+        newSelectedKeys[1] = key2;
+        newSelectedKeys[2] = key3;
+        newSelectedKeys[3] = key4;
+        setSelectedKeys(newSelectedKeys);
         console.log(image)
 
 
@@ -1740,9 +1801,8 @@ useEffect(() => {
                   </div>
                   <div className='history'>
                   {matchArray.map((matchObject, index) => (
-                        <Match key={index} matchObject={matchObject} style={matchObject.isWin ? { color: 'green' } : { color: 'green' }}/>
+                        <Match key={index} matchObject={matchObject} style={matchObject.isWin ? { backgroundColor: 'green' } : { backgroundColor: 'red' }}/>
                     ))}
-    
                   </div>
                   
                 </div>

@@ -747,9 +747,8 @@ useEffect(() => {
       const messageObj = JSON.parse(event.data); 
       const type = messageObj.type;
 
-      console.log('test', location.pathname)
       if (location.pathname !== '/online'){
-        console.log('bugggggg')
+        
         websocket.close();
         websocket = null
         updateSetState(22)
@@ -857,7 +856,10 @@ useEffect(() => {
           winnerTournament.player = messageObj.player_1_username
         } else if (messageObj.player_2_score === 5){
           winnerTournament.player = messageObj.player_2_username
+        } else {
+          winnerTournament.player = messageObj.username
         }
+
         updateSetState(22)
         playerId = -1
         localStorage.setItem('playerId','-1')
