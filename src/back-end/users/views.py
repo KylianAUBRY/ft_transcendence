@@ -36,8 +36,8 @@ class UserRegister(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 # Post request to login user
-@authentication_classes([])
 class UserLogin(APIView):
+    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -48,6 +48,11 @@ class UserLogin(APIView):
         serializer = UserLoginSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.check_user(data)
+            try:
+                request.user.auth_token.delete()
+                logout(request)
+            except Exception as error:
+                logger.info("LOGOUT ERROR 3 : %s", error)
             login(request, user)
 
             try:
@@ -201,8 +206,23 @@ class JoinQueue(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        logger = logging.getLogger(__name__)
         data = request.data
         user_id = data.get("userId")
+        try:
+            player = WaitingPlayerModel.objects.get(player_id=user_id)
+            if player:
+                return Response({'message': 'You are already in queue on this account'})
+        except Exception as error:
+            logger.info("\n\nJOINQUEUE ERROR WAITINGPLAYER : %s", error)
+
+        try:
+            game = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id)).first()
+            if game:
+                return Response({'message': 'You are already in queue on this account'})
+        except Exception as error:
+            logger.info("\n\nJOINQUEUE ERROR WAITINGPLAYER : %s", error)
+
         WaitingPlayerModel.objects.create(player_id=user_id)
         return Response({'message': 'You have joined the queue.'}, status=status.HTTP_200_OK)
 
@@ -249,7 +269,8 @@ class ExitQueue(APIView):
             game_server.state = 'waiting'
             game_server.save()
         return Response({"message": 'You left the queue'}, status=status.HTTP_200_OK)
-    
+
+
 class AddFriend(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -276,7 +297,7 @@ class AddFriend(APIView):
                 return Response({"message": "'" + friend_obj.username + "#" + str(friend_obj.user_id) + "' added to friend list"}, status=status.HTTP_200_OK)
         except Exception as error:
             return Response({"message": "User doesn't exist"}, status=status.HTTP_200_OK)
-        
+
 
 class RemoveFriend(APIView):
     permission_classes = [permissions.AllowAny]
@@ -296,7 +317,7 @@ class RemoveFriend(APIView):
             return Response({"message": "Friend deleted"}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Can't find user"}, status=status.HTTP_200_OK)
-        
+
 
 class GetFriendList(APIView):
     permission_classes = [permissions.AllowAny]
