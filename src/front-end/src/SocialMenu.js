@@ -22,6 +22,33 @@ function displayList(){
     var lineOne = document.getElementById('line1');
     var lineTwo = document.getElementById('line2');
     var lineThree = document.getElementById('line3');
+    if (props.currentUser !== true){
+      fetch(props.baseUrl + ':8000/' + 'api/GetFriendList', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Token " + props.csrfToken
+            },
+          body: JSON.stringify({
+            userId: props.userId
+          }),
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        }).then(function(data){
+          if (data.friend_list.length !== nb){
+            setFriend(data.friend_list)
+            setNb(data.friend_list.length)
+            console.log(data.friend_list)
+          }
+            
+  
+        }).catch(function(err){
+          console.error(err)
+        });
+  }
     if(list.classList.contains("active")) {
         btn.classList.remove("active")
         list.classList.remove("active")
@@ -157,33 +184,7 @@ function handleAddFriend(e){
       });
 }
 
-if (props.currentUser !== true){
-    fetch(props.baseUrl + ':8000/' + 'api/GetFriendList', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": "Token " + props.csrfToken
-          },
-        body: JSON.stringify({
-          userId: props.userId
-        }),
-      }).then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      }).then(function(data){
-        if (data.friend_list.length !== nb){
-          setFriend(data.friend_list)
-          setNb(data.friend_list.length)
-          console.log(data.friend_list)
-        }
-          
 
-      }).catch(function(err){
-        console.error(err)
-      });
-}
 
         
 
@@ -243,6 +244,7 @@ const handleChangeMusic = event => {
     }
 
     window.addEventListener('keydown', handleKeyPress);
+    updateOptions()
 
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
