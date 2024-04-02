@@ -13,6 +13,7 @@ urlpatterns = [
     path('CheckJoinGame', views.CheckJoinGame.as_view(), name='CheckJoinGame'),
     path('ExitQueue', views.ExitQueue.as_view(), name='ExitQueue'),
 	path('URL42', views.URL42.as_view(), name='URL42'),
+	path('Register42', views.Register42.as_view(), name='Register42'),
 	path('AddFriend', views.AddFriend.as_view(), name='AddFriend'),
 	path('RemoveFriend', views.RemoveFriend.as_view(), name='RemoveFriend'),
 	path('GetFriendList', views.GetFriendList.as_view(), name='GetFriendList')

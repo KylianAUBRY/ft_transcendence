@@ -19,7 +19,7 @@ import dotenv
 
 dotenv.load_dotenv()
 
-REQUIRED_ENV_VARIABLES = ['POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'DATABASE_HOST_NAME', 'DATABASE_PORT', 'API_CLIENT_ID', 'API_CLIENT_SECRET', 'API_CONNECT_URL', 'API_TOKEN_URL', 'API_INFO_URL', 'API_KEY']
+REQUIRED_ENV_VARIABLES = ['POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'DATABASE_HOST_NAME', 'DATABASE_PORT', 'API_CLIENT_ID', 'API_CLIENT_SECRET', 'API_CONNECT_URL', 'API_TOKEN_URL', 'API_INFO_URL', 'API_KEY', 'API_DEFAULT_PASSWORD']
 
 # Checking for the existence of environment variables.
 for env_variable in REQUIRED_ENV_VARIABLES:
@@ -37,6 +37,7 @@ API_CONNECT_URL = os.environ['API_CONNECT_URL']
 API_TOKEN_URL = os.environ['API_TOKEN_URL']
 API_INFO_URL = os.environ['API_INFO_URL']
 SECRET_KEY = os.environ['API_KEY']
+API_DEFAULT_PASSWORD = os.environ['API_DEFAULT_PASSWORD']
 
 # -------------------------- #
 
@@ -59,11 +60,16 @@ LOGGING = {
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
                 'formatter': 'default',
-            }
+            },
+            'error_console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'stream': 'ext://sys.stderr',  # Envoyer les logs d'erreur vers la sortie d'erreur
+            },
         },
         'loggers': {
             '*': {
-                'handlers': ['console'],
+                'handlers': ['console', 'error_console'],
                 'level': 'DEBUG',
                 'propagate': True,
             }
@@ -233,4 +239,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Niveau de journalisation par défaut
-
