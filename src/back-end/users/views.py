@@ -218,13 +218,6 @@ class CheckJoinGame(APIView):
         user_id = data.get("userId")
         game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id)).first()
         if game_server:
-            from django.utils import timezone
-            # if (game_server.firstPlayerId == user_id):
-            #     game_server.player1LastRequest = (timezone.now()).total_seconds()
-            #     game_server.save()
-            # if (game_server.secondPlayerId == user_id):
-            #     game_server.player2LastRequest = (timezone.now()).total_seconds()
-            #     game_server.save()
             if (game_server.state == 'full'):
                 return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
             else:

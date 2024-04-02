@@ -14,7 +14,6 @@ def updateUserOption(user_id, language, color, music, key1, key2, key3, key4):
 
 import logging
 from django.conf import settings
-from django.utils import timezone
 def ManageGameQueue():
     logger = logging.getLogger(__name__)
     if (settings.IS_SEARCHING == False):
@@ -28,12 +27,6 @@ def ManageGameQueue():
                     game_server.firstPlayerId = player1.player_id
                     game_server.save()
                     player1.delete()
-            # else:
-            #     timeSinceLastRequest = (timezone.now()).total_seconds() - game_server.player1LastRequest
-            #     if timeSinceLastRequest > 3:
-            #         game_server.firstPlayerId = -1
-            #         game_server.player1LastRequest = 0
-            #         game_server.save()
 
             if game_server.secondPlayerId == -1:
                 player2 = WaitingPlayerModel.objects.first()
@@ -41,12 +34,6 @@ def ManageGameQueue():
                     game_server.secondPlayerId = player2.player_id
                     game_server.save()
                     player2.delete()
-            # else:
-            #     timeSinceLastRequest = (timezone.now()).total_seconds() - game_server.player2LastRequest
-            #     if timeSinceLastRequest > 3:
-            #         game_server.secondPlayerId = -1
-            #         game_server.player2LastRequest = 0
-            #         game_server.save()
 
             # Actualiser le game_server avec player info et change le game_server en full
             if game_server.firstPlayerId != -1 and game_server.secondPlayerId != -1:
