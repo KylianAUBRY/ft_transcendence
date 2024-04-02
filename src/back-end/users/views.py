@@ -212,14 +212,14 @@ class JoinQueue(APIView):
         try:
             player = WaitingPlayerModel.objects.get(player_id=user_id)
             if player:
-                return Response({'message': 'You are already in queue on this account'})
+                return Response({'message': 'You are already in queue on this account'}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as error:
             logger.info("\n\nJOINQUEUE ERROR WAITINGPLAYER : %s", error)
 
         try:
             game = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id)).first()
             if game:
-                return Response({'message': 'You are already in queue on this account'})
+                return Response({'message': 'You are already in queue on this account'}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as error:
             logger.info("\n\nJOINQUEUE ERROR WAITINGPLAYER : %s", error)
 
