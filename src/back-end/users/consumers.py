@@ -217,14 +217,14 @@ class GameRoom(AsyncWebsocketConsumer):
         # Wait player to be ready to start the game
         while isStarting==False and self.players[serv][player1_id]["isDisconnect"] == False and self.players[serv][player2_id]["isDisconnect"] == False:
             if len(self.players[serv]) == 2:
-                if (self.players[serv][player1_id]["isReady"] == True and self.players[serv][player2_id]["isReady"] == True):
-                    isStarting = True
-                    ball_dx = random.choice([-1, 1])
-                    while True:
-                        ball_dy = random.uniform(-0.5, 0.5)
-                        if ball_dy != 0:
-                            break
-                    timeStartGame = timezone.now()
+                #if (self.players[serv][player1_id]["isReady"] == True and self.players[serv][player2_id]["isReady"] == True):
+                isStarting = True
+                ball_dx = random.choice([-1, 1])
+                while True:
+                    ball_dy = random.uniform(-0.5, 0.5)
+                    if ball_dy != 0:
+                        timeStartGame = timezone.now()
+                        break
             await asyncio.sleep(1)
 
         await self.channel_layer.group_send(
@@ -241,7 +241,7 @@ class GameRoom(AsyncWebsocketConsumer):
             },
         )
 
-        await asyncio.sleep(timePerFrame)
+        await asyncio.sleep(3)
 
         while gameIsFinished==False and self.players[serv][player1_id]["isDisconnect"] == False and self.players[serv][player2_id]["isDisconnect"] == False:
             if (isGoal):

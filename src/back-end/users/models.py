@@ -77,7 +77,10 @@ class HistoryModel(models.Model):
 class GameServerModel(models.Model):
 	serverId = models.AutoField(primary_key=True)
 	firstPlayerId = models.IntegerField(default=-1)
+	player1LastRequest = models.FloatField(default=0)
 	secondPlayerId = models.IntegerField(default=-1)
+	player2LastRequest = models.FloatField(default=0)
+	timeSinceLastRequest = models.FloatField(default=0)
 	state = models.CharField(max_length=10, default="waiting")
 	def __str__(self):
 		return f"{self.serverId}"

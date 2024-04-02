@@ -11,6 +11,13 @@ def custom_validation(data):
     if not email or UserModel.objects.filter(email=email).exists():
         raise ValidationError('choose another email')
     ##
+    parts = email.split('@')
+    if (len(parts) == 2):
+        domain_part = parts[1]
+        domain_parts = domain_part.split('.')
+        if (domain_parts[0] == "42lehavre"):
+            raise ValidationError('42lehavre email domain is forbidden')
+    ##   
     if not password or len(password) < 8:
         raise ValidationError('choose another password, min 8 characters')
     ##
