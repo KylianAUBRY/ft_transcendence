@@ -1184,9 +1184,6 @@ function affDecompte(){
     event.preventDefault()
 
 
-    console.log(localStorage.getItem('token'))
-    if (localStorage.getItem('token'))
-      return
 
     refBadPassword.current.innerText = ''
     document.getElementById('badEmail2').innerText = ''
@@ -1329,11 +1326,6 @@ function affDecompte(){
 
   function handleRegister(event){
     event.preventDefault()
-
-
-    console.log(localStorage.getItem('token'))
-    if (localStorage.getItem('token'))
-      return
 
     document.getElementById('badEmail').innerText = ''
     document.getElementById('badLogin').innerText = ''
