@@ -8,6 +8,7 @@ let musicValue
 let colorValue
 
 function SocialMenu( props ) {
+  console.log(props.selectedKeys[0], props.selectedKeys[1], props.selectedKeys[2], props.selectedKeys[3])
     const [play1, { stop: stop1 }] = useSound('music1.mp3', { loop: true, volume: 0.5 })
     const [play2, { stop: stop2 }] = useSound('music2.mp3', { loop: true, volume: 0.5 })
     const [play3, { stop: stop3 }] = useSound('music3.mp3', { loop: true, volume: 0.5 })
@@ -22,7 +23,6 @@ function displayList(){
     var lineOne = document.getElementById('line1');
     var lineTwo = document.getElementById('line2');
     var lineThree = document.getElementById('line3');
-    if (props.currentUser !== true){
       fetch(props.baseUrl + ':8000/' + 'api/GetFriendList', {
           method: 'POST',
           headers: {
@@ -48,7 +48,6 @@ function displayList(){
         }).catch(function(err){
           console.error(err)
         });
-  }
     if(list.classList.contains("active")) {
         btn.classList.remove("active")
         list.classList.remove("active")
@@ -101,7 +100,7 @@ function updateOptions(){
     musicValue = 0
   if (!colorValue)
     colorValue  = 'white'
-  console.log(colorValue, musicValue)
+  console.log(props.selectedKeys[0], props.selectedKeys[1], props.selectedKeys[2], props.selectedKeys[3])
     fetch(props.baseUrl + ':8000/' + 'api/UpdateUserOption', {
         method: 'POST',
         headers: {
