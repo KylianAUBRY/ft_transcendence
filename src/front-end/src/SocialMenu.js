@@ -8,7 +8,6 @@ let musicValue
 let colorValue
 
 function SocialMenu( props ) {
-  console.log(props.selectedKeys[0], props.selectedKeys[1], props.selectedKeys[2], props.selectedKeys[3])
     const [play1, { stop: stop1 }] = useSound('music1.mp3', { loop: true, volume: 0.5 })
     const [play2, { stop: stop2 }] = useSound('music2.mp3', { loop: true, volume: 0.5 })
     const [play3, { stop: stop3 }] = useSound('music3.mp3', { loop: true, volume: 0.5 })
@@ -41,7 +40,6 @@ function displayList(){
           if (data.friend_list.length !== nb){
             setFriend(data.friend_list)
             setNb(data.friend_list.length)
-            console.log(data.friend_list)
           }
             
   
@@ -78,7 +76,6 @@ function displayList(){
             const user = res
             localStorage.setItem("userID", user.user_id)
             props.userId = localStorage.getItem('userID')
-          console.log(localStorage.getItem('userID'))
         }).catch(function(err){
           console.error(err)
         })
@@ -100,7 +97,6 @@ function updateOptions(){
     musicValue = 0
   if (!colorValue)
     colorValue  = 'white'
-  console.log(props.selectedKeys[0], props.selectedKeys[1], props.selectedKeys[2], props.selectedKeys[3])
     fetch(props.baseUrl + ':8000/' + 'api/UpdateUserOption', {
         method: 'POST',
         headers: {
@@ -169,7 +165,6 @@ function handleAddFriend(e){
           if (data.friend_list.length !== nb){
             setFriend(data.friend_list)
             setNb(data.friend_list.length)
-            console.log(data.friend_list)
           }
             
   
@@ -277,7 +272,6 @@ const handleChangeMusic = event => {
         if (username !== '')
             setUsername(props.username) 
 
-console.log(formData, props.userId, username, password)
       fetch(props.baseUrl + ':8000/' + 'api/UpateUserInfo', {
         method: 'POST',
         headers: {
@@ -305,7 +299,6 @@ console.log(formData, props.userId, username, password)
             const user = res
             localStorage.setItem("userID", user.user_id)
             const image = user.image
-            console.log(image)
 
             const pp = document.getElementById('profil')
             pp.src = props.baseUrl + ':8000' + image

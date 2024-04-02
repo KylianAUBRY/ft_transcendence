@@ -9,12 +9,15 @@ const Match = (matchObject) => {
     var match = document.getElementById(`match${id}`)
 
 
-    console.log('match   ', matchObject)
-   /* if (matchObject.matchObject.isWin){
+    if (matchObject.matchObject.isWin){
         try{
             match.style.background = 'green'
         } catch{}
-    }*/
+    } else {
+        try{
+            match.style.background = 'red'
+        } catch{}
+    }
         
 
     const opponentUsername = matchObject.matchObject.opponentUsername
