@@ -4,7 +4,6 @@ function Friend( props ) {
 
 
     function handleDelete(){
-        console.log('delete', props.friend.user_id)
         fetch(props.baseUrl + ':8000/' + 'api/RemoveFriend', {
             method: 'POST',
             headers: {
@@ -39,7 +38,6 @@ function Friend( props ) {
               if (data.friend_list.length !== props.nb){
                 props.setFriend(data.friend_list)
                 props.setNb(data.friend_list.length)
-                console.log(data.friend_list)
               }
                 
       
@@ -71,7 +69,6 @@ function Friend( props ) {
     }
 
 
-    console.log('friend', props.friend.username)
     let isOnline
     if (props.friend.isOnline === true)
         isOnline = props.t('home.online')

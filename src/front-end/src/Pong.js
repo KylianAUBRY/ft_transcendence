@@ -696,7 +696,7 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 
 
 
-  const websocketUrl = socketUrl + '://' + newUrl + ':8000/ws/game/' + gameId + '/'
+  const websocketUrl = socketUrl + '://' + newUrl + ':8000/ws/game/' + gameId + '/' + localStorage.getItem('token') + '/'
    
   let websocket;
 
@@ -766,6 +766,20 @@ useEffect(() => {
         websocket.close();
         websocket = null
         
+        ball.material = new THREE.MeshBasicMaterial({ color: 0xff1500 });
+        racket1.position.z = 0
+        racket2.position.z = 0
+        ball.vector.x = 0
+        ball.vector.z = 0
+        ball.speed = 0
+        gsap.to(ball.position, {
+          duration:2,
+          z: 0,
+          x: 0,
+          onComplete: () => {
+            ball.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+          }
+        })
         winnerTournament.player = 'game canceled'
   
         updateSetState(22)
@@ -857,7 +871,7 @@ useEffect(() => {
         } else if (messageObj.player_2_score === 5){
           winnerTournament.player = messageObj.player_2_username
         } else {
-          winnerTournament.player = messageObj.username
+          winnerTournament.player = username
         }
 
         updateSetState(22)

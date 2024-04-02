@@ -236,7 +236,6 @@ useEffect(() => {
 
 
     localStorage.setItem('token', code)
-    console.log('test')
     updateUser(true)
     setTimeout(function() {
       setisLoginPage(false)
@@ -597,9 +596,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
       }
       return response.json();
     }).then(async data => {
-      console.log('search avant boucle ', isSearch)
       while (gameId === null && isSearch === true) {
-        console.log('checkjoingame', isSearch)
         const data = await checkJoinGame();
         if (data.hasOwnProperty('gameId')) {
           gameId = data.gameId
@@ -610,7 +607,6 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         await new Promise(resolve => setTimeout(resolve, 1000)); // Attendez 1 seconde avant de renvoyer la requête
       }
       if (isSearch === false){
-        console.log('test exit queue')
         try {
           const response = await fetch(baseUrl + ':8000/' + 'api/ExitQueue', {
             method: 'POST',
@@ -626,7 +622,6 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
-          console.log('tets apres exit')
           const data = await response.json();
           return data;
         } catch (error) {
@@ -1187,6 +1182,12 @@ function affDecompte(){
 
   function handleconnection(event) {
     event.preventDefault()
+
+
+    console.log(localStorage.getItem('token'))
+    if (localStorage.getItem('token'))
+      return
+
     refBadPassword.current.innerText = ''
     document.getElementById('badEmail2').innerText = ''
     document.getElementById('badPassword2').innerText = ''
@@ -1203,7 +1204,6 @@ function affDecompte(){
       document.getElementById('badEmail2').innerText = t("home.badE")
       return
     }
-    console.log('login', email2, password2)
     client.post(
       "/api/login",
       {
@@ -1219,8 +1219,10 @@ function affDecompte(){
       var token1 = chaine.substring(debutToken, finToken);
 
       localStorage.setItem('token', token1)
+
+
+
     
-      console.log('api/api/login', localStorage.getItem("token"))
       updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
@@ -1237,7 +1239,6 @@ function affDecompte(){
         console.error("Erreur lors de la requête de connexion :", error);
         refBadPassword.current.innerText = t("home.WPass")
       }).then(function(res){
-        console.log('api/user', localStorage.getItem("token"))
         fetch(baseUrl + ':8000/' + 'api/user', {
           method: 'GET',
           headers: {
@@ -1267,7 +1268,6 @@ function affDecompte(){
             localStorage.setItem("username", user.username)
             winRate = user.winRate
             userId = user.user_id
-            console.log(user.user_id)
             localStorage.setItem('userID', user.user_id)
             language = user.language
             color = user.color
@@ -1306,7 +1306,6 @@ function affDecompte(){
               newSelectedKeys[3] = key4;
               setSelectedKeys(newSelectedKeys);
             }
-            console.log(user)
             const pp = document.getElementById('profil')
             pp.src = baseUrl + ':8000' + image
 
@@ -1330,6 +1329,12 @@ function affDecompte(){
 
   function handleRegister(event){
     event.preventDefault()
+
+
+    console.log(localStorage.getItem('token'))
+    if (localStorage.getItem('token'))
+      return
+
     document.getElementById('badEmail').innerText = ''
     document.getElementById('badLogin').innerText = ''
     document.getElementById('badPassword').innerText = ''
@@ -1383,8 +1388,12 @@ function affDecompte(){
         var finToken = chaine.indexOf('"', debutToken);
         var token1 = chaine.substring(debutToken, finToken);
 
+
         localStorage.setItem('token', token1)
         
+
+
+
         updateUser(true)
         var loginPage = document.getElementById('loginPage');
         loginPage.classList.remove('visible');
@@ -1576,7 +1585,6 @@ function getChart() {
         newSelectedKeys[2] = key3;
         newSelectedKeys[3] = key4;
         setSelectedKeys(newSelectedKeys);
-        console.log(image)
 
 
         const pp = document.getElementById('profil')
@@ -1692,6 +1700,7 @@ function getChart() {
           try {
             const objets = data;
             setMatchArray(objets);
+            setMatchArray(objets);
         } catch (error) {
             console.error("Erreur lors du traitement des données :", error);
         }
@@ -1738,8 +1747,6 @@ function handle42register(){
 
 useEffect(() => {
   return () => {
-    // Effectuer des actions de nettoyage ou de démontage ici
-    console.log('Le composant est démonté');
        if (currentUser === true){
 
 
@@ -1801,7 +1808,7 @@ useEffect(() => {
                   </div>
                   <div className='history'>
                   {matchArray.map((matchObject, index) => (
-                        <Match key={index} matchObject={matchObject} style={matchObject.isWin ? { backgroundColor: 'green' } : { backgroundColor: 'red' }}/>
+                        <Match key={index} matchObject={matchObject}/>
                     ))}
                   </div>
                   
@@ -1850,9 +1857,9 @@ useEffect(() => {
           </div>
         </form>
         </div>
-        <div className='btn42'>
+        {/* <div className='btn42'>
             <button className='btnlogin' onClick={handle42register}>Login with 42</button>      
-          </div>
+          </div> */}
       </div>
       ) : null}
     { state === 10 ? (
