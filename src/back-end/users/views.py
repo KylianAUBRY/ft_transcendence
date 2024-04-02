@@ -48,6 +48,7 @@ class UserLogin(APIView):
         serializer = UserLoginSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.check_user(data)
+            login(request, user)
 
             try:
                 from . models import AppUser
@@ -67,24 +68,29 @@ class UserLogout(APIView):
 
     def post(self, request):
         logger = logging.getLogger(__name__)
-
         try:
             data = request.data
             user_id = data.get("userId")
+            logger.info("\n\nLOGOUT INFO USER_ID : %s", user_id)
             from . models import AppUser
             user_obj = AppUser.objects.get(pk=user_id)
+            logger.info("\n\nUSER : %s", str(user_obj))
             if user_obj:
                 user_obj.isOnline = False
                 user_obj.save()
         except Exception as error:
+            logger.info("LOGOUT ERROR 1 : %s", error)
             pass
         
         try:
             request.user.auth_token.delete()
         except Exception as error:
-            logger.info("LOGOUT ERRRO : %s", error)
+            logger.info("LOGOUT ERROR 2 : %s", error)
 
-        logout(request)
+        try:
+            logout(request)
+        except Exception as error:
+            logger.info("LOGOUT ERROR 3 : %s", error)
         return Response(status=status.HTTP_200_OK)
 
 # Get info of user connected

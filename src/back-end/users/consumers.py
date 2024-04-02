@@ -36,7 +36,7 @@ class GameRoom(AsyncWebsocketConsumer):
                         logger.info("Error CANCEL in GameServerModel--------------- : %s", error)
                     break
             else:
-                logger.info("\n\nBREAK BREAK BREAK BREKA BREAK BREAK BREAK\n\n")
+                logger.info("\n\nBREAK BREAK BREAK BREAK BREAK BREAK BREAK\n\n")
                 break
             await asyncio.sleep(1)
             
