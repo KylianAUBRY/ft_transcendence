@@ -159,6 +159,8 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
     }, []);
     
 	function startBallMovement() {
+  ball.position.x = 0
+  ball.position.z = 0
 	let ball_z;
 	let ball_x =  Math.random() < 0.5 ? -1 : 1;
 	while (1) {
@@ -696,7 +698,7 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 
 
 
-  const websocketUrl = socketUrl + '://' + newUrl + ':8000/ws/game/' + gameId + '/' + localStorage.getItem('token') + '/'
+  const websocketUrl = socketUrl + '://' + newUrl + ':8000/ws/game/' + gameId + '/'
    
   let websocket;
 

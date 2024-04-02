@@ -541,7 +541,7 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
 
   async function searchOpponent(){
 
-
+    console.log(localStorage.getItem('token'))
 
     const buttonS = document.getElementById('btnSearch')
     buttonS.style.display = 'none'
@@ -556,9 +556,22 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
 
 
 
-    client.get("/api/user")
-      .then(res => {
-        user = res.data.user
+    fetch(baseUrl + ':8000/' + 'api/user', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": "Token " + localStorage.getItem("token")
+      }
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    }).then(res =>{
+
+
+    
+        user = res
         LongestExchange = user.LongestExchange
         aceRate = user.aceRate
         nbAce = user.nbAce
@@ -569,9 +582,14 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         nbPointMarked = user.nbPointMarked
         nbTouchedBall = user.nbTouchedBall
         name = user.username
+        localStorage.setItem("username", user.username)
         winRate = user.winRate
         userId = user.user_id
-        localStorage.setItem('userId', user.user_id)
+
+
+
+
+
         language = user.language
         color = user.color
         music = user.music
@@ -579,6 +597,48 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
         key2 = user.key2
         key3 = user.key3
         key4 = user.key4
+        image = user.image
+
+
+
+
+        if (color === 'white')
+          setracketColor(0xffffff)
+        else if (color === 'dark grey')
+          setracketColor(0x373737)
+        else if (color === 'light blue')
+          setracketColor(0x7FDAD0)
+        else if (color === 'light grey')
+          setracketColor(0x898989)
+        else if (color === 'purple')
+          setracketColor(0x720F8F)
+
+          if (language === 'French'){
+            i18n.changeLanguage('fr')
+          } else if (language == 'Spanish'){
+            i18n.changeLanguage('es')
+          }else if (language === 'English'){
+            i18n.changeLanguage('en')
+          }
+      
+
+        if (key1 && key2 && key3 && key4){
+          const newSelectedKeys = [...selectedKeys];
+          newSelectedKeys[0] = key1;
+          newSelectedKeys[1] = key2;
+          newSelectedKeys[2] = key3;
+          newSelectedKeys[3] = key4;
+          setSelectedKeys(newSelectedKeys);
+        }
+        
+        
+        console.log(user)
+
+
+
+
+    }).catch(function(err){
+      console.error(err)
     }).then(function(res){
   
     fetch(baseUrl + ':8000/' + 'api/JoinQueue', {
@@ -650,6 +710,10 @@ const[findOnlineGame, setFindOnlineGame] = useState(false)
 
     }).catch(error => {
       console.error('There was a problem JoinQueue:', error);
+      setTimeout(function() {
+        setisOnlineLoad(false)
+        exitTournament()
+      }, 500); 
     })
 
 
@@ -1438,7 +1502,8 @@ function affDecompte(){
               key2 = user.key2
               key3 = user.key3
               key4 = user.key4
-       
+            console.log(user)
+            console.log(localStorage.getItem('token'))
 
           }).catch(function(err){
             console.error(err)

@@ -6,6 +6,9 @@ function App() {
   const [isSize, setIsSize] = useState(0);
   const [oneTime, setoneTime] = useState(true)
 
+
+
+
   const checkWindowSize = () => {
     if (window.innerHeight >= 720 && window.innerWidth >= 1280) {
       setIsSize(1);
