@@ -51,6 +51,7 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 	key4 = models.CharField(max_length=50, default="ArrowRight")
 	is_staff = models.BooleanField(default=False)
 	isOnline = models.BooleanField(default=False)
+	isInGame = models.BooleanField(default=False)
 	friends_list = ArrayField(models.IntegerField(default=0), default=list)
 	image = models.ImageField(upload_to='profile_pic/', default='profil.png')
 	# image = models.BinaryField(null=True)

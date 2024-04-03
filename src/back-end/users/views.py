@@ -239,6 +239,10 @@ class CheckJoinGame(APIView):
         game_server = GameServerModel.objects.filter(Q(firstPlayerId=user_id) | Q(secondPlayerId=user_id)).first()
         if game_server:
             if (game_server.state == 'full'):
+                from . models import AppUser
+                user_obj = AppUser.objects.get(pk=user_id)
+                user_obj.isInGame = True
+                user_obj.save()
                 return Response({'gameId': game_server.serverId}, status=status.HTTP_200_OK)
             else:
                 return Response({'message': 'Searching for a game.'}, status=status.HTTP_200_OK)
@@ -382,19 +386,20 @@ class Register42(APIView):
         if (access_token is not None):
             inf = requests.get(settings.API_INFO_URL, params={'access_token': access_token})
             if (inf.status_code == status.HTTP_200_OK):
-                login = inf.json().get('login')
-                mail = inf.json().get('email')
+                username = inf.json().get('login')
+                email = inf.json().get('email')
                 # print("\n\n login ", login, " email ", mail, file=sys.stderr)
 
-                user_exists = AppUser.objects.filter(email=mail).exists()
+                user_exists = AppUser.objects.filter(email=email).exists()
                 if not user_exists:
                     from django.contrib.auth import authenticate
                     # Créer un nouvel utilisateur
-                    user = AppUser.objects.create_user(username=login, email=mail, password=settings.API_DEFAULT_PASSWORD)
+                    user = AppUser.objects.create_user(username=username, email=email, password=settings.API_DEFAULT_PASSWORD)
                     
-                    user = authenticate(username=mail, password=settings.API_DEFAULT_PASSWORD)
+                    user = authenticate(username=email, password=settings.API_DEFAULT_PASSWORD)
+                    login(request, user)
                     try:
-                        user_obj = AppUser.objects.get(email=data.get("email"))
+                        user_obj = AppUser.objects.get(email=email)
                         if user_obj:
                             user_obj.isOnline = True
                             user_obj.save()
@@ -407,11 +412,12 @@ class Register42(APIView):
                     from django.contrib.auth import authenticate
                     # Récupérer l'utilisateur existant
                     
-                    user = AppUser.objects.get(email=mail)
-                    user = authenticate(username=mail, password=settings.API_DEFAULT_PASSWORD)
+                    user = AppUser.objects.get(email=email)
+                    user = authenticate(username=email, password=settings.API_DEFAULT_PASSWORD)
+                    login(request, user)
                     
                     try:
-                        user_obj = AppUser.objects.get(email=data.get("email"))
+                        user_obj = AppUser.objects.get(email=email)
                         if user_obj:
                             user_obj.isOnline = True
                             user_obj.save()

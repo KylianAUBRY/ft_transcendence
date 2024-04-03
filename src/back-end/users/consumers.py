@@ -449,6 +449,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 user.LongestExchange = player1["nbLongestExchange"]
             user.nbPointMarked += player1["score"]
             user.nbPointLose += player2["score"]
+            user.isInGame = False
             await sync_to_async(user.save)()
         except Exception as error:
             logger.info("\n\nPLAYER 1 UPDATE FAIL : %s", error)
@@ -465,6 +466,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 user2.LongestExchange = player2["nbLongestExchange"]
             user2.nbPointMarked += player2["score"]
             user2.nbPointLose += player1["score"]
+            user2.isInGame = False
             await sync_to_async(user2.save)()
         except Exception as error:
             logger.info("\n\nPLAYER 2 UPDATE FAIL : %s", error)
