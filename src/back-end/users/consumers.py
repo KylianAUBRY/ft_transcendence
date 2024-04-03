@@ -262,7 +262,7 @@ class GameRoom(AsyncWebsocketConsumer):
                 ball_y = 0
                 ball_dx = 0
                 ball_dy = 0
-                ball_speed = 5
+                ball_speed = 6.5
                 isGoal = False
 
                 # Randomize ball direction for start of round
