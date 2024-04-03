@@ -136,7 +136,7 @@ function handleBtnExit(){
 }
 
 document.addEventListener('keydown', function(event) {
-  if (event.keyCode === 13) {
+  if (event.keyCode === 13 && props.state < 20) {
     Click(loaderGltf.scene.rotation.y);
   }
 });

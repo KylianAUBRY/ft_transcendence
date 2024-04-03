@@ -139,6 +139,9 @@ function MyCanvas ( props ) {
         localMatch.classList.add('visible');
     }, 100); 
   }else if (newValue === 30){
+      multiple = true
+      updateSetScore('name1', 'Player 1')
+      updateSetScore('name2', 'Player 2')
       setisLocalMatch(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.localMatch');
@@ -172,6 +175,9 @@ function MyCanvas ( props ) {
       setisResultTournamnt(true)
 
     } else if (newValue === 50) {
+        multiple = true
+        updateSetScore('name1', 'Player 1')
+        updateSetScore('name2', 'AI-bot')
         setisBotMatch(true)
         setTimeout(function() {
         var localMatch = document.querySelector('.botMatch');
@@ -186,6 +192,7 @@ function MyCanvas ( props ) {
           localMatch.classList.add('visible');
       }, 100); 
     }else if (newValue === 60){
+      console.log('usestate60')
       multiple = true
       updateSetScore('name1', 'Team 1')
       updateSetScore('name2', 'Team 2')
@@ -1942,7 +1949,7 @@ useEffect(() => {
             <div className='bad' id='badEmail'></div>
           </div>
           <div className='Wgroup'>
-            <input placeholder='login' id='login2' name='login2' className='Winput' onChange={e => setUsername(e.target.value)}></input>
+            <input placeholder='login' id='login2' name='login2' className='Winput' onChange={e => setUsername(e.target.value)} maxLength={15}></input>
             <label className='Wlabel' htmlFor='login2'>{t("home.login")}</label>
             <div className='bad' id='badLogin'></div>
           </div>

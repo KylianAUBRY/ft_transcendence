@@ -200,7 +200,6 @@
   }
   
   .customize::before {
-    content: "\f13a";
     width: auto;
     height: auto;
     text-align: center;
@@ -244,7 +243,6 @@
   }
 
  .ChangeInfo::before {
-    content: "\f13a";
     width: auto;
     height: auto;
     text-align: center;

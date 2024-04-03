@@ -236,7 +236,6 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
   }
   
   function updateBallPosition() {
-    console.log(ball.vector.x, ball.vector.z, ball.speed)
     var ballPos = ball.position;
     ballPos.x += ball.vector.x * deltaTime * ball.speed;
     ballPos.z += ball.vector.z * deltaTime * ball.speed;
@@ -675,7 +674,7 @@ if (multiple && loaderGltf2 && loaderGltf2.scene){
 
 
   if (stateGame === 21 || stateGame === 31 || stateGame === 41 || stateGame === 43 || stateGame === 45 || stateGame === 47 || stateGame === 49 || stateGame === 141 || stateGame === 143 || stateGame === 51 || stateGame === 61) {
-
+    console.log('state', stateGame)
     if (stateGame !== 61){
       multiple = false
       racket11.visible = false
