@@ -139,7 +139,6 @@ function MyCanvas ( props ) {
         localMatch.classList.add('visible');
     }, 100); 
   }else if (newValue === 30){
-      multiple = true
       updateSetScore('name1', 'Player 1')
       updateSetScore('name2', 'Player 2')
       setisLocalMatch(true)
@@ -175,7 +174,6 @@ function MyCanvas ( props ) {
       setisResultTournamnt(true)
 
     } else if (newValue === 50) {
-        multiple = true
         updateSetScore('name1', 'Player 1')
         updateSetScore('name2', 'AI-bot')
         setisBotMatch(true)
@@ -302,7 +300,6 @@ useEffect(() => {
             setSelectedKeys(newSelectedKeys);
             }
 
-            //setOptions()
         }).catch(function(err){
           console.error(err)
         })
@@ -546,8 +543,8 @@ useEffect(() => {
 const[findOnlineGame, setFindOnlineGame] = useState(false)
 
   async function searchOpponent(){
-
-    console.log(localStorage.getItem('token'))
+    setIsProfilView(false)
+  
 
     const buttonS = document.getElementById('btnSearch')
     buttonS.style.display = 'none'
@@ -1398,8 +1395,6 @@ function affDecompte(){
               newSelectedKeys[3] = key4;
               setSelectedKeys(newSelectedKeys);
             }
-            const pp = document.getElementById('profil')
-            pp.src = baseUrl + ':8000' + image
 
 
 
@@ -1929,7 +1924,7 @@ useEffect(() => {
       <div className='form'>
         <form onSubmit={handleconnection} className='signinForm'>
           <div className='Wgroup'>
-            <input placeholder='login' id='login' name='login' className='Winput' onChange={e => setEmail2(e.target.value)}></input>
+            <input placeholder='login' id='login' name='login' className='Winput' onChange={e => setEmail2(e.target.value.replace(/[<>(){}\[\]'"]/g, ''))} ></input>
             <label className='Wlabel' htmlFor='login'>{t("home.email")}</label>
             <div className='bad' id='badEmail2'></div>
           </div>
@@ -1944,12 +1939,12 @@ useEffect(() => {
         </form>
         <form onSubmit={handleRegister} className='signupForm'>
         <div className='Wgroup'>
-            <input placeholder='e-mail' id='e-mail' name='e-mail' className='Winput' onChange={e => setEmail(e.target.value)}></input>
+            <input placeholder='e-mail' id='e-mail' name='e-mail' className='Winput' onChange={e => setEmail(e.target.value.replace(/[<>(){}\[\]'"]/g, ''))} ></input>
             <label className='Wlabel' htmlFor='e-mail'>{t("home.email")}</label>
             <div className='bad' id='badEmail'></div>
           </div>
           <div className='Wgroup'>
-            <input placeholder='login' id='login2' name='login2' className='Winput' onChange={e => setUsername(e.target.value)} maxLength={15}></input>
+            <input placeholder='login' id='login2' name='login2' className='Winput' maxLength={15} onChange={e => setUsername(e.target.value.replace(/[<>(){}\[\]'"]/g, ''))}></input>
             <label className='Wlabel' htmlFor='login2'>{t("home.login")}</label>
             <div className='bad' id='badLogin'></div>
           </div>

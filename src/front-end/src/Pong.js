@@ -321,6 +321,11 @@ function endGame(winner)
     winner === 1 ? winnerTournament.player = 'player 1' : winnerTournament.player = 'AI-bot'
     updateSetState(52)
   }
+  multiple = false
+  racket11.visible = false
+  racket22.visible = false
+  updateSetScore('name1', 'Player 1')
+  updateSetScore('name2', 'Player 2')
 }
 
 	function stopBall(){ 

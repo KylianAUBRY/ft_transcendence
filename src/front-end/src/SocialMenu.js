@@ -428,7 +428,7 @@ const handleImageChange = (e) => {
                 <p>Change Info</p>
                 <form onSubmit={uploadImage}>
                     <input placeholder='Image' type='file' accept="image/*" onChange={handleImageChange}></input>
-                    <input placeholder='Username'type='text' onChange={e => setUsername(e.target.value)}></input>
+                    <input placeholder='Username'type='text' onChange={e => setUsername(e.target.value.replace(/[<>(){}\[\]'"]/g, ''))}></input>
                     <input placeholder='Password' type='password' onChange={e => setPassword(e.target.value)}></input>
                     <button type='submit' >{props.t("home.change")}</button>
                 </form>
