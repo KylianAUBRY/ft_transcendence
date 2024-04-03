@@ -7,7 +7,7 @@ import './Match.css'
 const Match = (matchObject) => {
     const id = matchObject.matchObject.gameId
     var match = document.getElementById(`match${id}`)
-
+    console.log('mtch', matchObject)
 
     if (matchObject.matchObject.isWin){
         try{

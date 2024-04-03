@@ -161,6 +161,7 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
 	function startBallMovement() {
   ball.position.x = 0
   ball.position.z = 0
+  ball.speed = speedBall
 	let ball_z;
 	let ball_x =  Math.random() < 0.5 ? -1 : 1;
 	while (1) {
@@ -235,6 +236,7 @@ const Pong = ({ stateGame, updateSetState, formData8, formData4, formData2, winn
   }
   
   function updateBallPosition() {
+    console.log(ball.vector.x, ball.vector.z, ball.speed)
     var ballPos = ball.position;
     ballPos.x += ball.vector.x * deltaTime * ball.speed;
     ballPos.z += ball.vector.z * deltaTime * ball.speed;
@@ -773,7 +775,6 @@ useEffect(() => {
         racket2.position.z = 0
         ball.vector.x = 0
         ball.vector.z = 0
-        ball.speed = 0
         gsap.to(ball.position, {
           duration:2,
           z: 0,
@@ -807,7 +808,7 @@ useEffect(() => {
         side = messageObj.side
       }
       if (type === 'state_update'){
-      if (isUsername === false && messageObj.player_1_username){
+      if (isUsername === false && messageObj.player_1_username&& messageObj.player_2_username){
         updateSetScore('name1', messageObj.player_1_username)
         updateSetScore('name2', messageObj.player_2_username)
         isUsername = true
@@ -819,7 +820,6 @@ useEffect(() => {
         ball.vector.y = messageObj.ball_dy * -1
         racket1.position.z = messageObj.player_1_y * -1
         racket2.position.z = messageObj.player_2_y * -1
-        ball.speed = messageObj.ball_speed
    
       } else if (side === 'right'){
         ball.position.x = messageObj.ball_x
@@ -828,7 +828,6 @@ useEffect(() => {
         racket2.position.z = messageObj.player_1_y
         ball.vector.x = messageObj.ball_dx
         ball.vector.y = messageObj.ball_dy
-        ball.speed = messageObj.ball_speed
       }
   
       if (messageObj.isGoal === true){
@@ -849,7 +848,6 @@ useEffect(() => {
         racket2.position.z = 0
         ball.vector.x = 0
         ball.vector.z = 0
-        ball.speed = 0
         gsap.to(ball.position, {
           duration:2,
           z: 0,

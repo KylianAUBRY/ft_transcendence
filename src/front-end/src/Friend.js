@@ -47,21 +47,6 @@ function Friend( props ) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             return response.json();
           }).catch(err => {
             console.error(err)
@@ -74,6 +59,10 @@ function Friend( props ) {
         isOnline = props.t('home.online')
     else    
         isOnline = props.t('home.offline')
+
+console.log(props.friend)
+    if (props.friend.isInGame === true)
+        isOnline = 'in game'
     return (
         <li className='friend'>
             {props.friend.username}   --   {isOnline}

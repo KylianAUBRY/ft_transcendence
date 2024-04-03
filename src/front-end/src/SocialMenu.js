@@ -37,10 +37,10 @@ function displayList(){
           }
           return response.json();
         }).then(function(data){
-          if (data.friend_list.length !== nb){
+         
             setFriend(data.friend_list)
             setNb(data.friend_list.length)
-          }
+          
             
   
         }).catch(function(err){

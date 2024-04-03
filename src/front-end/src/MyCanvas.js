@@ -232,15 +232,14 @@ useEffect(() => {
     const urlParams = new URLSearchParams(url.split('?')[1]);
     const code = urlParams.get('code');
 
-
-
-
     localStorage.setItem('token', code)
     updateUser(true)
     setTimeout(function() {
       setisLoginPage(false)
       if (childRef.current) {
         childRef.current.childFunction(2)
+    } else{
+      navigate('/lobby')
     }
     }, 800);
     updateSetState(10)
@@ -946,6 +945,31 @@ function exitTournament(){
     return
   }
   updateSetState(10)
+
+
+  fetch(baseUrl + ':8000/' + 'api/history', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": "Token " + localStorage.getItem("token")
+    },
+    body: JSON.stringify({
+      userId: localStorage.getItem("userID")
+    }),
+  }).then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  }).then(function(data){
+    try {
+      const objets = data;
+      setMatchArray(objets);
+      setMatchArray(objets);
+  } catch (error) {
+      console.error("Erreur lors du traitement des données :", error);
+  }
+  });
   }
 
 
@@ -1502,8 +1526,26 @@ function affDecompte(){
               key2 = user.key2
               key3 = user.key3
               key4 = user.key4
-            console.log(user)
-            console.log(localStorage.getItem('token'))
+            
+              
+
+              
+              setracketColor(0xffffff)
+            
+
+            
+              i18n.changeLanguage('en')
+          
+          
+
+            if (key1 && key2 && key3 && key4){
+              const newSelectedKeys = [...selectedKeys];
+              newSelectedKeys[0] = key1;
+              newSelectedKeys[1] = key2;
+              newSelectedKeys[2] = key3;
+              newSelectedKeys[3] = key4;
+              setSelectedKeys(newSelectedKeys);
+            }
 
           }).catch(function(err){
             console.error(err)
@@ -1914,9 +1956,9 @@ useEffect(() => {
           </div>
         </form>
         </div>
-        {/* <div className='btn42'>
+        <div className='btn42'>
             <button className='btnlogin' onClick={handle42register}>Login with 42</button>      
-          </div> */}
+          </div>
       </div>
       ) : null}
     { state === 10 ? (
